@@ -20,10 +20,12 @@ def get_this_sunday(today=TODAY, sunday=SUNDAY):
 if __name__ == '__main__':
     this_sunday = get_this_sunday()
 
-    # sas = SundaysAndSeasons()
-    # sas.get_readings_and_slide(this_sunday)
+    sas = SundaysAndSeasons()
+    sas.login()
+    sas.get_readings_and_slide(this_sunday)
+    sas.logoff()
     
     # os.system('soffice --headless --invisible --convert-to pptx slides.ppt')
 
-    ppt = PowerPoint(this_sunday)
-    ppt.get_image()
+    # ppt = PowerPoint(this_sunday)
+    # ppt.get_image()

@@ -1,5 +1,6 @@
 import calendar
 import os
+from io import BytesIO
 from datetime import date
 
 import requests
@@ -23,7 +24,7 @@ class SundaysAndSeasons():
 
     # TODO: error handling
 
-    def __init__(self):
+    def __init__(self, day):
         self.prayer = None
         self.readings = []
         self.intercession = None
@@ -32,25 +33,16 @@ class SundaysAndSeasons():
         self._session = requests.Session()
         self._username = os.getenv('user')
         self._password = os.getenv('password')
-        self._login()
+        self._day = day
 
 
-    def get_readings_and_slide(self, date):
+    def get_readings_and_slide(self):
         '''Get all the data for the current date'''
-        self._get_all_texts(date)
-        self._get_slide(date)
+        self._get_all_texts(self._day)
+        self._get_slide(self._day)
 
 
-    def _get_token(self, url=LOGIN):
-        '''Get the token from the login form'''
-        html = self._session.get(url)
-        soup = BeautifulSoup(html.text, 'html.parser')
-        login_form = soup.find(id='loginForm').form.find_all('input')[0]
-        key, value = login_form['name'], login_form['value']
-        return key, value
-
-
-    def _login(self, url=LOGIN):
+    def login(self, url=LOGIN):
         '''Login to the Sundays and Seasons website'''
         key, value = self._get_token(url)
         payload = {
@@ -70,9 +62,18 @@ class SundaysAndSeasons():
             raise Exception('Logoff failed')
         
 
-    def _get_all_texts(self, date, url=TEXTS):
+    def _get_token(self, url=LOGIN):
+        '''Get the token from the login form'''
+        html = self._session.get(url)
+        soup = BeautifulSoup(html.text, 'html.parser')
+        login_form = soup.find(id='loginForm').form.find_all('input')[0]
+        key, value = login_form['name'], login_form['value']
+        return key, value
+        
+
+    def _get_all_texts(self, url=TEXTS):
         '''Get all the texts for the current date'''
-        req = self._session.get(url.format(date))
+        req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
         self._get_prayer(soup)
         self._get_readings(soup)
@@ -104,9 +105,9 @@ class SundaysAndSeasons():
         self.intercession = [p, c]
 
 
-    def _get_slide(self, date, url=SLIDES):
+    def _get_slide(self, url=SLIDES):
         '''Get the main slide in a soup object'''
-        req = self._session.get(url.format(date))
+        req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
         parent = soup.body.find('div', {'id': 'toggle-btn-panel-projectable'})
         children = parent.find_all_next('img')
@@ -118,7 +119,13 @@ class SundaysAndSeasons():
             if 'Slide 1' in title and '(wide screen)' not in title:
                 file = img['data-download']
                 url = SundaysAndSeasons.BASE + file
-                # TODO: save the file to a folder
-                with open('slides.ppt', 'wb') as f:
+                
+                if not os.path.exists(f'services/{self._day}'):
+                    os.makedirs(f'services/{self._day}')
+
+                with open(f'services/{self._day}/slide.ppt', 'wb') as f:
                     f.write(self._session.get(url).content)
+
+                os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/slide.ppt')
+                os.remove(f'services/{self._day}/slide.ppt')
                     
