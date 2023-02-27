@@ -1,7 +1,9 @@
 import calendar
 import datetime
-from datetime import date
 import os
+from datetime import date
+
+import art
 
 from powerpoint import PowerPoint
 from sundaysandseasons import SundaysAndSeasons
@@ -15,17 +17,31 @@ def get_this_sunday(today=TODAY, sunday=SUNDAY):
     return today + datetime.timedelta((sunday - today.weekday()) % 7)
 
 
-# TODO: implrement tqdm for progress bar
+# TODO: implement tqdm for progress bar
 
 if __name__ == '__main__':
     this_sunday = get_this_sunday()
 
-    sas = SundaysAndSeasons()
-    sas.login()
-    sas.get_readings_and_slide(this_sunday)
-    sas.logoff()
-    
-    # os.system('soffice --headless --invisible --convert-to pptx slides.ppt')
+    # sas = SundaysAndSeasons(this_sunday)
+    # sas.login()
+    # sas.get_readings_and_slide()
+    # sas.logoff()
 
-    # ppt = PowerPoint(this_sunday)
+    # with open(f'services/{this_sunday}/prayer.txt', 'w', encoding='utf-8') as f:
+    #     f.write(sas.prayer)
+
+    # with open(f'services/{this_sunday}/readings.txt', 'w', encoding='utf-8') as f:
+    #     for reading in sas.readings:
+    #         f.write(f'{reading[0]}\n{reading[1]}\n\n')
+
+    # with open(f'services/{this_sunday}/intercession.txt', 'w', encoding='utf-8') as f:
+    #     f.write(f'{sas.intercession[0]}\n{sas.intercession[1]}')
+
+    with open(f'services/{this_sunday}/prayer.txt', 'r', encoding='utf-8') as f:
+        prayer = f.read()
+
+    ppt = PowerPoint(this_sunday)
+    ppt.add_image()
+    ppt.add_title_content_slide('Prayer of the Day', prayer)
+    ppt.save()
     # ppt.get_image()

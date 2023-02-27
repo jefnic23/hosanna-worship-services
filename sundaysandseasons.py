@@ -1,7 +1,4 @@
-import calendar
 import os
-from io import BytesIO
-from datetime import date
 
 import requests
 from bs4 import BeautifulSoup
@@ -25,21 +22,16 @@ class SundaysAndSeasons():
     # TODO: error handling
 
     def __init__(self, day):
-        self.prayer = None
-        self.readings = []
-        self.intercession = None
-
         load_dotenv()
         self._session = requests.Session()
         self._username = os.getenv('user')
         self._password = os.getenv('password')
         self._day = day
 
-
-    def get_readings_and_slide(self):
-        '''Get all the data for the current date'''
-        self._get_all_texts(self._day)
-        self._get_slide(self._day)
+        self.title = None
+        self.prayer = None
+        self.readings = []
+        self.intercession = None
 
 
     def login(self, url=LOGIN):
@@ -62,6 +54,12 @@ class SundaysAndSeasons():
             raise Exception('Logoff failed')
         
 
+    def get_readings_and_slide(self):
+        '''Get all the data for the current date'''
+        self._get_all_texts()
+        self._get_slide()
+        
+
     def _get_token(self, url=LOGIN):
         '''Get the token from the login form'''
         html = self._session.get(url)
@@ -78,6 +76,11 @@ class SundaysAndSeasons():
         self._get_prayer(soup)
         self._get_readings(soup)
         self._get_intercession(soup)
+
+
+    def _get_title(self, soup):
+        '''Get the title of the day in a soup object'''
+        self.title = soup.body.find('h1', {'id': 'ribbontitle'}).get_text().strip()
 
 
     def _get_prayer(self, soup):
@@ -123,9 +126,9 @@ class SundaysAndSeasons():
                 if not os.path.exists(f'services/{self._day}'):
                     os.makedirs(f'services/{self._day}')
 
-                with open(f'services/{self._day}/slide.ppt', 'wb') as f:
+                with open(f'services/{self._day}/service.ppt', 'wb') as f:
                     f.write(self._session.get(url).content)
 
-                os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/slide.ppt')
-                os.remove(f'services/{self._day}/slide.ppt')
+                os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/service.ppt')
+                os.remove(f'services/{self._day}/service.ppt')
                     
