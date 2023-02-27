@@ -33,11 +33,15 @@ class PowerPoint():
     def add_title_content_slide(self, title_text, content_text):
         '''Add a slide to the presentation'''
         slide = self.prs.slides.add_slide(self._blank_layout)
-        title = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0.0), Inches(6), Inches(0.5))
+        # title = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0.0), Inches(6), Inches(0.5))
+        title = slide.shapes.add_textbox(Inches(0.0), Inches(0.0), Inches(6), Inches(1))
         tf = title.text_frame
         tf.text = title_text
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
         tf.vertical_anchor = MSO_ANCHOR.TOP
-        tf.text_align = PP_ALIGN.RIGHT
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.RIGHT
 
         content = slide.shapes.add_textbox(Inches(0.25), Inches(0.5), Inches(5), Inches(2))
         tf = content.text_frame
