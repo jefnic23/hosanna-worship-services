@@ -20,7 +20,7 @@ def get_this_sunday(today=TODAY, sunday=SUNDAY):
 # TODO: implement tqdm for progress bar
 
 if __name__ == '__main__':
-    this_sunday = get_this_sunday()
+    # this_sunday = get_this_sunday()
 
     # sas = SundaysAndSeasons(this_sunday)
     # sas.login()
@@ -37,11 +37,16 @@ if __name__ == '__main__':
     # with open(f'services/{this_sunday}/intercession.txt', 'w', encoding='utf-8') as f:
     #     f.write(f'{sas.intercession[0]}\n{sas.intercession[1]}')
 
+    this_sunday = '2023-02-26'
     with open(f'services/{this_sunday}/prayer.txt', 'r', encoding='utf-8') as f:
         prayer = f.read()
 
+    with open('liturgy/confession.txt', 'r', encoding='utf-8') as f:
+        confession = f.read()
+
     ppt = PowerPoint(this_sunday)
     ppt.add_image()
-    ppt.add_title_content_slide('Prayer of the Day', prayer)
+    ppt.add_confession(confession)
+    ppt.add_prayer_of_the_day(prayer)
     ppt.save()
     # ppt.get_image()
