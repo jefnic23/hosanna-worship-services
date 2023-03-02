@@ -3,11 +3,15 @@ import re
 
 from pptx import Presentation
 from pptx.util import Inches, Pt
-from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
+from pptx.enum.text import MSO_AUTO_SIZE, PP_PARAGRAPH_ALIGNMENT as PP_ALIGN
 from pptx.dml.color import RGBColor
 
 
 class PowerPoint():
+    '''Creates a PowerPoint presentation'''
+    DEFAULT_FONT = 'Segoe UI'
+    DEFAULT_FONTSIZE = 18
+    
     def __init__(self, day):
         self._day = day
         self.prs = Presentation()
@@ -21,7 +25,7 @@ class PowerPoint():
         if os.path.exists(f'services/{self._day}/image.pptx'):
             self._get_image()
 
-        if os.path.exists(f'liturgy/confession.txt'):
+        if os.path.exists('liturgy/confession.txt'):
             self._confession = open('liturgy/confession.txt', 'r', encoding='utf-8').read()
 
 
@@ -46,19 +50,11 @@ class PowerPoint():
 
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.LEFT
-        run = p.add_run()
-        run.text = first_part.splitlines()[0]
-        run.font.name = 'Segoe UI'
-        run.font.bold = False
-        run.font.size = Pt(18)
+        self._add_run(p, first_part.splitlines()[0])
 
         tf.add_paragraph()
         p = tf.paragraphs[1]
-        run = p.add_run()
-        run.text = content_text.splitlines()[1]
-        run.font.name = 'Segoe UI'
-        run.font.bold = True
-        run.font.size = Pt(18)
+        self._add_run(p, first_part.splitlines()[1], bold=True)
 
         slide = self._add_slide_with_header(title_text)
         content = slide.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
@@ -68,14 +64,11 @@ class PowerPoint():
 
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.LEFT
-        run = p.add_run()
-        run.text = second_part.splitlines()[0]
-        run.font.name = 'Segoe UI'
-        run.font.bold = False
-        run.font.size = Pt(18)
+        self._add_run(p, second_part.splitlines()[0])
         p.add_line_break()
 
         p = tf.add_paragraph()
+        
         run = p.add_run()
         run.text = second_part.splitlines()[1]
         run.font.name = 'Segoe UI'
@@ -121,24 +114,6 @@ class PowerPoint():
         self.prs.save(f'services/{self._day}/service.pptx')
 
 
-    @staticmethod
-    def _add_header(slide, header_text):
-        '''Add a header to a slide'''
-        header = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(0))
-        tf = header.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.RIGHT
-        run = p.add_run()
-        run.text = header_text
-        run.font.name = 'Segoe UI'
-        run.font.bold = True
-        run.font.size = Pt(12)
-        run.font.color.rgb = RGBColor(66, 133, 244)
-
-
     def _get_layouts(self):
         '''Get the layouts of the presentation'''
         for l in self.prs.slide_layouts:
@@ -163,6 +138,38 @@ class PowerPoint():
         slide = self.prs.slides.add_slide(self._blank_layout)
         self._add_header(slide, title_text)
         return slide
+    
+    
+    @staticmethod
+    def _add_header(slide, header_text):
+        '''Add a header to a slide'''
+        header = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(0))
+        tf = header.text_frame
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.RIGHT
+        run = p.add_run()
+        run.text = header_text
+        run.font.name = 'Segoe UI'
+        run.font.bold = True
+        run.font.size = Pt(12)
+        run.font.color.rgb = RGBColor(66, 133, 244)
+    
+    
+    @staticmethod
+    def _add_run(text_frame, text, font=DEFAULT_FONT, size=DEFAULT_FONTSIZE, bold=False):
+        '''Add a run to a paragraph'''
+        # check if text frame has only one paragraph, if not add one
+        if len(text_frame.paragraphs) == 0:
+            text_frame.add_paragraph()
+        paragraph = text_frame.paragraphs[-1:]
+        run = paragraph.add_run()
+        run.text = text
+        run.font.name = font
+        run.font.bold = bold
+        run.font.size = Pt(size)
     
 
     @staticmethod

@@ -73,7 +73,7 @@ if __name__ == '__main__':
     formatted_text = '\n'.join(formatted_text)
 
     final = get_height(formatted_text, draw, regular)
-
+    print(len(final))
     for f in final:
         print(f + '\n')
 
