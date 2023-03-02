@@ -15,43 +15,25 @@ parts = [p.start() for p in re.finditer(r'P:', confession)]
 first_part = confession[:parts[1]].strip()
 second_part = confession[parts[1]:parts[2]].strip()
 
+
 def check_size(draw, line, font):
     return draw.multiline_textbbox((0, 0), line, font)
 
-def get_index(line, draw, font, max_width=MAX_WIDTH):
-    # get the index of the last space before the max width
-    # if there is no space, return the index of the first space after the max width
-    return
-
 
 def get_width(line, draw, font, max_width=MAX_WIDTH):
-    # new_line = line.split()[0]
-    # for i, word in enumerate(line.split()[1:]):
-    #     size = check_size(draw, new_line + ' ' + word, font)
-    #     if size[2] < max_width:
-    #         new_line += ' ' + word
-    #     else:
-    #         new_line += '\n' + ' '.join(line.split()[i+1:])
-    #         break
-    
-    # return new_line
-
     if check_size(draw, line, font)[2] < max_width:
         return line
     else:
-        # recursively split the line
-        return line[:]
+        lines = []
+        for word in line.split():
+            if check_size(draw, ' '.join(lines[-1:] + [word]), font)[2] < max_width:
+                lines[-1:] = [' '.join(lines[-1:] + [word])]
+            else:
+                lines += [word]
+
+        return '\n'.join(lines)
+    
 
 if __name__ == '__main__':
-    # line = second_part.splitlines()[3]
-    # new_line = line.split()[0]
-    # for word in line.split()[1:]:
-    #     size = check_size(draw, new_line + ' ' + word, bold)
-    #     if size[2] < MAX_WIDTH:
-    #         new_line += ' ' + word
-    #     else:
-    #         print(new_line, check_size(draw, new_line, bold))
-    #         break
-    
-    for line in first_part.splitlines():
+    for line in second_part.splitlines():
         print(get_width(line, draw, regular))
