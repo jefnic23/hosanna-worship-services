@@ -82,8 +82,6 @@ class PowerPoint():
         run.font.bold = False
         run.font.size = Pt(18)
 
-        print(tf.)
-
         for line in second_part.splitlines()[2:]:
             p = tf.add_paragraph()
             run = p.add_run()
