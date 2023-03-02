@@ -15,12 +15,20 @@ parts = [p.start() for p in re.finditer(r'P:', confession)]
 first_part = confession[:parts[1]].strip()
 second_part = confession[parts[1]:parts[2]].strip()
 
+def point_to_px(point):
+    '''Converts a point size to a pixel size'''
+    return int(point * 96 / 72)
+
+def inch_to_px(inch):
+    '''Converts an inch size to a pixel size'''
+    return int(inch * 96)
 
 def check_size(draw, line, font):
+    '''Checks the size of a line of text'''
     return draw.multiline_textbbox((0, 0), line, font)
 
-
 def get_width(line, draw, font, max_width=MAX_WIDTH):
+    '''Gets the width of a line of text and splits it if it's too long'''
     if check_size(draw, line, font)[2] < max_width:
         return line
     else:
@@ -37,3 +45,6 @@ def get_width(line, draw, font, max_width=MAX_WIDTH):
 if __name__ == '__main__':
     for line in second_part.splitlines():
         print(get_width(line, draw, regular))
+
+    print(point_to_px(18))
+    print(inch_to_px(5.9), inch_to_px(3.45))
