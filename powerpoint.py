@@ -58,10 +58,10 @@ class PowerPoint():
         congregation = [c.start() for c in re.finditer(r'C:', self._confession)]
 
         for part in get_parts(pastor, congregation):
-            if part[1] is None:
-                p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[0][1]:].strip()
-            else:
+            if part[1] is not None:
                 p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[1][0]:part[1][1]].strip()
+            else:
+                p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[0][1]:].strip()
                 
             width_formatted_text = []
             for line in p.splitlines():
@@ -87,30 +87,19 @@ class PowerPoint():
     def add_prayer_of_the_day(self, title_text='Prayer of the Day'):
         '''Add the prayer of the day to the presentation'''
         slide = self._add_slide_with_header(title_text)
-
         content = slide.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
         tf = content.text_frame
         tf.word_wrap = True
         tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
 
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.JUSTIFY
-        run = p.add_run()
-        run.text = self._prayer.splitlines()[0]
-        run.font.name = 'Segoe UI'
-        run.font.bold = True
-        run.font.size = Pt(18)
-
-        p = tf.add_paragraph()
-        run = p.add_run()
-        run.text = self._prayer.splitlines()[1]
-        run.font.name = 'Segoe UI'
-        run.font.bold = True
-        run.font.size = Pt(18)
+        for line in self._prayer.splitlines():
+            self._add_run(tf, line + '\n', bold=True, align=PP_ALIGN.JUSTIFY)
 
 
     def save(self):
         '''Save the presentation'''
+        if not os.path.exists(f'services/{self._day}'):
+            os.makedirs(f'services/{self._day}')
         self.prs.save(f'services/{self._day}/service.pptx')
 
 
@@ -183,6 +172,7 @@ class PowerPoint():
         run.font.name = font
         run.font.bold = bold
         run.font.size = Pt(size)
+        paragraph.add_break()
     
 
     @staticmethod
