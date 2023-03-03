@@ -38,15 +38,10 @@ if __name__ == '__main__':
     #     f.write(f'{sas.intercession[0]}\n{sas.intercession[1]}')
 
     this_sunday = '2023-02-26'
-    with open(f'services/{this_sunday}/prayer.txt', 'r', encoding='utf-8') as f:
-        prayer = f.read()
-
-    with open('liturgy/confession.txt', 'r', encoding='utf-8') as f:
-        confession = f.read()
 
     ppt = PowerPoint(this_sunday)
     ppt.add_image()
-    ppt.add_confession(confession)
-    ppt.add_prayer_of_the_day(prayer)
+    ppt.add_confession()
+    ppt.add_prayer_of_the_day()
     ppt.save()
     # ppt.get_image()

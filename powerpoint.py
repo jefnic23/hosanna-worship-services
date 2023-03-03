@@ -6,9 +6,23 @@ from pptx.util import Inches, Pt
 from pptx.enum.text import MSO_AUTO_SIZE, PP_PARAGRAPH_ALIGNMENT as PP_ALIGN
 from pptx.dml.color import RGBColor
 
+from utils import get_parts, get_width, get_height
+
+from PIL import Image, ImageDraw, ImageFont
+
+MAX_WIDTH = 566
+MAX_HEIGHT = 336
+
+
+regular = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
+bold = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
+draw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
+
+
 
 class PowerPoint():
     '''Creates a PowerPoint presentation'''
+
     DEFAULT_FONT = 'Segoe UI'
     DEFAULT_FONTSIZE = 18
     
@@ -28,6 +42,9 @@ class PowerPoint():
         if os.path.exists('liturgy/confession.txt'):
             self._confession = open('liturgy/confession.txt', 'r', encoding='utf-8').read()
 
+        if os.path.exists('liturgy/prayer.txt'):
+            self._prayer = open('liturgy/prayer.txt', 'r', encoding='utf-8').read()
+
 
     def add_image(self):
         slide = self.prs.slides.add_slide(self._blank_layout)
@@ -35,56 +52,38 @@ class PowerPoint():
         slide.shapes.add_picture(f'services/{self._day}/image.jpg', left, top, self.prs.slide_width, self.prs.slide_height)
 
 
-    def add_confession(self, content_text, title_text='Confession and Forgiveness'):
+    def add_confession(self, title_text='Confession and Forgiveness'):
         '''Add the confession to the presentation'''
-        parts = [p.start() for p in re.finditer(r'P:', content_text)]
-        first_part = content_text[:parts[1]].strip()
-        second_part = content_text[parts[1]:parts[2]].strip()
-        third_part = content_text[parts[2]:].strip()
+        pastor = [p.start() for p in re.finditer(r'P:', self._confession)]
+        congregation = [c.start() for c in re.finditer(r'C:', self._confession)]
 
-        slide = self._add_slide_with_header(title_text)
-        content = slide.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        for part in get_parts(pastor, congregation):
+            if part[1] is None:
+                p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[0][1]:].strip()
+            else:
+                p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[1][0]:part[1][1]].strip()
+                
+            width_formatted_text = []
+            for line in p.splitlines():
+                width_formatted_text.append(get_width(line, draw, regular))
+                
+            for line in c.splitlines():
+                width_formatted_text.append(get_width(line, draw, bold))
 
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.LEFT
-        self._add_run(p, first_part.splitlines()[0])
+            width_formatted_text = '\n'.join(width_formatted_text)
 
-        tf.add_paragraph()
-        p = tf.paragraphs[1]
-        self._add_run(p, first_part.splitlines()[1], bold=True)
+            slides = get_height(width_formatted_text, draw, regular)
 
-        slide = self._add_slide_with_header(title_text)
-        content = slide.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.LEFT
-        self._add_run(p, second_part.splitlines()[0])
-        p.add_line_break()
-
-        p = tf.add_paragraph()
-        
-        run = p.add_run()
-        run.text = second_part.splitlines()[1]
-        run.font.name = 'Segoe UI'
-        run.font.bold = False
-        run.font.size = Pt(18)
-
-        for line in second_part.splitlines()[2:]:
-            p = tf.add_paragraph()
-            run = p.add_run()
-            run.text = line
-            run.font.name = 'Segoe UI'
-            run.font.bold = True
-            run.font.size = Pt(18)
+            for slide in slides:
+                s = self._add_slide_with_header(title_text)
+                content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+                tf = content.text_frame
+                tf.word_wrap = True
+                tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                self._add_run(tf, slide)
 
 
-    def add_prayer_of_the_day(self, content_text, title_text='Prayer of the Day'):
+    def add_prayer_of_the_day(self, title_text='Prayer of the Day'):
         '''Add the prayer of the day to the presentation'''
         slide = self._add_slide_with_header(title_text)
 
@@ -96,14 +95,14 @@ class PowerPoint():
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.JUSTIFY
         run = p.add_run()
-        run.text = content_text.splitlines()[0]
+        run.text = self._prayer.splitlines()[0]
         run.font.name = 'Segoe UI'
         run.font.bold = True
         run.font.size = Pt(18)
 
         p = tf.add_paragraph()
         run = p.add_run()
-        run.text = content_text.splitlines()[1]
+        run.text = self._prayer.splitlines()[1]
         run.font.name = 'Segoe UI'
         run.font.bold = True
         run.font.size = Pt(18)
@@ -139,6 +138,18 @@ class PowerPoint():
         self._add_header(slide, title_text)
         return slide
     
+
+    @staticmethod
+    def _get_pastor(text):
+        '''Returns the indices of the pastor's lines'''
+        return [p.start() for p in re.finditer(r'P:', text)]
+
+
+    @staticmethod
+    def _get_congregation(text):
+        '''Returns the indices of the congregation's lines'''
+        return [c.start() for c in re.finditer(r'C:', text)]
+    
     
     @staticmethod
     def _add_header(slide, header_text):
@@ -159,12 +170,13 @@ class PowerPoint():
     
     
     @staticmethod
-    def _add_run(text_frame, text, font=DEFAULT_FONT, size=DEFAULT_FONTSIZE, bold=False):
+    def _add_run(text_frame, text, font=DEFAULT_FONT, size=DEFAULT_FONTSIZE, bold=False, align=PP_ALIGN.LEFT):
         '''Add a run to a paragraph'''
         # check if text frame has only one paragraph, if not add one
         if len(text_frame.paragraphs) == 0:
             text_frame.add_paragraph()
-        paragraph = text_frame.paragraphs[-1:]
+        paragraph = text_frame.paragraphs[-1]
+        paragraph.alignment = align
         run = paragraph.add_run()
         run.text = text
         run.font.name = font
