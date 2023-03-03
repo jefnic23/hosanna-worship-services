@@ -121,5 +121,5 @@ if __name__ == '__main__':
         slides = get_height(width_formatted_text, draw, regular)
 
         for slide in slides:
-            print(slide)
-            print('---')
+            for line in slide.splitlines():
+                print(line in p, line in c)

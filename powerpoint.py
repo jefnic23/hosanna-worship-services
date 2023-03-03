@@ -42,8 +42,8 @@ class PowerPoint():
         if os.path.exists('liturgy/confession.txt'):
             self._confession = open('liturgy/confession.txt', 'r', encoding='utf-8').read()
 
-        if os.path.exists('liturgy/prayer.txt'):
-            self._prayer = open('liturgy/prayer.txt', 'r', encoding='utf-8').read()
+        if os.path.exists(f'services/{day}/prayer.txt'):
+            self._prayer = open(f'services/{day}/prayer.txt', 'r', encoding='utf-8').read()
 
 
     def add_image(self):
@@ -80,7 +80,8 @@ class PowerPoint():
                 tf = content.text_frame
                 tf.word_wrap = True
                 tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-                self._add_run(tf, slide)
+                for line in slide.splitlines():
+                    self._add_run(tf, line + '\n', bold=True if line in c else False)
 
 
     def add_prayer_of_the_day(self, title_text='Prayer of the Day'):
