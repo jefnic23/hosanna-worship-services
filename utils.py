@@ -3,8 +3,8 @@ from itertools import chain, tee, zip_longest
 
 from PIL import Image, ImageDraw, ImageFont
 
-MAX_WIDTH = 566
-MAX_HEIGHT = 336
+MAX_WIDTH = 565
+MAX_HEIGHT = 335
 
 
 regular = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
@@ -12,13 +12,11 @@ bold = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
 draw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
 
 
-with open('liturgy/confession.txt', 'r', encoding='utf-8') as f:
-    confession = f.read()
+with open('liturgy/kyrie.txt', 'r', encoding='utf-8') as f:
+    kyrie = f.read()
 
-
-pastor = [p.start() for p in re.finditer(r'P:', confession)]
-congregation = [c.start() for c in re.finditer(r'C:', confession)]
-
+with open('services/2023-02-26/psalm.txt', 'r', encoding='utf-8') as f:
+    psalm = f.read()
 
 
 def point_to_px(point):
@@ -93,6 +91,27 @@ def get_parts(pastor, congregation):
     '''Gets the start and end of each part of the liturgy'''
     parts = pairwise(list(chain.from_iterable(zip(pastor, congregation))))
     return grouper(parts, 2)
+
+
+def lookahead(iterable):
+    """Pass through all values from the given iterable, augmented by the
+    information if there are more values to come after the current one
+    (True), or if it is the last value (False).
+    """
+    # Get an iterator and pull the first value.
+    it = iter(iterable)
+    last = next(it)
+    # Run the iterator to exhaustion (starting from the second value).
+    for val in it:
+        # Report the *previous* value (more to come).
+        yield last, True
+        last = val
+    # Report the last value.
+    yield last, False
+
+
+def get_superscripts(text):
+    return [(s.start(), s.end())for s in re.finditer(r'(\d+:\d+)|\d+', text)]
     
 
 if __name__ == '__main__':
@@ -103,23 +122,31 @@ if __name__ == '__main__':
     # second_part = content_text[parts[1]:parts[2]].strip()
     # third_part = content_text[parts[2]:].strip()
 
-    for part in get_parts(pastor, congregation):
-        if part[1] is None:
-            p, c = confession[part[0][0]:part[0][1]].strip(), confession[part[0][1]:].strip()
+    psalm = psalm.replace(' | ', ' ').replace('- ', '')
+    lines = psalm.splitlines()[1:]
+    
+    p = []
+    c = []
+
+    width_formatted_text = []
+    for i, line in enumerate(lines):
+        if i % 2 == 0:
+            new_line = get_width(line, draw, bold)
+            for line in new_line.splitlines():
+                c.append(line)
+            width_formatted_text.append(new_line)
         else:
-            p, c = confession[part[0][0]:part[0][1]].strip(), confession[part[1][0]:part[1][1]].strip()
-            
-        width_formatted_text = []
-        for line in p.splitlines():
-            width_formatted_text.append(get_width(line, draw, regular))
-            
-        for line in c.splitlines():
-            width_formatted_text.append(get_width(line, draw, bold))
+            new_line = get_width(line, draw, regular)
+            p.append(new_line.splitlines())
+            width_formatted_text.append(new_line)
 
-        width_formatted_text = '\n'.join(width_formatted_text)
+    width_formatted_text = '\n'.join(width_formatted_text)
 
-        slides = get_height(width_formatted_text, draw, regular)
+    slides = get_height(width_formatted_text, draw, regular)
 
-        for slide in slides:
-            for line in slide.splitlines():
-                print(line in p, line in c)
+    for line in c:
+        print(line)
+
+    # for slide in slides:
+    #     for line, has_more in lookahead(slide.splitlines()):
+    #         print(line, has_more)
