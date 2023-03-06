@@ -94,6 +94,7 @@ class SundaysAndSeasons():
         parent = soup.body.find(text=SundaysAndSeasons.READINGS).parent
         headings = parent.find_all_next('a', {'class': 'scripture'})[:4]
         intros = parent.find_all_next('div', {'class': 'reading_intro'})
+        # TODO: omit <span class="refrain"> from psalm
         for i in range(len(headings)):
             reading = [headings[i].get_text().strip(), intros[i].find_next_sibling().get_text().strip()]
             self.readings.append(reading)
