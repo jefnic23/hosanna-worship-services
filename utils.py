@@ -87,10 +87,10 @@ def grouper(iterable, n, fillvalue=None):
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def get_parts(pastor, congregation):
+def get_parts(x, y):
     '''Gets the start and end of each part of the liturgy'''
-    parts = pairwise(list(chain.from_iterable(zip(pastor, congregation))))
-    return grouper(parts, 2)
+    xy = pairwise(list(chain.from_iterable(zip(x, y))))
+    return grouper(xy, 2)
 
 
 def lookahead(iterable):

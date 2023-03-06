@@ -226,9 +226,9 @@ class PowerPoint():
 
     def add_psalm(self):
         '''Add a psalm to the presentation'''
-        text = self._psalm.replace(' | ', ' ').replace('- ', '')
+        text = self._psalm.replace('|', '').replace('- ', '').replace('  ', ' ')
         title = text.splitlines()[0]
-        psalm = text.splitlines()[1:]
+        psalm = [line.strip() for line in text.splitlines()[1:] if line]
 
         self.add_title_slide(title)
 
