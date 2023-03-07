@@ -51,6 +51,24 @@ class PowerPoint():
         if os.path.exists('liturgy/kyrie.txt'):
             self._kyrie = open('liturgy/kyrie.txt', 'r', encoding='utf-8').read()
 
+        if os.path.exists('liturgy/creed.txt'):
+            self._creed = open('liturgy/creed.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/dialogue.txt'):
+            self._dialogue = open('liturgy/dialogue.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/holy-holy-holy.txt'):
+            self._hosanna = open('liturgy/holy-holy-holy.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/communion-dialogue.txt'):
+            self._communion_dialogue = open('liturgy/communion-dialogue.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/lords-prayer.txt'):
+            self._lords_prayer = open('liturgy/lords-prayer.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/communion-hymn.txt'):
+            self._communion_hymn = open('liturgy/communion-hymn.txt', 'r', encoding='utf-8').read()
+
         if os.path.exists(f'services/{day}/prayer.txt'):
             self._prayer = open(f'services/{day}/prayer.txt', 'r', encoding='utf-8').read()
 
@@ -68,6 +86,18 @@ class PowerPoint():
         
         if os.path.exists(f'services/{day}/gospel.txt'):
             self._gospel = open(f'services/{day}/gospel.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists(f'services/{day}/intercession.txt'):
+            self._intercession = open(f'services/{day}/intercession.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/prayer-after-communion.txt'):
+            self._prayer_after_communion = open('liturgy/prayer-after-communion.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/benediction.txt'):
+            self._benediction = open('liturgy/benediction.txt', 'r', encoding='utf-8').read()
+
+        if os.path.exists('liturgy/dismissal.txt'):
+            self._dismissal = open('liturgy/dismissal.txt', 'r', encoding='utf-8').read()
 
 
     def add_image(self):
@@ -226,7 +256,7 @@ class PowerPoint():
 
     def add_psalm(self):
         '''Add a psalm to the presentation'''
-        text = self._psalm.replace('|', '').replace('- ', '').replace('  ', ' ')
+        text = self._psalm.replace('|', '').replace('- ', '')
         title = text.splitlines()[0]
         psalm = [line.strip() for line in text.splitlines()[1:] if line]
 
@@ -333,6 +363,151 @@ class PowerPoint():
                         self._add_run(paragraph, line, bold=True)
                     else:
                         self._add_run(paragraph, line, has_more=has_more)
+
+
+    def add_creed(self, title):
+        '''Add the creed to the presentation'''
+        width_formatted_text = []
+        for line in self._creed.splitlines():
+            width_formatted_text.append(get_width(line, draw, bold))
+
+        width_formatted_text = '\n'.join(width_formatted_text)
+
+        slides = get_height(width_formatted_text, draw, regular)
+
+        for slide in slides:
+            s = self._add_slide_with_header(title)
+            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+            tf = content.text_frame
+            tf.word_wrap = True
+            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            p = tf.paragraphs[0]
+            for line, has_more in lookahead(slide.splitlines()):
+                self._add_run(p, line, bold=True, has_more=has_more)
+
+
+    def add_intercessions(self):
+        '''Add the intercessions to the presentation'''
+        slide = self._add_slide_with_header('Prayers of Intercession')
+        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
+        tf = content.text_frame
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        self._add_run(p, 'Each petition ends:', italic=True)
+        p.add_line_break()
+        self._add_run(p, self._intercession.splitlines()[0])
+        p.add_line_break()
+        self._add_run(p, self._intercession.splitlines()[1], bold=True)
+
+
+    def add_dialogue(self):
+        '''Add the dialogue to the presentation'''
+        text = grouper(self._dialogue.splitlines(), 2)
+
+        slide = self._add_slide_with_header('Dialogue')
+        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
+        tf = content.text_frame
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        for line, has_more in lookahead(text):
+            self._add_run(p, line[0])
+            p.add_line_break()
+            self._add_run(p, line[1], bold=True, has_more=has_more)
+            if has_more:
+                p.add_line_break()
+
+
+    def add_hosanna(self):
+        '''Add holy holy holy to the presentation'''
+        slide = self._add_slide_with_header('Holy, holy, holy')
+        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
+        tf = content.text_frame
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        for line in self._hosanna.splitlines():
+            self._add_run(p, line, bold=True)
+            p.add_line_break()
+
+
+    def add_communion_dialogue(self):
+        '''Add the communion dialogue to the presentation'''
+        slide = self._add_slide_with_header('Communion Dialogue')
+        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
+        tf = content.text_frame
+        tf.word_wrap = True
+        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        for line, has_more in lookahead(self._communion_dialogue.splitlines()):
+            self._add_run(p, line, bold=False if has_more else True)
+            p.add_line_break()
+
+
+    def add_lords_prayer(self, title):
+        '''Add the creed to the presentation'''
+        width_formatted_text = []
+        for line in self._lords_prayer.splitlines():
+            width_formatted_text.append(get_width(line, draw, bold))
+
+        width_formatted_text = '\n'.join(width_formatted_text)
+
+        slides = get_height(width_formatted_text, draw, regular)
+
+        for slide in slides:
+            s = self._add_slide_with_header(title)
+            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+            tf = content.text_frame
+            tf.word_wrap = True
+            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            p = tf.paragraphs[0]
+            for line, has_more in lookahead(slide.splitlines()):
+                self._add_run(p, line, bold=True, has_more=has_more)
+
+
+    def add_communion_hymn(self):
+        '''Add the communion hymn to the presentation'''
+        slides = grouper(self._communion_hymn.split('\n\n'), 2)
+
+        for slide in slides:
+            s = self._add_slide_with_header('Communion Hymn')
+            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+            tf = content.text_frame
+            tf.word_wrap = True
+            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            for lines, has_more in lookahead(slide) if slide else []:
+                paragraph = tf.paragraphs[0]
+                for line, has_break in lookahead(lines.splitlines()) if lines else []:
+                    self._add_run(paragraph, line, bold=True, has_more=has_break)
+                if has_more:
+                    paragraph.add_line_break()
+                    paragraph.add_line_break()
+
+
+    def add_call_and_response(self, title, text):
+        '''Add the call and response to the presentation'''
+        width_formatted_text = []
+        for line in text.splitlines():
+            width_formatted_text.append(get_width(line, draw, bold))
+
+        width_formatted_text = '\n'.join(width_formatted_text)
+
+        slides = get_height(width_formatted_text, draw, regular)
+
+        for slide in slides:
+            s = self._add_slide_with_header(title)
+            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+            tf = content.text_frame
+            tf.word_wrap = True
+            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            p = tf.paragraphs[0]
+            for line, has_more in lookahead(slide.splitlines()):
+                self._add_run(p, line, bold=True if not has_more else False, has_more=has_more)
 
 
     def save(self):
