@@ -17,10 +17,11 @@ def get_this_sunday(today=TODAY, sunday=SUNDAY):
     return today + datetime.timedelta((sunday - today.weekday()) % 7)
 
 
-# TODO: implement tqdm for progress bar
+# TODO: implement tqdm/rich for progress bar
 
 if __name__ == '__main__':
     # TODO: prompt to install libreoffice if it doesn't exist
+    # https://www.libreoffice.org/download/download-libreoffice/
 
     this_sunday = get_this_sunday()
 
