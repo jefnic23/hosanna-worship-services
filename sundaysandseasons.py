@@ -31,6 +31,7 @@ class SundaysAndSeasons():
         self.title = None
         self.prayer = None
         self.readings = []
+        self.psalm = None
         self.intercession = None
 
 
@@ -99,6 +100,12 @@ class SundaysAndSeasons():
         for i in range(len(headings)):
             reading = [headings[i].get_text().strip(), intros[i].find_next_sibling().get_text().strip()]
             self.readings.append(reading)
+            
+            
+    def _get_psalm(self, soup):
+        '''Get the psalm in a soup object'''
+        parent = soup.body.find(text=SundaysAndSeasons.READINGS).parent
+        # spans = [span for span in soup.find_all('span') if 'style' not in span.attrs and span.has_attr('class')]
 
 
     def _get_intercession(self, soup):
@@ -133,4 +140,4 @@ class SundaysAndSeasons():
 
                 os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/image.ppt')
                 os.remove(f'services/{self._day}/image.ppt')
-                    
+                       
