@@ -106,6 +106,7 @@ class SundaysAndSeasons():
         '''Get the psalm in a soup object'''
         parent = soup.body.find(text=SundaysAndSeasons.READINGS).parent
         # spans = [span for span in soup.find_all('span') if 'style' not in span.attrs and span.has_attr('class')]
+        # TODO: refrain spans are nested; remove them
 
 
     def _get_intercession(self, soup):
