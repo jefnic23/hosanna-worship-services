@@ -12,13 +12,6 @@ bold = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
 draw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
 
 
-with open('liturgy/kyrie.txt', 'r', encoding='utf-8') as f:
-    kyrie = f.read()
-
-with open('services/2023-02-26/psalm.txt', 'r', encoding='utf-8') as f:
-    psalm = f.read()
-
-
 def point_to_px(point):
     '''Converts a point size to a pixel size'''
     return int(point * 96 / 72)
@@ -114,39 +107,5 @@ def get_superscripts(text):
     return [(s.start(), s.end())for s in re.finditer(r'(\d+:\d+)|\d+', text)]
     
 
-if __name__ == '__main__':
-    # print(second_part)
-    # print(get_slides(second_part, draw, regular))
-
-    # first_part = content_text[:parts[1]].strip()
-    # second_part = content_text[parts[1]:parts[2]].strip()
-    # third_part = content_text[parts[2]:].strip()
-
-    psalm = psalm.replace(' | ', ' ').replace('- ', '')
-    lines = psalm.splitlines()[1:]
-    
-    p = []
-    c = []
-
-    width_formatted_text = []
-    for i, line in enumerate(lines):
-        if i % 2 == 0:
-            new_line = get_width(line, draw, bold)
-            for line in new_line.splitlines():
-                c.append(line)
-            width_formatted_text.append(new_line)
-        else:
-            new_line = get_width(line, draw, regular)
-            p.append(new_line.splitlines())
-            width_formatted_text.append(new_line)
-
-    width_formatted_text = '\n'.join(width_formatted_text)
-
-    slides = get_height(width_formatted_text, draw, regular)
-
-    for line in c:
-        print(line)
-
-    # for slide in slides:
-    #     for line, has_more in lookahead(slide.splitlines()):
-    #         print(line, has_more)
+def clean_text(text):
+    return text.replace('|', '').replace('- ', '')
