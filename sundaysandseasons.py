@@ -95,6 +95,7 @@ class SundaysAndSeasons():
         headings = parent.find_all_next('a', {'class': 'scripture'})[:4]
         intros = parent.find_all_next('div', {'class': 'reading_intro'})
         # TODO: omit <span class="refrain"> from psalm
+        # TODO: add call and response at end of readings
         for i in range(len(headings)):
             reading = [headings[i].get_text().strip(), intros[i].find_next_sibling().get_text().strip()]
             self.readings.append(reading)
@@ -127,9 +128,9 @@ class SundaysAndSeasons():
                 if not os.path.exists(f'services/{self._day}'):
                     os.makedirs(f'services/{self._day}')
 
-                with open(f'services/{self._day}/service.ppt', 'wb') as f:
+                with open(f'services/{self._day}/image.ppt', 'wb') as f:
                     f.write(self._session.get(url).content)
 
-                os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/service.ppt')
-                os.remove(f'services/{self._day}/service.ppt')
+                os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/image.ppt')
+                os.remove(f'services/{self._day}/image.ppt')
                     

@@ -146,9 +146,8 @@ class PowerPoint():
         tf = content.text_frame
         tf.word_wrap = True
         tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        paragraph = tf.paragraphs[0]
         for line, has_more in lookahead(self._prayer.splitlines()):
-            paragraph = tf.paragraphs[0]
-            paragraph.alignment = PP_ALIGN.JUSTIFY
             self._add_run(paragraph, line, bold=True, has_more=has_more)
 
 
