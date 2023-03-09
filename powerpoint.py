@@ -236,7 +236,7 @@ class PowerPoint():
             s = self._add_slide_with_header(title_text)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            tf.word_wrap = True
+            # tf.word_wrap = True
             tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
@@ -326,7 +326,7 @@ class PowerPoint():
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
-        tf.word_wrap = True
+        # tf.word_wrap = True
         tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
         p = tf.paragraphs[0]
@@ -347,7 +347,7 @@ class PowerPoint():
             s = self._add_slide_with_header('Gospel')
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            tf.word_wrap = True
+            # tf.word_wrap = True
             tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):

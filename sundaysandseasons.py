@@ -17,12 +17,16 @@ class SundaysAndSeasons():
     SLIDES = BASE + '/Visuals/Index/{}/0#projectable'
 
     PRAYER = 'Prayer of the Day'
-    READINGS = 'Readings and Psalm'
-    FIRST_READING = r'First Reading:'
-    PSALM = r'Psalm:'
-    SECOND_READING = r'Second Reading:'
-    GOSPEL = r'Gospel:'
+    FIRST_READING = re.compile(r'First Reading:')
+    PSALM = re.compile(r'Psalm:')
+    SECOND_READING = re.compile(r'Second Reading:')
+    GOSPEL = re.compile(r'Gospel:')
     INTERCESSION = 'Prayers of Intercession'
+
+    READING_CALL = 'The word of the Lord,'
+    READING_RESPONSE = 'Thanks be to God.'
+    GOSPEL_CALL = 'The gospel of the Lord,'
+    GOSPEL_RESPONSE = 'Praise to you, O Christ.'
 
 
     # TODO: error handling
@@ -36,8 +40,10 @@ class SundaysAndSeasons():
 
         self.title = None
         self.prayer = None
-        self.readings = []
+        self.first_reading = None
         self.psalm = None
+        self.second_reading = None
+        self.gospel = None
         self.intercession = None
 
 
@@ -80,10 +86,10 @@ class SundaysAndSeasons():
         '''Get all the texts for the current date'''
         req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
+        self._get_prayer(soup)
+        self._get_readings(soup)
         self._get_psalm(soup)
-        # self._get_prayer(soup)
-        # self._get_readings(soup)
-        # self._get_intercession(soup)
+        self._get_intercession(soup)
 
 
     def _get_title(self, soup):
@@ -98,19 +104,31 @@ class SundaysAndSeasons():
 
 
     def _get_readings(self, soup):
-        '''Get the readings and psalm in a soup object'''
-        parent = soup.body.find(text=SundaysAndSeasons.READINGS).parent
-        headings = parent.find_all_next('a', {'class': 'scripture'})[:4]
-        intros = parent.find_all_next('div', {'class': 'reading_intro'})
-        # TODO: add call and response at end of readings
-        for i in range(len(headings)):
-            reading = [headings[i].get_text().strip(), intros[i].find_next_sibling().get_text().strip()]
-            self.readings.append(reading)
-            
-            
-    def _get_psalm(self, soup):
+        '''Get the readings in a soup object'''
+        self.first_reading = self._get_reading(
+            soup, 
+            SundaysAndSeasons.FIRST_READING, 
+            'First Reading: ', 
+            SundaysAndSeasons.READING_CALL, 
+            SundaysAndSeasons.READING_RESPONSE
+        )
+        self.second_reading = self._get_reading(
+            soup, 
+            SundaysAndSeasons.SECOND_READING, 
+            'Second Reading: ', 
+            SundaysAndSeasons.READING_CALL, 
+            SundaysAndSeasons.READING_RESPONSE)
+        self.gospel = self._get_reading(
+            soup, 
+            SundaysAndSeasons.GOSPEL, 
+            'Gospel: ',
+            SundaysAndSeasons.GOSPEL_CALL,
+            SundaysAndSeasons.GOSPEL_RESPONSE)
+
+
+    def _get_psalm(self, soup, regex=PSALM):
         '''Get the psalm in a soup object'''
-        parent = soup.find('h3', string=re.compile(r'Psalm: '))
+        parent = soup.find('h3', string=regex)
         title = parent.get_text().split('Psalm: ')[1]
 
         psalm = parent.find_next_sibling().find_next_sibling()
@@ -151,4 +169,13 @@ class SundaysAndSeasons():
 
                 os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/image.ppt')
                 os.remove(f'services/{self._day}/image.ppt')
+
+
+    @staticmethod
+    def _get_reading(soup, regex, title, call, response):
+        '''Get the first reading in a soup object'''
+        parent = soup.find('h3', string=regex)
+        title = parent.get_text().split(title)[1]
+        reading = parent.find_next_sibling().find_next_sibling()
+        return '\n'.join([title, reading.get_text().strip(), call, response])
                        
