@@ -352,8 +352,9 @@ class PowerPoint():
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
-                if superscripts:
-                    print(pairwise(superscripts))
+                if len(superscripts) > 2:
+                    start, end = 0, len(line)
+                    print([start, *superscripts, end])
                     # for start, end in superscript:
                     #     self._add_run(paragraph, line[:start])
                     #     self._add_run(paragraph, line[start:end], superscript=True)

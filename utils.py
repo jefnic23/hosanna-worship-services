@@ -104,8 +104,7 @@ def lookahead(iterable):
 
 
 def get_superscripts(text):
-    start, end = 0, len(text)
-    superscripts = [[start]] + [[s.start(), s.end()] for s in re.finditer(r'(\d+:\d+)|\d+', text)] + [[end]]
+    superscripts = [[s.start(), s.end()] for s in re.finditer(r'(\d+:\d+)|\d+', text)]
     return list(chain(*superscripts))
     
 
