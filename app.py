@@ -25,10 +25,11 @@ if __name__ == '__main__':
 
     this_sunday = get_this_sunday()
 
-    # sas = SundaysAndSeasons(this_sunday)
-    # sas.login()
+    sas = SundaysAndSeasons(this_sunday)
+    sas.login()
+    sas._get_all_texts()
     # sas.get_readings_and_slide()
-    # sas.logoff()
+    sas.logoff()
 
     # with open(f'services/{this_sunday}/prayer.txt', 'w', encoding='utf-8') as f:
     #     f.write(sas.prayer)
@@ -41,8 +42,8 @@ if __name__ == '__main__':
     # with open(f'services/{this_sunday}/first-reading.txt', 'w', encoding='utf-8') as f:
     #     f.write(f'{first_reading[0]}\n{first_reading[1]}')
 
-    # with open(f'services/{this_sunday}/psalm.txt', 'w', encoding='utf-8') as f:
-    #     f.write(f'{psalm[0]}\n{psalm[1]}')
+    with open(f'services/{this_sunday}/psalm.txt', 'w', encoding='utf-8') as f:
+        f.write(sas.psalm)
 
     # with open(f'services/{this_sunday}/second-reading.txt', 'w', encoding='utf-8') as f:
     #     f.write(f'{second_reading[0]}\n{second_reading[1]}')

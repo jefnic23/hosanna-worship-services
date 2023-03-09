@@ -1,8 +1,10 @@
 import os
+import re
 
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+from utils import clean_text, grouper
 
 
 class SundaysAndSeasons():
@@ -16,6 +18,10 @@ class SundaysAndSeasons():
 
     PRAYER = 'Prayer of the Day'
     READINGS = 'Readings and Psalm'
+    FIRST_READING = r'First Reading:'
+    PSALM = r'Psalm:'
+    SECOND_READING = r'Second Reading:'
+    GOSPEL = r'Gospel:'
     INTERCESSION = 'Prayers of Intercession'
 
 
@@ -74,9 +80,10 @@ class SundaysAndSeasons():
         '''Get all the texts for the current date'''
         req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
-        self._get_prayer(soup)
-        self._get_readings(soup)
-        self._get_intercession(soup)
+        self._get_psalm(soup)
+        # self._get_prayer(soup)
+        # self._get_readings(soup)
+        # self._get_intercession(soup)
 
 
     def _get_title(self, soup):
@@ -95,7 +102,6 @@ class SundaysAndSeasons():
         parent = soup.body.find(text=SundaysAndSeasons.READINGS).parent
         headings = parent.find_all_next('a', {'class': 'scripture'})[:4]
         intros = parent.find_all_next('div', {'class': 'reading_intro'})
-        # TODO: omit <span class="refrain"> from psalm
         # TODO: add call and response at end of readings
         for i in range(len(headings)):
             reading = [headings[i].get_text().strip(), intros[i].find_next_sibling().get_text().strip()]
@@ -104,8 +110,12 @@ class SundaysAndSeasons():
             
     def _get_psalm(self, soup):
         '''Get the psalm in a soup object'''
-        parent = soup.body.find(text=SundaysAndSeasons.READINGS).parent
-        # spans = [span for span in soup.find_all('span') if 'style' not in span.attrs and span.has_attr('class')]
+        parent = soup.find('h3', string=re.compile(r'Psalm: '))
+        title = parent.get_text().split('Psalm: ')[1]
+
+        psalm = parent.find_next_sibling().find_next_sibling()
+        spans = [clean_text(span.get_text()) for span in psalm.find_all('span', {'class':None}) if 'style' not in span.attrs]
+        self.psalm = title + '\n' + '\n'.join([' '.join(line) for line in grouper(spans, 3)])
         # TODO: refrain spans are nested; remove them
 
 

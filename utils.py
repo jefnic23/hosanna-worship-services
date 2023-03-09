@@ -1,6 +1,6 @@
 import re
 from itertools import chain, tee, zip_longest
-
+from unicodedata import normalize
 from PIL import Image, ImageDraw, ImageFont
 
 MAX_WIDTH = 565
@@ -108,4 +108,5 @@ def get_superscripts(text):
     
 
 def clean_text(text):
-    return text.replace('|', '').replace('- ', '')
+    cleaned = text.encode('utf-8').decode().replace(' | ', ' ').replace('- ', '').replace('  ', ' ').strip()
+    return cleaned[:-1] if cleaned.endswith('R') else cleaned 
