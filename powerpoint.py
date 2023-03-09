@@ -353,10 +353,13 @@ class PowerPoint():
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
                 if superscripts:
-                    for start, end in superscripts:
-                        self._add_run(paragraph, line[:start])
-                        self._add_run(paragraph, line[start:end], superscript=True)
-                        self._add_run(paragraph, line[end:], has_more=has_more)
+                    if len(superscripts) > 2:
+                        print(line, [[s[0], s[1]] for s in superscripts])
+                        print([line[s[0]:s[1]] for s in superscripts])
+                        # for start, end in superscript:
+                        #     self._add_run(paragraph, line[:start])
+                        #     self._add_run(paragraph, line[start:end], superscript=True)
+                        #     self._add_run(paragraph, line[end:], has_more=has_more)
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
