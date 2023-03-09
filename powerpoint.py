@@ -8,7 +8,7 @@ from pptx.enum.text import MSO_AUTO_SIZE, MSO_VERTICAL_ANCHOR
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT as PP_ALIGN
 from pptx.util import Inches, Pt
 
-from utils import get_height, get_parts, get_width, grouper, lookahead, get_superscripts
+from utils import pairwise, get_height, get_parts, get_width, grouper, lookahead, get_superscripts
 
 MAX_WIDTH = 565
 MAX_HEIGHT = 335
@@ -353,13 +353,11 @@ class PowerPoint():
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
                 if superscripts:
-                    if len(superscripts) > 2:
-                        print(line, [[s[0], s[1]] for s in superscripts])
-                        print([line[s[0]:s[1]] for s in superscripts])
-                        # for start, end in superscript:
-                        #     self._add_run(paragraph, line[:start])
-                        #     self._add_run(paragraph, line[start:end], superscript=True)
-                        #     self._add_run(paragraph, line[end:], has_more=has_more)
+                    print(pairwise(superscripts))
+                    # for start, end in superscript:
+                    #     self._add_run(paragraph, line[:start])
+                    #     self._add_run(paragraph, line[start:end], superscript=True)
+                    #     self._add_run(paragraph, line[end:], has_more=has_more)
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
