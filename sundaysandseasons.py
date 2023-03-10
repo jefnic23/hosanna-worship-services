@@ -172,12 +172,14 @@ class SundaysAndSeasons():
 
 
     @staticmethod
-    def _get_reading(soup, regex, title, call, response):
+    def _get_reading(soup, regex, call, response):
         '''Get the first reading in a soup object'''
         parent = soup.find('h3', string=regex)
-        title = parent.get_text().split(title)[1]
+        title = parent.get_text().split(':')[1:]
         reading = parent.find_next_sibling().find_next_sibling()
-        return '\n'.join([title, reading.get_text().strip(), call, response])
+        text = '\n'.join([clean_text(line) for line in reading.get_text().splitlines() for line in line.splitlines() if line])
+        return text
+        # return '\n'.join([title, text, call, response])
         # spans = [clean_text(span.get_text()) for span in reading.find_all('span') if 'style' not in span.attrs]
         # return '\n'.join([title, '\n'.join(span for span in spans), call, response])
                        
