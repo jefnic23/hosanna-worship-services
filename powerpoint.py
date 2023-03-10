@@ -8,6 +8,8 @@ from pptx.enum.text import MSO_AUTO_SIZE, MSO_VERTICAL_ANCHOR
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT as PP_ALIGN
 from pptx.util import Inches, Pt
 
+from itertools import chain
+
 from utils import pairwise, get_height, get_parts, get_width, grouper, lookahead, get_superscripts
 
 MAX_WIDTH = 565
@@ -100,6 +102,19 @@ class PowerPoint():
             self._dismissal = open('liturgy/dismissal.txt', 'r', encoding='utf-8').read()
 
 
+    def add_title_slide(self, text):
+        '''Add a title slide to the presentation'''
+        slide = self.prs.slides.add_slide(self._blank_layout)
+        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
+        tf = content.text_frame
+        
+        tf.auto_size = MSO_AUTO_SIZE.NONE
+        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.CENTER
+        self._add_run(p, text, bold=True, size=24)
+
+
     def add_image(self):
         slide = self.prs.slides.add_slide(self._blank_layout)
         left = top = Inches(0)
@@ -132,75 +147,31 @@ class PowerPoint():
                 s = self._add_slide_with_header(title_text)
                 content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
                 tf = content.text_frame
-                tf.word_wrap = True
-                tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+                
+                tf.auto_size = MSO_AUTO_SIZE.NONE
                 for line, has_more in lookahead(slide.splitlines()):
                     paragraph = tf.paragraphs[0]
                     self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
 
 
-    def add_prayer_of_the_day(self, title_text='Prayer of the Day'):
-        '''Add the prayer of the day to the presentation'''
-        slide = self._add_slide_with_header(title_text)
-        content = slide.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        paragraph = tf.paragraphs[0]
-        for line, has_more in lookahead(self._prayer.splitlines()):
-            self._add_run(paragraph, line, bold=True, has_more=has_more)
+    def add_congregation_text(self, title, text):
+        '''Add bold text to be read by the congregation to the presentation.'''
+        width_formatted_text = []
+        for line in text.splitlines():
+            width_formatted_text.append(get_width(line, draw, bold))
 
+        width_formatted_text = '\n'.join(width_formatted_text)
 
-    def add_greeting(self, title_text='Greeting'):
-        '''Add the greeting to the presentation'''
-        pastor = [p.start() for p in re.finditer(r'P:', self._greeting)]
-        congregation = [c.start() for c in re.finditer(r'C:', self._greeting)]
-
-        for part in get_parts(pastor, congregation):
-            if part[1] is not None:
-                p, c = self._greeting[part[0][0]:part[0][1]].strip(), self._greeting[part[1][0]:part[1][1]].strip()
-            else:
-                p, c = self._greeting[part[0][0]:part[0][1]].strip(), self._greeting[part[0][1]:].strip()
-                
-            width_formatted_text = []
-            for line in p.splitlines():
-                width_formatted_text.append(get_width(line, draw, regular))
-                
-            for line in c.splitlines():
-                width_formatted_text.append(get_width(line, draw, bold))
-
-            width_formatted_text = '\n'.join(width_formatted_text)
-
-            slides = get_height(width_formatted_text, draw, regular)
-
-            for slide in slides:
-                s = self._add_slide_with_header(title_text)
-                content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-                tf = content.text_frame
-                tf.word_wrap = True
-                tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-                for line, has_more in lookahead(slide.splitlines()):
-                    paragraph = tf.paragraphs[0]
-                    self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
-
-
-    def add_kyrie(self, title_text='Kyrie'):
-        '''Add the Kyrie to the presentation'''
-        slides = grouper(self._kyrie.split('\n\n'), 2)
+        slides = get_height(width_formatted_text, draw, regular)
 
         for slide in slides:
-            s = self._add_slide_with_header(title_text)
+            s = self._add_slide_with_header(title)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-            for lines, has_more in lookahead(slide) if slide else []:
-                paragraph = tf.paragraphs[0]
-                for line, has_break in lookahead(lines.splitlines()) if lines else []:
-                    self._add_run(paragraph, line, bold=True, has_more=has_break)
-                if has_more:
-                    paragraph.add_line_break()
-                    paragraph.add_line_break()
+            tf.auto_size = MSO_AUTO_SIZE.NONE
+            p = tf.paragraphs[0]
+            for line, has_more in lookahead(slide.splitlines()):
+                self._add_run(p, line, bold=True, has_more=has_more)
 
 
     def add_hymn(self):
@@ -208,8 +179,7 @@ class PowerPoint():
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.auto_size = MSO_AUTO_SIZE.NONE
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
         for line, has_more in lookahead(self._hymns.pop(0)):
             paragraph = tf.paragraphs[0]
@@ -236,8 +206,8 @@ class PowerPoint():
             s = self._add_slide_with_header(title_text)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            # tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            # 
+            tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
@@ -288,8 +258,7 @@ class PowerPoint():
             s = self._add_slide_with_header(title)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
                 if line in first_lines:
@@ -305,18 +274,6 @@ class PowerPoint():
                     self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
 
 
-    def add_gospel_acclamation(self):
-        '''Add the gospel acclamation to the presentation'''
-        slide = self._add_slide_with_header('Gospel Acclamation')
-        content = slide.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        paragraph = tf.paragraphs[0]
-        for line, has_more in lookahead(self._gospel_acclamation.splitlines()):
-            self._add_run(paragraph, line, bold=True, has_more=has_more)
-
-
     def add_gospel(self):
         '''Add the gospel to the presentation'''
         text = self._gospel
@@ -326,8 +283,7 @@ class PowerPoint():
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
-        # tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.auto_size = MSO_AUTO_SIZE.NONE
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.LEFT
@@ -347,18 +303,17 @@ class PowerPoint():
             s = self._add_slide_with_header('Gospel')
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            # tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+            tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
+            paragraph.alignment = PP_ALIGN.LEFT
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
-                if len(superscripts) > 2:
-                    start, end = 0, len(line)
-                    print([start, *superscripts, end])
-                    # for start, end in superscript:
-                    #     self._add_run(paragraph, line[:start])
-                    #     self._add_run(paragraph, line[start:end], superscript=True)
-                    #     self._add_run(paragraph, line[end:], has_more=has_more)
+                if len(superscripts) > 0:
+                    index = pairwise(list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]])))
+                    for start, end in index:
+                        self._add_run(paragraph, line[start:end], superscript=True if (start, end) in superscripts else False)
+                    if has_more:
+                        paragraph.add_line_break()
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
@@ -366,34 +321,12 @@ class PowerPoint():
                         self._add_run(paragraph, line, has_more=has_more)
 
 
-    def add_creed(self, title):
-        '''Add the creed to the presentation'''
-        width_formatted_text = []
-        for line in self._creed.splitlines():
-            width_formatted_text.append(get_width(line, draw, bold))
-
-        width_formatted_text = '\n'.join(width_formatted_text)
-
-        slides = get_height(width_formatted_text, draw, regular)
-
-        for slide in slides:
-            s = self._add_slide_with_header(title)
-            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-            tf = content.text_frame
-            tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-            p = tf.paragraphs[0]
-            for line, has_more in lookahead(slide.splitlines()):
-                self._add_run(p, line, bold=True, has_more=has_more)
-
-
     def add_intercessions(self):
         '''Add the intercessions to the presentation'''
         slide = self._add_slide_with_header('Prayers of Intercession')
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.auto_size = MSO_AUTO_SIZE.NONE
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
         p = tf.paragraphs[0]
         self._add_run(p, 'Each petition ends:', italic=True)
@@ -410,8 +343,8 @@ class PowerPoint():
         slide = self._add_slide_with_header('Dialogue')
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        
+        tf.auto_size = MSO_AUTO_SIZE.NONE
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
         p = tf.paragraphs[0]
         for line, has_more in lookahead(text):
@@ -422,93 +355,35 @@ class PowerPoint():
                 p.add_line_break()
 
 
-    def add_hosanna(self):
-        '''Add holy holy holy to the presentation'''
-        slide = self._add_slide_with_header('Holy, holy, holy')
-        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-        p = tf.paragraphs[0]
-        for line in self._hosanna.splitlines():
-            self._add_run(p, line, bold=True)
-            p.add_line_break()
-
-
-    def add_communion_dialogue(self):
-        '''Add the communion dialogue to the presentation'''
-        slide = self._add_slide_with_header('Communion Dialogue')
-        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-        p = tf.paragraphs[0]
-        for line, has_more in lookahead(self._communion_dialogue.splitlines()):
-            self._add_run(p, line, bold=False if has_more else True)
-            p.add_line_break()
-
-
-    def add_lords_prayer(self, title):
-        '''Add the creed to the presentation'''
-        width_formatted_text = []
-        for line in self._lords_prayer.splitlines():
-            width_formatted_text.append(get_width(line, draw, bold))
-
-        width_formatted_text = '\n'.join(width_formatted_text)
-
-        slides = get_height(width_formatted_text, draw, regular)
-
-        for slide in slides:
-            s = self._add_slide_with_header(title)
-            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-            tf = content.text_frame
-            tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-            p = tf.paragraphs[0]
-            for line, has_more in lookahead(slide.splitlines()):
-                self._add_run(p, line, bold=True, has_more=has_more)
-
-
-    def add_communion_hymn(self):
-        '''Add the communion hymn to the presentation'''
-        slides = grouper(self._communion_hymn.split('\n\n'), 2)
-
-        for slide in slides:
-            s = self._add_slide_with_header('Communion Hymn')
-            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-            tf = content.text_frame
-            tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-            for lines, has_more in lookahead(slide) if slide else []:
-                paragraph = tf.paragraphs[0]
-                for line, has_break in lookahead(lines.splitlines()) if lines else []:
-                    self._add_run(paragraph, line, bold=True, has_more=has_break)
-                if has_more:
-                    paragraph.add_line_break()
-                    paragraph.add_line_break()
-
-
-    def add_call_and_response(self, title, text):
+    def add_call_and_response(self, title, text, anchor=None):
         '''Add the call and response to the presentation'''
-        width_formatted_text = []
-        for line in text.splitlines():
-            width_formatted_text.append(get_width(line, draw, bold))
+        pastor, congregation = PowerPoint._get_pastor(text), PowerPoint._get_congregation(text)
+        for part in get_parts(pastor, congregation):
+            if part[1] is not None:
+                p, c = text[part[0][0]:part[0][1]].strip(), text[part[1][0]:part[1][1]].strip()
+            else:
+                p, c = text[part[0][0]:part[0][1]].strip(), text[part[0][1]:].strip()
+                
+            width_formatted_text = []
+            for line in p.splitlines():
+                width_formatted_text.append(get_width(line.replace('P:', ''), draw, regular))
+                
+            for line in c.splitlines():
+                width_formatted_text.append(get_width(line.replace('C:', ''), draw, bold))
 
-        width_formatted_text = '\n'.join(width_formatted_text)
+            width_formatted_text = '\n'.join(width_formatted_text)
 
-        slides = get_height(width_formatted_text, draw, regular)
+            slides = get_height(width_formatted_text, draw, regular)
 
-        for slide in slides:
-            s = self._add_slide_with_header(title)
-            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-            tf = content.text_frame
-            tf.word_wrap = True
-            tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-            p = tf.paragraphs[0]
-            for line, has_more in lookahead(slide.splitlines()):
-                self._add_run(p, line, bold=True if not has_more else False, has_more=has_more)
+            for slide in slides:
+                s = self._add_slide_with_header(title)
+                content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(3.5))
+                tf = content.text_frame
+                tf.auto_size = MSO_AUTO_SIZE.NONE
+                tf.vertical_anchor = anchor
+                paragraph = tf.paragraphs[0]
+                for line, has_more in lookahead(slide.splitlines()):
+                    self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
 
 
     def save(self):
@@ -550,19 +425,6 @@ class PowerPoint():
         return slide
     
 
-    def add_title_slide(self, text):
-        '''Add a title slide to the presentation'''
-        slide = self.prs.slides.add_slide(self._blank_layout)
-        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
-        tf = content.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
-        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-        p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.CENTER
-        self._add_run(p, text, bold=True, size=24)
-    
-
     @staticmethod
     def _get_pastor(text):
         '''Returns the indices of the pastor's lines'''
@@ -578,10 +440,9 @@ class PowerPoint():
     @staticmethod
     def _add_header(slide, header_text):
         '''Add a header to a slide'''
-        header = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(0))
+        header = slide.shapes.add_textbox(Inches(0), Inches(0.1), Inches(6), Inches(0))
         tf = header.text_frame
-        tf.word_wrap = True
-        tf.auto_size = MSO_AUTO_SIZE.SHAPE_TO_FIT_TEXT
+        tf.auto_size = MSO_AUTO_SIZE.NONE
         paragraph = tf.paragraphs[0]
         paragraph.alignment = PP_ALIGN.RIGHT
         PowerPoint._add_run(paragraph, header_text, size=12, bold=True, color=(66, 133, 244))

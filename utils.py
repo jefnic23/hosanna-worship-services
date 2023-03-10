@@ -1,6 +1,5 @@
 import re
 from itertools import chain, tee, zip_longest
-from unicodedata import normalize
 from PIL import Image, ImageDraw, ImageFont
 
 MAX_WIDTH = 565
@@ -104,8 +103,7 @@ def lookahead(iterable):
 
 
 def get_superscripts(text):
-    superscripts = [[s.start(), s.end()] for s in re.finditer(r'(\d+:\d+)|\d+', text)]
-    return list(chain(*superscripts))
+    return [(s.start(), s.end()) for s in re.finditer(r'(\d+:\d+)|\d+', text)]
     
 
 def clean_text(text):

@@ -20,7 +20,7 @@ class SundaysAndSeasons():
     FIRST_READING = re.compile(r'First Reading:')
     PSALM = re.compile(r'Psalm:')
     SECOND_READING = re.compile(r'Second Reading:')
-    GOSPEL = re.compile(r'Gospel:')
+    GOSPEL = re.compile(r'^Gospel:')
     INTERCESSION = 'Prayers of Intercession'
 
     READING_CALL = 'The word of the Lord,'
@@ -178,4 +178,6 @@ class SundaysAndSeasons():
         title = parent.get_text().split(title)[1]
         reading = parent.find_next_sibling().find_next_sibling()
         return '\n'.join([title, reading.get_text().strip(), call, response])
+        # spans = [clean_text(span.get_text()) for span in reading.find_all('span') if 'style' not in span.attrs]
+        # return '\n'.join([title, '\n'.join(span for span in spans), call, response])
                        
