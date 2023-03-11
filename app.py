@@ -4,11 +4,11 @@ import os
 from datetime import date
 
 import art
+from pptx.enum.text import MSO_VERTICAL_ANCHOR
 
+from document import WordDocument
 from powerpoint import PowerPoint
 from sundaysandseasons import SundaysAndSeasons
-
-from pptx.enum.text import MSO_VERTICAL_ANCHOR
 
 SUNDAY = calendar.SUNDAY
 TODAY = date.today()
@@ -86,3 +86,8 @@ if __name__ == '__main__':
     # ppt.add_image()
     # ppt.save()
     
+    doc = WordDocument(this_sunday)
+    doc.add_reading(doc._first_reading)
+    doc.add_reading(doc._psalm)
+    doc.add_reading(doc._second_reading)
+    doc.save()
