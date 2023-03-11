@@ -108,20 +108,17 @@ class SundaysAndSeasons():
         self.first_reading = self._get_reading(
             soup, 
             SundaysAndSeasons.FIRST_READING, 
-            'First Reading: ', 
             SundaysAndSeasons.READING_CALL, 
             SundaysAndSeasons.READING_RESPONSE
         )
         self.second_reading = self._get_reading(
             soup, 
             SundaysAndSeasons.SECOND_READING, 
-            'Second Reading: ', 
             SundaysAndSeasons.READING_CALL, 
             SundaysAndSeasons.READING_RESPONSE)
         self.gospel = self._get_reading(
             soup, 
             SundaysAndSeasons.GOSPEL, 
-            'Gospel: ',
             SundaysAndSeasons.GOSPEL_CALL,
             SundaysAndSeasons.GOSPEL_RESPONSE)
 
@@ -175,8 +172,8 @@ class SundaysAndSeasons():
     def _get_reading(soup, regex, call, response):
         '''Get the first reading in a soup object'''
         parent = soup.find('h3', string=regex)
-        title = parent.get_text().split(':')[1:]
+        title = ' '.join(parent.get_text().split(':')[1:]).strip()
         reading = parent.find_next_sibling().find_next_sibling()
-        text = '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines() if 'style' not in ele.attrs])
+        text = '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()])
         return '\n'.join([title, text, call, response])
                        
