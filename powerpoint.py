@@ -31,10 +31,8 @@ class PowerPoint():
     def __init__(self, day):
         self._day = day
         self.prs = Presentation()
-
         self.prs.slide_width = Inches(6)
         self.prs.slide_height = Inches(4)
-
         self._section_layout = self.prs.slide_layouts[2]
         self._blank_layout = self.prs.slide_layouts[6]
 

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # TODO: prompt to install libreoffice if it doesn't exist
     # https://www.libreoffice.org/download/download-libreoffice/
 
-    this_sunday = get_this_sunday()  # + datetime.timedelta(14)
+    this_sunday = get_this_sunday() + datetime.timedelta(14)
 
     # sas = SundaysAndSeasons(this_sunday)
     # sas.login()
@@ -88,6 +88,6 @@ if __name__ == '__main__':
     
     doc = WordDocument(this_sunday)
     doc.add_reading(doc._first_reading)
-    doc.add_reading(doc._psalm)
+    doc.add_psalm(doc._psalm)
     doc.add_reading(doc._second_reading)
     doc.save()
