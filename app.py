@@ -27,33 +27,33 @@ if __name__ == '__main__':
     # TODO: prompt to install libreoffice if it doesn't exist
     # https://www.libreoffice.org/download/download-libreoffice/
 
-    this_sunday = get_this_sunday() + datetime.timedelta(21)
+    this_sunday = get_this_sunday() + datetime.timedelta(14)
 
-    sas = SundaysAndSeasons(this_sunday)
-    sas.login()
-    sas.get_readings_and_slide()
-    sas.logoff()
+    # sas = SundaysAndSeasons(this_sunday)
+    # sas.login()
+    # sas.get_readings_and_slide()
+    # sas.logoff()
 
-    if not os.path.exists(f'services/{this_sunday}'):
-        os.makedirs(f'services/{this_sunday}')
+    # if not os.path.exists(f'services/{this_sunday}'):
+    #     os.makedirs(f'services/{this_sunday}')
 
-    with open(f'services/{this_sunday}/prayer.txt', 'w', encoding='utf-8') as f:
-        f.write(sas.prayer)
+    # with open(f'services/{this_sunday}/prayer.txt', 'w', encoding='utf-8') as f:
+    #     f.write(sas.prayer)
 
-    with open(f'services/{this_sunday}/first-reading.txt', 'w', encoding='utf-8') as f:
-        f.write(sas.first_reading)
+    # with open(f'services/{this_sunday}/first-reading.txt', 'w', encoding='utf-8') as f:
+    #     f.write(sas.first_reading)
 
-    with open(f'services/{this_sunday}/psalm.txt', 'w', encoding='utf-8') as f:
-        f.write(sas.psalm)
+    # with open(f'services/{this_sunday}/psalm.txt', 'w', encoding='utf-8') as f:
+    #     f.write(sas.psalm)
 
-    with open(f'services/{this_sunday}/second-reading.txt', 'w', encoding='utf-8') as f:
-        f.write(sas.second_reading)
+    # with open(f'services/{this_sunday}/second-reading.txt', 'w', encoding='utf-8') as f:
+    #     f.write(sas.second_reading)
 
-    with open(f'services/{this_sunday}/gospel.txt', 'w', encoding='utf-8') as f:
-        f.write(sas.gospel)
+    # with open(f'services/{this_sunday}/gospel.txt', 'w', encoding='utf-8') as f:
+    #     f.write(sas.gospel)
 
-    with open(f'services/{this_sunday}/intercession.txt', 'w', encoding='utf-8') as f:
-        f.write(f'{sas.intercession[0]}\n{sas.intercession[1]}')
+    # with open(f'services/{this_sunday}/intercession.txt', 'w', encoding='utf-8') as f:
+    #     f.write(f'{sas.intercession[0]}\n{sas.intercession[1]}')
 
     # TODO: prompt to add hymns if they don't exist
 

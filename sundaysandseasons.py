@@ -177,9 +177,6 @@ class SundaysAndSeasons():
         parent = soup.find('h3', string=regex)
         title = parent.get_text().split(':')[1:]
         reading = parent.find_next_sibling().find_next_sibling()
-        text = '\n'.join([clean_text(line) for line in reading.get_text().splitlines() for line in line.splitlines() if line])
-        return text
-        # return '\n'.join([title, text, call, response])
-        # spans = [clean_text(span.get_text()) for span in reading.find_all('span') if 'style' not in span.attrs]
-        # return '\n'.join([title, '\n'.join(span for span in spans), call, response])
+        text = '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines() if 'style' not in ele.attrs])
+        return '\n'.join([title, text, call, response])
                        
