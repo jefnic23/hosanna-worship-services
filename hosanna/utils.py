@@ -1,5 +1,9 @@
+import calendar
 import re
+from datetime import date, timedelta
 from itertools import chain, tee, zip_longest
+from typing import Iterable
+
 from PIL import Image, ImageDraw, ImageFont
 
 MAX_WIDTH = 565
@@ -11,12 +15,12 @@ bold = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
 draw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
 
 
-def point_to_px(point):
+def point_to_px(point: int) -> int:
     '''Converts a point size to a pixel size'''
     return int(point * 96 / 72)
 
 
-def inch_to_px(inch):
+def inch_to_px(inch: int) -> int:
     '''Converts an inch size to a pixel size'''
     return int(inch * 96)
 
@@ -66,14 +70,14 @@ def get_slides(lines, draw, regular=regular):
     return get_height(width_formatted_text, draw, regular)
 
 
-def pairwise(iterable):
+def pairwise(iterable: Iterable) -> list[tuple]:
     '''s -> (s0,s1), (s1,s2), (s2, s3), ...'''
     a, b = tee(iterable)
     next(b, None)
     return list(zip(a, b))
 
 
-def grouper(iterable, n, fillvalue=None):
+def grouper(iterable: Iterable, n: int, fillvalue=None):
     '''Collect data into fixed-length chunks or blocks'''
     args = [iter(iterable)] * n
     return list(zip_longest(*args, fillvalue=fillvalue))
@@ -85,7 +89,7 @@ def get_parts(x, y):
     return grouper(xy, 2)
 
 
-def lookahead(iterable):
+def lookahead(iterable: Iterable):
     """Pass through all values from the given iterable, augmented by the
     information if there are more values to come after the current one
     (True), or if it is the last value (False).
@@ -102,10 +106,18 @@ def lookahead(iterable):
     yield last, False
 
 
-def get_superscripts(text):
+def get_superscripts(text: str) -> list[tuple[int, int]]:
+    '''Gets the superscripts in a string.'''
     return [(s.start(), s.end()) for s in re.finditer(r'(\d+:\d+)|\d+', text)]
     
 
-def clean_text(text):
+def clean_text(text: str) -> str:
+    '''Normalizes text.'''
     cleaned = text.encode('utf-8').decode().replace(' | ', ' ').replace('- ', '').replace('  ', ' ').strip()
     return cleaned[:-1] if cleaned.endswith('R') else cleaned 
+
+
+def get_sunday(today: date, delta: int = 0) -> date:
+    '''Gets the date of the next Sunday.'''
+    SUNDAY = calendar.SUNDAY
+    return today + timedelta((SUNDAY - today.weekday()) % 7) + timedelta(weeks=delta)

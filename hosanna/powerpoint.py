@@ -10,7 +10,7 @@ from pptx.util import Inches, Pt
 
 from itertools import chain
 
-from utils import pairwise, get_height, get_parts, get_width, grouper, lookahead, get_superscripts
+from hosanna.utils import pairwise, get_height, get_parts, get_width, grouper, lookahead, get_superscripts
 
 MAX_WIDTH = 565
 MAX_HEIGHT = 335

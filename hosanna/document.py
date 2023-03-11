@@ -4,7 +4,7 @@ from itertools import chain
 from docx import Document
 from docx.shared import Inches, Pt
 
-from utils import get_superscripts, pairwise, lookahead
+from hosanna.utils import get_superscripts, pairwise, lookahead
 
 
 class WordDocument():

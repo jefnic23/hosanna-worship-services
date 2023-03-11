@@ -4,7 +4,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
-from utils import clean_text, grouper
+from hosanna.utils import clean_text, grouper
 
 
 class SundaysAndSeasons():

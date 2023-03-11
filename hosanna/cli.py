@@ -1,33 +1,44 @@
-import calendar
-import datetime
 import os
-from datetime import date
+from datetime import date, timedelta
 
 import art
-from pptx.enum.text import MSO_VERTICAL_ANCHOR
+import typer
 
-from document import WordDocument
-from powerpoint import PowerPoint
-from sundaysandseasons import SundaysAndSeasons
+from hosanna import __app_name__, __author__, __version__
+from hosanna.document import WordDocument
+from hosanna.powerpoint import PowerPoint
+from hosanna.sundaysandseasons import SundaysAndSeasons
+from hosanna.utils import get_sunday
 
-SUNDAY = calendar.SUNDAY
-TODAY = date.today()
+app = typer.Typer()
 
-def get_this_sunday(today=TODAY, sunday=SUNDAY):
-    return today + datetime.timedelta((sunday - today.weekday()) % 7)
+def _version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f'{__app_name__} v{__version__}')
+        raise typer.Exit()
+    
 
-# next_sunday = this_sunday + datetime.timedelta(7)
-
-
-
-
-# TODO: implement tqdm/rich for progress bar
+@app.callback()
+def main(
+    version: bool = typer.Option(
+        None,
+        '--version',
+        '-v',
+        callback=_version_callback,
+        is_eager=True,
+        help='Show version and exit.',
+    ),
+):
+    pass
 
 if __name__ == '__main__':
     # TODO: prompt to install libreoffice if it doesn't exist
     # https://www.libreoffice.org/download/download-libreoffice/
 
-    this_sunday = get_this_sunday() + datetime.timedelta(14)
+    # TODO: prompt to add hymns if they don't exist
+
+    TODAY = date.today()
+    this_sunday = get_sunday(TODAY)
 
     # sas = SundaysAndSeasons(this_sunday)
     # sas.login()
@@ -54,8 +65,6 @@ if __name__ == '__main__':
 
     # with open(f'services/{this_sunday}/intercession.txt', 'w', encoding='utf-8') as f:
     #     f.write(f'{sas.intercession[0]}\n{sas.intercession[1]}')
-
-    # TODO: prompt to add hymns if they don't exist
 
     # ppt = PowerPoint(this_sunday)
     # ppt.add_image()
