@@ -69,26 +69,8 @@ class PowerPoint():
         if os.path.exists('liturgy/communion-hymn.txt'):
             self._communion_hymn = open('liturgy/communion-hymn.txt', 'r', encoding='utf-8').read()
 
-        if os.path.exists(f'services/{day}/prayer.txt'):
-            self._prayer = open(f'services/{day}/prayer.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists(f'services/{day}/first-reading.txt'):
-            self._first_reading = open(f'services/{day}/first-reading.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists(f'services/{day}/psalm.txt'):
-            self._psalm = open(f'services/{day}/psalm.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists(f'services/{day}/second-reading.txt'):
-            self._second_reading = open(f'services/{day}/second-reading.txt', 'r', encoding='utf-8').read()
-
         if os.path.exists('liturgy/gospel-acclamation.txt'):
             self._gospel_acclamation = open('liturgy/gospel-acclamation.txt', 'r', encoding='utf-8').read()
-        
-        if os.path.exists(f'services/{day}/gospel.txt'):
-            self._gospel = open(f'services/{day}/gospel.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists(f'services/{day}/intercession.txt'):
-            self._intercession = open(f'services/{day}/intercession.txt', 'r', encoding='utf-8').read()
 
         if os.path.exists('liturgy/prayer-after-communion.txt'):
             self._prayer_after_communion = open('liturgy/prayer-after-communion.txt', 'r', encoding='utf-8').read()
@@ -221,9 +203,9 @@ class PowerPoint():
                         self._add_run(paragraph, line, has_more=has_more)
 
 
-    def add_psalm(self):
+    def add_psalm(self, text: str):
         '''Add a psalm to the presentation'''
-        text = self._psalm.replace('|', '').replace('- ', '')
+        text = text.replace('|', '').replace('- ', '')
         title = text.splitlines()[0]
         psalm = [line.strip() for line in text.splitlines()[1:] if line]
 
@@ -272,9 +254,8 @@ class PowerPoint():
                     self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
 
 
-    def add_gospel(self):
+    def add_gospel(self, text):
         '''Add the gospel to the presentation'''
-        text = self._gospel
         title = text.splitlines()[0].split()[0]
         reading = text.splitlines()[1:]
 
@@ -319,7 +300,7 @@ class PowerPoint():
                         self._add_run(paragraph, line, has_more=has_more)
 
 
-    def add_intercessions(self):
+    def add_intercessions(self, text: str):
         '''Add the intercessions to the presentation'''
         slide = self._add_slide_with_header('Prayers of Intercession')
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
@@ -329,9 +310,9 @@ class PowerPoint():
         p = tf.paragraphs[0]
         self._add_run(p, 'Each petition ends:', italic=True)
         p.add_line_break()
-        self._add_run(p, self._intercession.splitlines()[0])
+        self._add_run(p, text.splitlines()[0])
         p.add_line_break()
-        self._add_run(p, self._intercession.splitlines()[1], bold=True)
+        self._add_run(p, text.splitlines()[1], bold=True)
 
 
     def add_dialogue(self):

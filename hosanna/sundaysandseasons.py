@@ -140,7 +140,7 @@ class SundaysAndSeasons():
         children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
         p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
         c = children[1].get_text().strip()
-        self.intercession = [p, c]
+        self.intercession = p + '\n' + c
 
 
     def _get_slide(self, url=SLIDES, base=BASE):
