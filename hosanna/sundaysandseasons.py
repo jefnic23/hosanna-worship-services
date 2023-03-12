@@ -67,9 +67,9 @@ class SundaysAndSeasons():
             raise Exception('Logoff failed')
         
 
-    def get_readings_and_slide(self):
+    def get_texts_and_slide(self):
         '''Get all the data for the current date'''
-        self._get_all_texts()
+        self._get_texts()
         self._get_slide()
         
 
@@ -82,7 +82,7 @@ class SundaysAndSeasons():
         return key, value
         
 
-    def _get_all_texts(self, url=TEXTS):
+    def _get_texts(self, url=TEXTS):
         '''Get all the texts for the current date'''
         req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
@@ -134,16 +134,16 @@ class SundaysAndSeasons():
         # TODO: refrain spans are nested; remove them
 
 
-    def _get_intercession(self, soup):
+    def _get_intercession(self, soup, text=INTERCESSION):
         '''Get the intercessions in a soup object'''
-        parent = soup.body.find(text=SundaysAndSeasons.INTERCESSION).parent
+        parent = soup.body.find(string=text).parent
         children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
         p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
         c = children[1].get_text().strip()
         self.intercession = [p, c]
 
 
-    def _get_slide(self, url=SLIDES):
+    def _get_slide(self, url=SLIDES, base=BASE):
         '''Get the main slide in a soup object'''
         req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
@@ -156,7 +156,7 @@ class SundaysAndSeasons():
             title = img['title']
             if 'Slide 1' in title and '(wide screen)' not in title:
                 file = img['data-download']
-                url = SundaysAndSeasons.BASE + file
+                url = base + file
                 
                 if not os.path.exists(f'services/{self._day}'):
                     os.makedirs(f'services/{self._day}')
@@ -169,11 +169,16 @@ class SundaysAndSeasons():
 
 
     @staticmethod
-    def _get_reading(soup, regex, call, response):
+    def _get_reading(
+        soup: BeautifulSoup, 
+        regex: re.Pattern[str], 
+        call: str, 
+        response: str
+    ) -> str:
         '''Get the first reading in a soup object'''
         parent = soup.find('h3', string=regex)
-        title = ' '.join(parent.get_text().split(':')[1:]).strip()
         reading = parent.find_next_sibling().find_next_sibling()
+        title = re.split(regex, parent.get_text())[1].strip()
         text = '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()])
         return '\n'.join([title, text, call, response])
                        

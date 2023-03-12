@@ -7,7 +7,6 @@
 - [ ] Certain lines should be grouped together (calls and responses)
 - [ ] Make test cases
 - [ ] Decouple SundaysAndSeasons from PowerPoint
-- [ ] Make a command line interface
-- [ ] Make __init__.py
 - [ ] Error handling
 - [ ] Rich text and progress bars
+- [ ] Check Sundays and Seasons for multiple readings

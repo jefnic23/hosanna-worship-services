@@ -388,7 +388,7 @@ class PowerPoint():
         '''Save the presentation'''
         if not os.path.exists(f'services/{self._day}'):
             os.makedirs(f'services/{self._day}')
-        self.prs.save(f'services/{self._day}/service.pptx')
+        self.prs.save(f'services/{self._day}/{self._day}.pptx')
 
 
     def _load_hymns(self):

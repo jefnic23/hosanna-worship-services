@@ -2,36 +2,15 @@ import os
 from datetime import date, timedelta
 
 import art
-import typer
 
-from hosanna import __app_name__, __author__, __version__
 from hosanna.document import WordDocument
 from hosanna.powerpoint import PowerPoint
 from hosanna.sundaysandseasons import SundaysAndSeasons
 from hosanna.utils import get_sunday
 
-app = typer.Typer()
-
-def _version_callback(value: bool) -> None:
-    if value:
-        typer.echo(f'{__app_name__} v{__version__}')
-        raise typer.Exit()
-    
-
-@app.callback()
-def main(
-    version: bool = typer.Option(
-        None,
-        '--version',
-        '-v',
-        callback=_version_callback,
-        is_eager=True,
-        help='Show version and exit.',
-    ),
-):
-    pass
 
 if __name__ == '__main__':
+    art.tprint('Hosanna Worship Services')
     # TODO: prompt to install libreoffice if it doesn't exist
     # https://www.libreoffice.org/download/download-libreoffice/
 
@@ -39,10 +18,11 @@ if __name__ == '__main__':
 
     TODAY = date.today()
     this_sunday = get_sunday(TODAY)
+    print(f'Creating worship service for {this_sunday}...')
 
     # sas = SundaysAndSeasons(this_sunday)
     # sas.login()
-    # sas.get_readings_and_slide()
+    # sas.get_texts_and_slide()
     # sas.logoff()
 
     # if not os.path.exists(f'services/{this_sunday}'):
@@ -94,9 +74,9 @@ if __name__ == '__main__':
     # ppt.add_call_and_response('Dismissal', ppt._dismissal)
     # ppt.add_image()
     # ppt.save()
-    
-    doc = WordDocument(this_sunday)
-    doc.add_reading(doc._first_reading)
-    doc.add_psalm(doc._psalm)
-    doc.add_reading(doc._second_reading)
-    doc.save()
+
+    # doc = WordDocument(this_sunday)
+    # doc.add_reading(doc._first_reading)
+    # doc.add_psalm(doc._psalm)
+    # doc.add_reading(doc._second_reading)
+    # doc.save()

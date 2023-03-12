@@ -70,7 +70,10 @@ class WordDocument():
 
 
     def save(self):
-        '''Save the document to the services folder.'''
+        '''Save the document to the services folder.'''        
         if not os.path.exists(f'services/{self._day}'):
             os.makedirs(f'services/{self._day}')
-        self._document.save(f'services/{self._day}/readings.docx')
+        self._document.save(f'services/{self._day}/{self._day}.docx')
+
+        os.system(f'soffice --headless --invisible --convert-to pdf --outdir services/{self._day} services/{self._day}/{self._day}.docx')
+        os.remove(f'services/{self._day}/{self._day}.docx')
