@@ -10,7 +10,7 @@ from hosanna.utils import clean_text, grouper
 
 
 class SundaysAndSeasons():
-    '''Class for scraping Sundays and Seasons'''
+    '''Class for scraping Sundays and Seasons.'''
 
     BASE = 'https://members.sundaysandseasons.com'
     LOGIN = BASE + '/Account/Login'
@@ -23,7 +23,7 @@ class SundaysAndSeasons():
     PSALM = re.compile(r'Psalm:')
     SECOND_READING = re.compile(r'Second Reading:')
     GOSPEL = re.compile(r'^Gospel:')
-    INTERCESSION = 'Prayers of Intercession'
+    INTERCESSION = re.compile(r'Prayers of Intercession')
 
     READING_CALL = 'The word of the Lord,'
     READING_RESPONSE = 'Thanks be to God.'
@@ -49,7 +49,7 @@ class SundaysAndSeasons():
         self.intercession = None
 
 
-    def login(self, url=LOGIN):
+    def login(self, url: str = LOGIN) -> None:
         '''Login to the Sundays and Seasons website'''
         key, value = self._get_token(url)
         payload = {
@@ -62,20 +62,20 @@ class SundaysAndSeasons():
             raise Exception('Login failed')
         
 
-    def logoff(self, url=LOGOFF):
+    def logoff(self, url: str = LOGOFF) -> None:
         '''Logoff from the Sundays and Seasons website'''
         req = self._session.get(url)
         if req.status_code != 200:
             raise Exception('Logoff failed')
         
 
-    def get_texts_and_slide(self):
+    def get_texts_and_slide(self) -> None:
         '''Get all the data for the current date'''
         self._get_texts()
         self._get_slide()
         
 
-    def _get_token(self, url=LOGIN):
+    def _get_token(self, url: str = LOGIN) -> tuple[str, str]:
         '''Get the token from the login form'''
         html = self._session.get(url)
         soup = BeautifulSoup(html.text, 'html.parser')
@@ -84,7 +84,7 @@ class SundaysAndSeasons():
         return key, value
         
 
-    def _get_texts(self, url=TEXTS):
+    def _get_texts(self, url: str = TEXTS) -> None:
         '''Get all the texts for the current date'''
         req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
@@ -94,18 +94,18 @@ class SundaysAndSeasons():
         self._get_intercession(soup)
 
 
-    def _get_title(self, soup):
+    def _get_title(self, soup: BeautifulSoup) -> None:
         '''Get the title of the day in a soup object'''
         self.title = soup.body.find('h1', {'id': 'ribbontitle'}).get_text().strip()
 
 
-    def _get_prayer(self, soup):
+    def _get_prayer(self, soup: BeautifulSoup) -> None:
         '''Get the prayer of the day in a soup object'''
         parent = soup.body.find(text=SundaysAndSeasons.PRAYER).parent
         self.prayer = parent.findNext('div', {'class': 'body'}).get_text().strip()
 
 
-    def _get_readings(self, soup):
+    def _get_readings(self, soup: BeautifulSoup) -> None:
         '''Get the readings in a soup object'''
         self.first_reading = self._get_reading(
             soup, 
@@ -125,7 +125,11 @@ class SundaysAndSeasons():
             SundaysAndSeasons.GOSPEL_RESPONSE)
 
 
-    def _get_psalm(self, soup, regex=PSALM):
+    def _get_psalm(
+        self, 
+        soup: BeautifulSoup, 
+        regex: re.Pattern[str] = PSALM
+    ) -> None:
         '''Get the psalm in a soup object'''
         parent = soup.find('h3', string=regex)
         title = parent.get_text().split('Psalm: ')[1]
@@ -136,16 +140,24 @@ class SundaysAndSeasons():
         # TODO: refrain spans are nested; remove them
 
 
-    def _get_intercession(self, soup, text=INTERCESSION):
+    def _get_intercession(
+        self, 
+        soup: BeautifulSoup, 
+        regex: re.Pattern[str] = INTERCESSION
+    ) -> None:
         '''Get the intercessions in a soup object'''
-        parent = soup.body.find(string=text).parent
+        parent = soup.find('h3', string=regex).parent
         children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
         p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
         c = children[1].get_text().strip()
         self.intercession = p + '\n' + c
 
 
-    def _get_slide(self, url=SLIDES, base=BASE):
+    def _get_slide(
+        self, 
+        url: str = SLIDES, 
+        base: str = BASE
+    ) -> None:
         '''Get the main slide in a soup object'''
         req = self._session.get(url.format(self._day))
         soup = BeautifulSoup(req.text, 'html.parser')
@@ -183,4 +195,3 @@ class SundaysAndSeasons():
         title = re.split(regex, parent.get_text())[1].strip()
         text = '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()])
         return '\n'.join([title, text, call, response])
-                       
