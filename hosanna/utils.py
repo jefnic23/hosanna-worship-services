@@ -22,13 +22,17 @@ def pairwise(iterable: Iterable) -> list[tuple]:
     return list(zip(a, b))
 
 
-def grouper(iterable: Iterable, n: int, fillvalue=None):
+def grouper(
+    iterable: Iterable, 
+    n: int, 
+    fillvalue = None
+) -> list[tuple]:
     '''Collect data into fixed-length chunks or blocks'''
     args = [iter(iterable)] * n
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
-def get_parts(x, y):
+def get_parts(x: str, y: str) -> list[tuple]:
     '''Gets the start and end of each part of the liturgy'''
     xy = pairwise(list(chain.from_iterable(zip(x, y))))
     return grouper(xy, 2)

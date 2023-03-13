@@ -1,3 +1,4 @@
+from datetime import date
 import os
 from itertools import chain
 
@@ -8,7 +9,8 @@ from hosanna.utils import get_superscripts, pairwise, lookahead
 
 
 class WordDocument():
-    def __init__(self, day):
+    '''A class for creating a Word document.'''
+    def __init__(self, day: date):
         self._day = day
         self._document = Document()
         self._section = self._document.sections[0]
@@ -24,7 +26,7 @@ class WordDocument():
             self._second_reading = open(f'services/{self._day}/second-reading.txt', 'r', encoding='utf-8').read()
 
 
-    def add_reading(self, reading):
+    def add_reading(self, reading: str) -> None:
         '''Add a reading to the document.'''
         paragraph = self._document.add_paragraph()
         run = paragraph.add_run(reading.splitlines()[0] + "\n")
@@ -48,7 +50,7 @@ class WordDocument():
                 run.add_break()
 
 
-    def add_psalm(self, psalm):
+    def add_psalm(self, psalm: str) -> None:
         '''Add a psalm to the document.'''
         paragraph = self._document.add_paragraph()
         run = paragraph.add_run(psalm.splitlines()[0] + "\n")
@@ -69,7 +71,7 @@ class WordDocument():
             run.add_break()
 
 
-    def save(self):
+    def save(self) -> None:
         '''Save the document to the services folder.'''        
         if not os.path.exists(f'services/{self._day}'):
             os.makedirs(f'services/{self._day}')

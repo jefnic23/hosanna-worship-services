@@ -15,8 +15,7 @@ from hosanna.utils import *
 
 
 class PowerPoint():
-    '''Creates a PowerPoint presentation.'''
-
+    '''A class for creating a PowerPoint presentation.'''
     DEFAULT_FONT = 'Segoe UI'
     DEFAULT_FONTSIZE = 18
     MAX_WIDTH = 565
@@ -389,13 +388,13 @@ class PowerPoint():
     def _add_run(
         paragraph: _Paragraph, 
         text: str, 
-        font = DEFAULT_FONT, 
-        size = DEFAULT_FONTSIZE, 
-        bold = False, 
-        italic = False, 
+        font: str = DEFAULT_FONT, 
+        size: int = DEFAULT_FONTSIZE, 
+        bold: bool = False, 
+        italic: bool = False, 
         color: tuple = (0, 0, 0), 
-        has_more = False, 
-        superscript = False
+        has_more: bool = False, 
+        superscript: bool = False
     ) -> None:
         '''Add a run to a paragraph'''
         run = paragraph.add_run()
