@@ -1,9 +1,11 @@
 import os
 import re
+from datetime import date
 
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
+
 from hosanna.utils import clean_text, grouper
 
 
@@ -31,7 +33,7 @@ class SundaysAndSeasons():
 
     # TODO: error handling
 
-    def __init__(self, day):
+    def __init__(self, day: date):
         load_dotenv()
         self._session = requests.Session()
         self._username = os.getenv('user')

@@ -1,34 +1,32 @@
 import os
 import re
+from itertools import chain
 
 from PIL import Image, ImageDraw, ImageFont
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_AUTO_SIZE, MSO_VERTICAL_ANCHOR
 from pptx.enum.text import PP_PARAGRAPH_ALIGNMENT as PP_ALIGN
+from pptx.slide import Slide
+from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
-from itertools import chain
-
-from hosanna.utils import pairwise, get_height, get_parts, get_width, grouper, lookahead, get_superscripts
-
-MAX_WIDTH = 565
-MAX_HEIGHT = 335
-
-
-regular = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
-bold = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
-draw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
-
+from hosanna.utils import *
 
 
 class PowerPoint():
-    '''Creates a PowerPoint presentation'''
+    '''Creates a PowerPoint presentation.'''
 
     DEFAULT_FONT = 'Segoe UI'
     DEFAULT_FONTSIZE = 18
+    MAX_WIDTH = 565
+    MAX_HEIGHT = 335
     
-    def __init__(self, day):
+    REGULAR = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
+    BOLD = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
+    DRAW = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
+    
+    def __init__(self, day: date):
         self._day = day
         self.prs = Presentation()
         self.prs.slide_width = Inches(6)
@@ -42,48 +40,9 @@ class PowerPoint():
         if os.path.exists(f'services/{day}/hymns.txt'):
             self._hymns = self._load_hymns()
 
-        if os.path.exists('liturgy/confession.txt'):
-            self._confession = open('liturgy/confession.txt', 'r', encoding='utf-8').read()
 
-        if os.path.exists('liturgy/greeting.txt'):
-            self._greeting = open('liturgy/greeting.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/kyrie.txt'):
-            self._kyrie = open('liturgy/kyrie.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/creed.txt'):
-            self._creed = open('liturgy/creed.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/dialogue.txt'):
-            self._dialogue = open('liturgy/dialogue.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/holy-holy-holy.txt'):
-            self._hosanna = open('liturgy/holy-holy-holy.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/communion-dialogue.txt'):
-            self._communion_dialogue = open('liturgy/communion-dialogue.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/lords-prayer.txt'):
-            self._lords_prayer = open('liturgy/lords-prayer.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/communion-hymn.txt'):
-            self._communion_hymn = open('liturgy/communion-hymn.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/gospel-acclamation.txt'):
-            self._gospel_acclamation = open('liturgy/gospel-acclamation.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/prayer-after-communion.txt'):
-            self._prayer_after_communion = open('liturgy/prayer-after-communion.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/benediction.txt'):
-            self._benediction = open('liturgy/benediction.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists('liturgy/dismissal.txt'):
-            self._dismissal = open('liturgy/dismissal.txt', 'r', encoding='utf-8').read()
-
-
-    def add_title_slide(self, text):
-        '''Add a title slide to the presentation'''
+    def add_title_slide(self, text: str) -> None:
+        '''Add a title slide to the presentation/'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
@@ -95,54 +54,29 @@ class PowerPoint():
         self._add_run(p, text, bold=True, size=24)
 
 
-    def add_image(self):
+    def add_image(self) -> None:
+        '''Add an image to the presentation.'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         left = top = Inches(0)
         slide.shapes.add_picture(f'services/{self._day}/image.jpg', left, top, self.prs.slide_width, self.prs.slide_height)
 
 
-    def add_confession(self, title_text='Confession and Forgiveness'):
-        '''Add the confession to the presentation'''
-        pastor = [p.start() for p in re.finditer(r'P:', self._confession)]
-        congregation = [c.start() for c in re.finditer(r'C:', self._confession)]
-
-        for part in get_parts(pastor, congregation):
-            if part[1] is not None:
-                p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[1][0]:part[1][1]].strip()
-            else:
-                p, c = self._confession[part[0][0]:part[0][1]].strip(), self._confession[part[0][1]:].strip()
-                
-            width_formatted_text = []
-            for line in p.splitlines():
-                width_formatted_text.append(get_width(line, draw, regular))
-                
-            for line in c.splitlines():
-                width_formatted_text.append(get_width(line, draw, bold))
-
-            width_formatted_text = '\n'.join(width_formatted_text)
-
-            slides = get_height(width_formatted_text, draw, regular)
-
-            for slide in slides:
-                s = self._add_slide_with_header(title_text)
-                content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-                tf = content.text_frame
-                
-                tf.auto_size = MSO_AUTO_SIZE.NONE
-                for line, has_more in lookahead(slide.splitlines()):
-                    paragraph = tf.paragraphs[0]
-                    self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
-
-
-    def add_congregation_text(self, title, text):
+    def add_congregation_text(
+            self, 
+            title: str, 
+            text: str,
+            draw: ImageDraw = DRAW,
+            bold: ImageFont = BOLD,
+            regular: ImageFont = REGULAR
+        ) -> None:
         '''Add bold text to be read by the congregation to the presentation.'''
         width_formatted_text = []
         for line in text.splitlines():
-            width_formatted_text.append(get_width(line, draw, bold))
+            width_formatted_text.append(PowerPoint.get_width(line, draw, bold))
 
         width_formatted_text = '\n'.join(width_formatted_text)
 
-        slides = get_height(width_formatted_text, draw, regular)
+        slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
         for slide in slides:
             s = self._add_slide_with_header(title)
@@ -154,8 +88,8 @@ class PowerPoint():
                 self._add_run(p, line, bold=True, has_more=has_more)
 
 
-    def add_hymn(self):
-        '''Add a hymn to the presentation'''
+    def add_hymn(self) -> None:
+        '''Add a hymn to the presentation.'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
@@ -167,8 +101,14 @@ class PowerPoint():
             self._add_run(paragraph, line, bold=True, italic=True if has_more else False, size=24, has_more=has_more)
 
 
-    def add_reading(self, title_text, text):
-        '''Add a reading to the presentation'''
+    def add_reading(
+            self, 
+            title_text: str, 
+            text: str,
+            draw: ImageDraw = DRAW,
+            regular: ImageFont = REGULAR
+        ) -> None:
+        '''Add a reading to the presentation.'''
         title = text.splitlines()[0]
         reading = text.splitlines()[1:]
 
@@ -176,17 +116,16 @@ class PowerPoint():
 
         width_formatted_text = []
         for line in reading:
-            width_formatted_text.append(get_width(line, draw, regular))
+            width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
 
         width_formatted_text = '\n'.join(width_formatted_text)
 
-        slides = get_height(width_formatted_text, draw, regular)
+        slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
         for slide, is_not_last in lookahead(slides):
             s = self._add_slide_with_header(title_text)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
-            # 
             tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
@@ -203,8 +142,14 @@ class PowerPoint():
                         self._add_run(paragraph, line, has_more=has_more)
 
 
-    def add_psalm(self, text: str):
-        '''Add a psalm to the presentation'''
+    def add_psalm(
+            self, 
+            text: str, 
+            draw: ImageDraw = DRAW, 
+            bold: ImageFont = BOLD, 
+            regular: ImageFont = REGULAR
+        ) -> None:
+        '''Add a psalm to the presentation.'''
         text = text.replace('|', '').replace('- ', '')
         title = text.splitlines()[0]
         psalm = [line.strip() for line in text.splitlines()[1:] if line]
@@ -218,13 +163,13 @@ class PowerPoint():
         width_formatted_text = []
         for i, line in enumerate(psalm):
             if i % 2 == 0:
-                new_line = get_width(line, draw, regular)
+                new_line = PowerPoint.get_width(line, draw, regular)
                 first_lines.append(new_line.splitlines()[0])
                 for l in new_line.splitlines():
                     p.append(l)
                 width_formatted_text.append(new_line)
             else:
-                new_line = get_width(line, draw, bold)
+                new_line = PowerPoint.get_width(line, draw, bold)
                 first_lines.append(new_line.splitlines()[0])
                 for l in new_line.splitlines():
                     c.append(l)
@@ -232,7 +177,7 @@ class PowerPoint():
 
         width_formatted_text = '\n'.join(width_formatted_text)
 
-        slides = get_height(width_formatted_text, draw, regular)
+        slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
         for slide in slides:
             s = self._add_slide_with_header(title)
@@ -254,8 +199,13 @@ class PowerPoint():
                     self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
 
 
-    def add_gospel(self, text):
-        '''Add the gospel to the presentation'''
+    def add_gospel(
+            self, 
+            text: str,
+            draw: ImageDraw = DRAW,
+            regular: ImageFont = REGULAR
+        ) -> None:
+        '''Add the gospel to the presentation.'''
         title = text.splitlines()[0].split()[0]
         reading = text.splitlines()[1:]
 
@@ -272,11 +222,11 @@ class PowerPoint():
 
         width_formatted_text = []
         for line in reading:
-            width_formatted_text.append(get_width(line, draw, regular))
+            width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
 
         width_formatted_text = '\n'.join(width_formatted_text)
 
-        slides = get_height(width_formatted_text, draw, regular)
+        slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
         for slide, is_not_last in lookahead(slides):
             s = self._add_slide_with_header('Gospel')
@@ -300,8 +250,8 @@ class PowerPoint():
                         self._add_run(paragraph, line, has_more=has_more)
 
 
-    def add_intercessions(self, text: str):
-        '''Add the intercessions to the presentation'''
+    def add_intercessions(self, text: str) -> None:
+        '''Add the intercessions to the presentation.'''
         slide = self._add_slide_with_header('Prayers of Intercession')
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
@@ -315,8 +265,8 @@ class PowerPoint():
         self._add_run(p, text.splitlines()[1], bold=True)
 
 
-    def add_dialogue(self):
-        '''Add the dialogue to the presentation'''
+    def add_dialogue(self) -> None:
+        '''Add the dialogue to the presentation.'''
         text = grouper(self._dialogue.splitlines(), 2)
 
         slide = self._add_slide_with_header('Dialogue')
@@ -334,8 +284,16 @@ class PowerPoint():
                 p.add_line_break()
 
 
-    def add_call_and_response(self, title, text, anchor=None):
-        '''Add the call and response to the presentation'''
+    def add_call_and_response(
+            self, 
+            title: str, 
+            text: str, 
+            anchor: MSO_VERTICAL_ANCHOR = None,
+            draw: ImageDraw = DRAW,
+            regular: ImageFont = REGULAR,
+            bold: ImageFont = BOLD
+        ) -> None:
+        '''Add the call and response to the presentation.'''
         pastor, congregation = PowerPoint._get_pastor(text), PowerPoint._get_congregation(text)
         for part in get_parts(pastor, congregation):
             if part[1] is not None:
@@ -345,14 +303,14 @@ class PowerPoint():
                 
             width_formatted_text = []
             for line in p.splitlines():
-                width_formatted_text.append(get_width(line.replace('P:', ''), draw, regular))
+                width_formatted_text.append(PowerPoint.get_width(line.replace('P:', ''), draw, regular))
                 
             for line in c.splitlines():
-                width_formatted_text.append(get_width(line.replace('C:', ''), draw, bold))
+                width_formatted_text.append(PowerPoint.get_width(line.replace('C:', ''), draw, bold))
 
             width_formatted_text = '\n'.join(width_formatted_text)
 
-            slides = get_height(width_formatted_text, draw, regular)
+            slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
             for slide in slides:
                 s = self._add_slide_with_header(title)
@@ -365,27 +323,27 @@ class PowerPoint():
                     self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
 
 
-    def save(self):
-        '''Save the presentation'''
+    def save(self) -> None:
+        '''Save the presentation.'''
         if not os.path.exists(f'services/{self._day}'):
             os.makedirs(f'services/{self._day}')
         self.prs.save(f'services/{self._day}/{self._day}.pptx')
 
 
-    def _load_hymns(self):
-        '''Load the hymns from the hymns.txt file'''
+    def _load_hymns(self) -> list[tuple]:
+        '''Load the hymns from the hymns.txt file.'''
         hymns = open(f'services/{self._day}/hymns.txt', 'r', encoding='utf-8').read()
         return grouper(hymns.splitlines(), 2)
 
 
-    def _get_layouts(self):
-        '''Get the layouts of the presentation'''
+    def _get_layouts(self) -> None:
+        '''Get the layouts of the presentation.'''
         for l in self.prs.slide_layouts:
             print(l.name)
 
 
-    def _get_image(self):
-        '''Add an image to the presentation'''
+    def _get_image(self) -> None:
+        '''Add an image to the presentation.'''
         prs = Presentation(f'services/{self._day}/image.pptx')
         slide = prs.slides[0]
         shape = slide.shapes[0]
@@ -397,7 +355,7 @@ class PowerPoint():
         os.remove(f'services/{self._day}/image.pptx')
 
 
-    def _add_slide_with_header(self, title_text):
+    def _add_slide_with_header(self, title_text: str) -> Slide:
         '''Add a slide with a header'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         self._add_header(slide, title_text)
@@ -405,19 +363,19 @@ class PowerPoint():
     
 
     @staticmethod
-    def _get_pastor(text):
+    def _get_pastor(text: str) -> list[int]:
         '''Returns the indices of the pastor's lines'''
         return [p.start() for p in re.finditer(r'P:', text)]
 
 
     @staticmethod
-    def _get_congregation(text):
+    def _get_congregation(text: str) -> list[int]:
         '''Returns the indices of the congregation's lines'''
         return [c.start() for c in re.finditer(r'C:', text)]
 
     
     @staticmethod
-    def _add_header(slide, header_text):
+    def _add_header(slide: Slide, header_text: str) -> None:
         '''Add a header to a slide'''
         header = slide.shapes.add_textbox(Inches(0), Inches(0.1), Inches(6), Inches(0))
         tf = header.text_frame
@@ -428,7 +386,17 @@ class PowerPoint():
     
     
     @staticmethod
-    def _add_run(paragraph, text, font=DEFAULT_FONT, size=DEFAULT_FONTSIZE, bold=False, italic=False, color=(0, 0, 0), has_more=False, superscript=False):
+    def _add_run(
+        paragraph: _Paragraph, 
+        text: str, 
+        font = DEFAULT_FONT, 
+        size = DEFAULT_FONTSIZE, 
+        bold = False, 
+        italic = False, 
+        color: tuple = (0, 0, 0), 
+        has_more = False, 
+        superscript = False
+    ) -> None:
         '''Add a run to a paragraph'''
         run = paragraph.add_run()
         run.text = text.strip()
@@ -440,4 +408,53 @@ class PowerPoint():
         run.font._element.set('baseline', '30000' if superscript else '0')
         if has_more:
             paragraph.add_line_break()
+
+
+    @staticmethod
+    def check_size(draw, line, font):
+        '''Checks the size of a line of text'''
+        size = draw.multiline_textbbox((0, 0), line, font)
+        return {'width': size[2], 'height': size[3]}
+
+
+    @staticmethod
+    def get_width(line, draw, font, max_width=MAX_WIDTH):
+        '''Gets the width of a line of text and splits it if it's too long'''
+        if PowerPoint.check_size(draw, line, font)['width'] < max_width:
+            return line
+        else:
+            lines = []
+            for word in line.split():
+                if PowerPoint.check_size(draw, ' '.join(lines[-1:] + [word]), font)['width'] < max_width:
+                    lines[-1:] = [' '.join(lines[-1:] + [word])]
+                else:
+                    lines += [word]
+
+            return '\n'.join(lines)
         
+
+    @staticmethod
+    def get_height(lines, draw, font, max_height=MAX_HEIGHT):
+        '''Gets the height of a line of text and splits it if it's too long'''
+        if PowerPoint.check_size(draw, lines, font)['height'] < max_height:
+            return [lines]
+        else:
+            slides = []
+            for line in lines.splitlines():
+                if PowerPoint.check_size(draw, '\n'.join(slides[-1:] + [line]), font)['height'] < max_height:
+                    slides[-1:] = ['\n'.join(slides[-1:] + [line])]
+                else:
+                    slides += [line]
+
+            return slides
+        
+
+    @staticmethod
+    def get_slides(lines, draw, regular=regular):
+        width_formatted_text = []
+        for line in lines.splitlines():
+            width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
+        width_formatted_text = '\n'.join(width_formatted_text)
+
+        return PowerPoint.get_height(width_formatted_text, draw, regular)
+            

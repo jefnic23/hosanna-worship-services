@@ -77,3 +77,4 @@ class WordDocument():
 
         os.system(f'soffice --headless --invisible --convert-to pdf --outdir services/{self._day} services/{self._day}/{self._day}.docx')
         os.remove(f'services/{self._day}/{self._day}.docx')
+        
