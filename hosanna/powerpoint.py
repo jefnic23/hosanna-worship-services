@@ -411,21 +411,30 @@ class PowerPoint():
 
 
     @staticmethod
-    def check_size(draw, line, font):
-        '''Checks the size of a line of text'''
+    def check_size(
+        line: str,
+        draw: ImageDraw,
+        font: ImageFont
+    ) -> dict[str, int]:
+        '''Checks the size of a line of text.'''
         size = draw.multiline_textbbox((0, 0), line, font)
         return {'width': size[2], 'height': size[3]}
 
 
     @staticmethod
-    def get_width(line, draw, font, max_width=MAX_WIDTH):
-        '''Gets the width of a line of text and splits it if it's too long'''
-        if PowerPoint.check_size(draw, line, font)['width'] < max_width:
+    def get_width(
+        line: str, 
+        draw: ImageDraw, 
+        font: ImageFont, 
+        max_width: int = MAX_WIDTH
+    ):
+        '''Gets the width of a line of text and splits it if it's too long.'''
+        if PowerPoint.check_size(line, draw, font)['width'] < max_width:
             return line
         else:
             lines = []
             for word in line.split():
-                if PowerPoint.check_size(draw, ' '.join(lines[-1:] + [word]), font)['width'] < max_width:
+                if PowerPoint.check_size(' '.join(lines[-1:] + [word]), draw, font)['width'] < max_width:
                     lines[-1:] = [' '.join(lines[-1:] + [word])]
                 else:
                     lines += [word]
@@ -434,14 +443,19 @@ class PowerPoint():
         
 
     @staticmethod
-    def get_height(lines, draw, font, max_height=MAX_HEIGHT):
-        '''Gets the height of a line of text and splits it if it's too long'''
-        if PowerPoint.check_size(draw, lines, font)['height'] < max_height:
+    def get_height(
+        lines: str, 
+        draw: ImageDraw, 
+        font: ImageFont, 
+        max_height: int = MAX_HEIGHT
+    ) -> list[str]:
+        '''Gets the height of a line of text and splits it if it's too long.'''
+        if PowerPoint.check_size(lines, draw, font)['height'] < max_height:
             return [lines]
         else:
             slides = []
             for line in lines.splitlines():
-                if PowerPoint.check_size(draw, '\n'.join(slides[-1:] + [line]), font)['height'] < max_height:
+                if PowerPoint.check_size('\n'.join(slides[-1:] + [line]), draw, font)['height'] < max_height:
                     slides[-1:] = ['\n'.join(slides[-1:] + [line])]
                 else:
                     slides += [line]
@@ -450,7 +464,12 @@ class PowerPoint():
         
 
     @staticmethod
-    def get_slides(lines, draw, regular=regular):
+    def get_slides(
+        lines: str, 
+        draw: ImageDraw, 
+        regular: ImageFont,
+    ) -> list[str]:
+        '''Transforms a string into a list of strings that fit on a slide.'''
         width_formatted_text = []
         for line in lines.splitlines():
             width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
