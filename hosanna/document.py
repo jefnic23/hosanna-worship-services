@@ -1,11 +1,11 @@
-from datetime import date
 import os
+from datetime import date
 from itertools import chain
 
 from docx import Document
 from docx.shared import Inches, Pt
 
-from hosanna.utils import get_superscripts, pairwise, lookahead
+from hosanna.utils import clean_text, get_superscripts, lookahead, pairwise
 
 
 class WordDocument():
@@ -26,23 +26,24 @@ class WordDocument():
             self._second_reading = open(f'services/{self._day}/second-reading.txt', 'r', encoding='utf-8').read()
 
 
-    def add_reading(self, reading: str) -> None:
+    def add_reading(self, text: str) -> None:
         '''Add a reading to the document.'''
         paragraph = self._document.add_paragraph()
-        run = paragraph.add_run(reading.splitlines()[0] + "\n")
+        run = paragraph.add_run(text.splitlines()[0] + "\n")
         run.font.bold = True
         run.font.size = Pt(14)
-
-        for line, has_more in lookahead(reading.splitlines()[1:]):
+        
+        reading = [clean_text(line) for line in text.splitlines()[1:]]
+        for line, has_more in lookahead(reading):
             superscripts = get_superscripts(line)
             if len(superscripts) > 0:
                 index = pairwise(list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]])))
                 for start, end in index:
-                    run = paragraph.add_run(line[start:end])
+                    run = paragraph.add_run(line[start:end].strip())
                     run.font.superscript = True if (start, end) in superscripts else False
                     run.font.size = Pt(14)
             else:
-                run = paragraph.add_run(line)
+                run = paragraph.add_run(line.strip())
                 run.font.size = Pt(14)
                 run.font.bold = False if has_more else True
 

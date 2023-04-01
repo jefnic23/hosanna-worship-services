@@ -146,7 +146,7 @@ class SundaysAndSeasons():
         regex: re.Pattern[str] = INTERCESSION
     ) -> None:
         '''Get the intercessions in a soup object'''
-        parent = soup.find('h3', string=regex).parent
+        parent = soup.find('h3', string=regex)
         children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
         p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
         c = children[1].get_text().strip()

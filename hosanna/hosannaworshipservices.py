@@ -1,5 +1,15 @@
+from datetime import date
 from textual.app import App, ComposeResult
-from textual.widgets import Header, Footer
+from textual.containers import Container
+from textual.widgets import Header, Footer, Button, Static
+
+
+class DateSelector(Static):
+    '''A date selector.'''
+
+    def compose(self):
+        yield date.today()
+
 
 class HosannaWorshipServices(App):
     '''Textual interface for creating worship services.'''
@@ -10,6 +20,7 @@ class HosannaWorshipServices(App):
         '''Compose the main view.'''
         yield Header()
         yield Footer()
+        yield Container(DateSelector())
         
     def action_toggle_dark(self) -> None:
         '''Toggle dark mode.'''

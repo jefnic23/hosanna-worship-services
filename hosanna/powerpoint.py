@@ -1,5 +1,6 @@
 import os
 import re
+from datetime import date
 from itertools import chain
 
 from PIL import Image, ImageDraw, ImageFont
@@ -201,6 +202,7 @@ class PowerPoint():
     def add_gospel(
             self, 
             text: str,
+            header: str = 'Gospel',
             draw: ImageDraw = DRAW,
             regular: ImageFont = REGULAR
         ) -> None:
@@ -228,7 +230,7 @@ class PowerPoint():
         slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
         for slide, is_not_last in lookahead(slides):
-            s = self._add_slide_with_header('Gospel')
+            s = self._add_slide_with_header(header)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
             tf.auto_size = MSO_AUTO_SIZE.NONE
@@ -264,9 +266,9 @@ class PowerPoint():
         self._add_run(p, text.splitlines()[1], bold=True)
 
 
-    def add_dialogue(self) -> None:
+    def add_dialogue(self, text: str) -> None:
         '''Add the dialogue to the presentation.'''
-        text = grouper(self._dialogue.splitlines(), 2)
+        text = grouper(text.splitlines(), 2)
 
         slide = self._add_slide_with_header('Dialogue')
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
@@ -319,7 +321,12 @@ class PowerPoint():
                 tf.vertical_anchor = anchor
                 paragraph = tf.paragraphs[0]
                 for line, has_more in lookahead(slide.splitlines()):
-                    self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
+                    self._add_run(
+                        paragraph, 
+                        line, 
+                        bold=True if line in c else False, 
+                        has_more=has_more
+                    )
 
 
     def save(self) -> None:

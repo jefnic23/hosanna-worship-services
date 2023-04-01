@@ -57,6 +57,7 @@ def lookahead(iterable: Iterable):
 
 def get_superscripts(text: str) -> list[tuple[int, int]]:
     '''Gets the superscripts in a string.'''
+    # TODO: some superscripts have lower case letters, which are not captured
     return [(s.start(), s.end()) for s in re.finditer(r'(\d+:\d+)|\d+', text)]
     
 
