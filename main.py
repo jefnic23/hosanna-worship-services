@@ -18,8 +18,7 @@ if __name__ == '__main__':
     # app = HosannaWorshipServices()
     # app.run()
 
-    TODAY = date.today()
-    this_sunday = get_sunday(TODAY)
+    this_sunday = get_sunday(date.today())
 
     if not os.path.exists(f'services/{this_sunday}'):
         os.makedirs(f'services/{this_sunday}')
@@ -31,25 +30,12 @@ if __name__ == '__main__':
 
     lit = Liturgy()
 
-    if os.path.exists('liturgy/palm-sunday/acclamation.txt'):
-        palm_sunday_acclamation = open('liturgy/palm-sunday/acclamation.txt', 'r', encoding='utf-8').read()
-
-    if os.path.exists('liturgy/palm-sunday/blessing-of-palms.txt'):
-        blessing_of_palms = open('liturgy/palm-sunday/blessing-of-palms.txt', 'r', encoding='utf-8').read()
-
-    if os.path.exists('liturgy/palm-sunday/processional-gospel.txt'):
-        processional_gospel = open('liturgy/palm-sunday/processional-gospel.txt', 'r', encoding='utf-8').read()
-
     ppt = PowerPoint(this_sunday)
     ppt.add_image()
-    # ppt.add_call_and_response('Confession and Forgiveness', lit.confession)
-    # ppt.add_hymn()
-    # ppt.add_call_and_response('Greeting', lit.greeting)
-    ppt.add_call_and_response('Acclamation', palm_sunday_acclamation)
-    ppt.add_gospel(processional_gospel, header='Processional Gospel')
-    ppt.add_call_and_response('Blessing of Palms', blessing_of_palms)
+    ppt.add_call_and_response('Confession and Forgiveness', lit.confession)
     ppt.add_hymn()
-    # ppt.add_congregation_text('Kyrie', lit.kyrie)
+    ppt.add_call_and_response('Greeting', lit.greeting)
+    ppt.add_congregation_text('Kyrie', lit.kyrie)
     ppt.add_congregation_text('Prayer of the Day', sas.prayer)
     ppt.add_reading('First Reading', sas.first_reading)
     ppt.add_psalm(sas.psalm)
@@ -73,8 +59,8 @@ if __name__ == '__main__':
     ppt.add_image()
     ppt.save()
 
-    # doc = WordDocument(this_sunday)
-    # doc.add_reading(doc._first_reading)
-    # doc.add_psalm(doc._psalm)
-    # doc.add_reading(doc._second_reading)
-    # doc.save()
+    doc = WordDocument(this_sunday)
+    doc.add_reading(doc._first_reading)
+    doc.add_psalm(doc._psalm)
+    doc.add_reading(doc._second_reading)
+    doc.save()

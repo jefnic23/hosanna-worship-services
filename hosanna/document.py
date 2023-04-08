@@ -15,16 +15,6 @@ class WordDocument():
         self._document = Document()
         self._section = self._document.sections[0]
         self._section.left_margin = self._section.right_margin = self._section.top_margin = self._section.bottom_margin = Inches(0.5)
-        
-        if os.path.exists(f'services/{self._day}/first-reading.txt'):
-            self._first_reading = open(f'services/{self._day}/first-reading.txt', 'r', encoding='utf-8').read()
-
-        if os.path.exists(f'services/{self._day}/psalm.txt'):
-            self._psalm = open(f'services/{self._day}/psalm.txt', 'r', encoding='utf-8').read()
-        
-        if os.path.exists(f'services/{self._day}/second-reading.txt'):
-            self._second_reading = open(f'services/{self._day}/second-reading.txt', 'r', encoding='utf-8').read()
-
 
     def add_reading(self, text: str) -> None:
         '''Add a reading to the document.'''

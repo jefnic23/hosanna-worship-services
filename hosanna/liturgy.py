@@ -26,6 +26,9 @@ class Liturgy():
         if os.path.exists('liturgy/communion-dialogue.txt'):
             self.communion_dialogue = open('liturgy/communion-dialogue.txt', 'r', encoding='utf-8').read()
 
+        if os.path.exists('liturgy/lord-be-with-you.txt'):
+            self.lord_be_with_you = open('liturgy/lord-be-with-you.txt', 'r', encoding='utf-8').read()
+
         if os.path.exists('liturgy/lords-prayer.txt'):
             self.lords_prayer = open('liturgy/lords-prayer.txt', 'r', encoding='utf-8').read()
 
