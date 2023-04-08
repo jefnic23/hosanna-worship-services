@@ -1,12 +1,12 @@
 import os
+from pathlib import Path
 from datetime import date
 
-from hosanna.document import WordDocument
-from hosanna.liturgy import Liturgy
-from hosanna.powerpoint import PowerPoint
-from hosanna.sundaysandseasons import SundaysAndSeasons
-from hosanna.utils import get_sunday
-# from hosanna.hosannaworshipservices import HosannaWorshipServices
+from services.document import WordDocument
+from services.liturgy import Liturgy
+from services.powerpoint import PowerPoint
+from services.sundaysandseasons import SundaysAndSeasons
+from services.utils import get_sunday
 
 
 if __name__ == '__main__':
@@ -14,14 +14,12 @@ if __name__ == '__main__':
     # https://www.libreoffice.org/download/download-libreoffice/
 
     # TODO: prompt to add hymns if they don't exist
-    
-    # app = HosannaWorshipServices()
-    # app.run()
 
     this_sunday = get_sunday(date.today())
 
-    if not os.path.exists(f'services/{this_sunday}'):
-        os.makedirs(f'services/{this_sunday}')
+    path = Path('D:/hosanna/services')
+    if not os.path.exists(f'{path}/{this_sunday}'):
+        os.makedirs(f'{path}/{this_sunday}')
 
     sas = SundaysAndSeasons(this_sunday)
     sas.login()

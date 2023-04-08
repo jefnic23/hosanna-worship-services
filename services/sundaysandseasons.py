@@ -1,12 +1,13 @@
 import os
 import re
 from datetime import date
+from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 
-from hosanna.utils import clean_text, grouper
+from services.utils import clean_text, grouper
 
 
 class SundaysAndSeasons():
@@ -33,12 +34,17 @@ class SundaysAndSeasons():
 
     # TODO: error handling
 
-    def __init__(self, day: date):
+    def __init__(
+        self, 
+        day: date,
+        path: Path = Path('D:/hosanna/services')
+    ):
         load_dotenv()
         self._session = requests.Session()
         self._username = os.getenv('user')
         self._password = os.getenv('password')
         self._day = day
+        self._path = path
 
         self.title = None
         self.prayer = None
@@ -172,14 +178,17 @@ class SundaysAndSeasons():
                 file = img['data-download']
                 url = base + file
                 
-                if not os.path.exists(f'services/{self._day}'):
-                    os.makedirs(f'services/{self._day}')
+                if not os.path.exists(f'{self._path}/{self._day}'):
+                    os.makedirs(f'{self._path}/{self._day}')
 
-                with open(f'services/{self._day}/image.ppt', 'wb') as f:
+                with open(f'{self._path}/{self._day}/image.ppt', 'wb') as f:
                     f.write(self._session.get(url).content)
 
-                os.system(f'soffice --headless --invisible --convert-to pptx --outdir services/{self._day} services/{self._day}/image.ppt')
-                os.remove(f'services/{self._day}/image.ppt')
+                os.system(
+                    f'soffice --headless --invisible --convert-to pptx --outdir '
+                    f'{self._path}/{self._day} {self._path}/{self._day}/image.ppt'
+                )
+                os.remove(f'{self._path}/{self._day}/image.ppt')
 
 
     @staticmethod

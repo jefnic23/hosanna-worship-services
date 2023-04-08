@@ -1,17 +1,23 @@
 import os
 from datetime import date
 from itertools import chain
+from pathlib import Path
 
 from docx import Document
 from docx.shared import Inches, Pt
 
-from hosanna.utils import clean_text, get_superscripts, lookahead, pairwise
+from services.utils import clean_text, get_superscripts, lookahead, pairwise
 
 
 class WordDocument():
     '''A class for creating a Word document.'''
-    def __init__(self, day: date):
+    def __init__(
+        self, 
+        day: date,
+        path: Path = Path('D:/hosanna/services')
+    ):
         self._day = day
+        self._path = path
         self._document = Document()
         self._section = self._document.sections[0]
         self._section.left_margin = self._section.right_margin = self._section.top_margin = self._section.bottom_margin = Inches(0.5)
@@ -64,10 +70,13 @@ class WordDocument():
 
     def save(self) -> None:
         '''Save the document to the services folder.'''        
-        if not os.path.exists(f'services/{self._day}'):
-            os.makedirs(f'services/{self._day}')
-        self._document.save(f'services/{self._day}/{self._day}.docx')
+        if not os.path.exists(f'{self._path}/{self._day}'):
+            os.makedirs(f'{self._path}/{self._day}')
+        self._document.save(f'{self._path}/{self._day}/{self._day}.docx')
 
-        os.system(f'soffice --headless --invisible --convert-to pdf --outdir services/{self._day} services/{self._day}/{self._day}.docx')
-        os.remove(f'services/{self._day}/{self._day}.docx')
+        os.system(
+            f'soffice --headless --invisible --convert-to pdf --outdir '
+            f'{self._path}/{self._day} {self._path}/{self._day}/{self._day}.docx'
+        )
+        os.remove(f'{self._path}/{self._day}/{self._day}.docx')
         

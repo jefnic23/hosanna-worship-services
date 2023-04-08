@@ -2,6 +2,7 @@ import os
 import re
 from datetime import date
 from itertools import chain
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
 from pptx import Presentation
@@ -12,7 +13,13 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
-from hosanna.utils import *
+from services.utils import (
+    get_superscripts,
+    grouper,
+    lookahead,
+    pairwise,
+    split_regular_bold_text,
+)
 
 
 class PowerPoint():
@@ -26,18 +33,23 @@ class PowerPoint():
     BOLD = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
     DRAW = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
     
-    def __init__(self, day: date):
+    def __init__(
+        self, 
+        day: date,
+        path: Path = Path('D:/hosanna/services') 
+    ):
         self._day = day
+        self._path = path
         self.prs = Presentation()
         self.prs.slide_width = Inches(6)
         self.prs.slide_height = Inches(4)
         self._section_layout = self.prs.slide_layouts[2]
         self._blank_layout = self.prs.slide_layouts[6]
 
-        if os.path.exists(f'services/{day}/image.pptx'):
+        if os.path.exists(f'{path}/{day}/image.pptx'):
             self._get_image()
 
-        if os.path.exists(f'services/{day}/hymns.txt'):
+        if os.path.exists(f'{path}/{day}/hymns.txt'):
             self._hymns = self._load_hymns()
 
 
@@ -58,7 +70,7 @@ class PowerPoint():
         '''Add an image to the presentation.'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         left = top = Inches(0)
-        slide.shapes.add_picture(f'services/{self._day}/image.jpg', left, top, self.prs.slide_width, self.prs.slide_height)
+        slide.shapes.add_picture(f'{self._path}/{self._day}/image.jpg', left, top, self.prs.slide_width, self.prs.slide_height)
 
 
     def add_congregation_text(
@@ -294,51 +306,98 @@ class PowerPoint():
             regular: ImageFont = REGULAR,
             bold: ImageFont = BOLD
         ) -> None:
-        '''Add the call and response to the presentation.'''
-        pastor, congregation = PowerPoint._get_pastor(text), PowerPoint._get_congregation(text)
-        for part in get_parts(pastor, congregation):
-            if part[1] is not None:
-                p, c = text[part[0][0]:part[0][1]].strip(), text[part[1][0]:part[1][1]].strip()
+        '''Add a call and response to the presentation.'''
+        regular_text, bold_text = split_regular_bold_text(text)
+        bold_lines = [line[1] for line in bold_text]
+        lines = [
+            line[1] for line in sorted(regular_text + bold_text, key=lambda x: x[0])
+        ]
+        width_formatted_text = []
+        bold_formatted_text = []
+        for line in lines:
+            if line in bold_lines:
+                bold_line = PowerPoint.get_width(line, draw, bold)
+                width_formatted_text.append(bold_line)
+                for l in bold_line.splitlines():
+                    bold_formatted_text.append(l)
             else:
-                p, c = text[part[0][0]:part[0][1]].strip(), text[part[0][1]:].strip()
+                width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
+
+        width_formatted_text = '\n'.join(width_formatted_text)
+
+        slides = PowerPoint.get_height(width_formatted_text, draw, regular)
+
+        for slide, is_not_last in lookahead(slides):
+            s = self._add_slide_with_header(title)
+            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+            tf = content.text_frame
+            tf.auto_size = MSO_AUTO_SIZE.NONE
+            paragraph = tf.paragraphs[0]
+            paragraph.alignment = PP_ALIGN.LEFT
+            for line, has_more in lookahead(slide.splitlines()):
+                superscripts = get_superscripts(line)
+                if len(superscripts) > 0:
+                    index = pairwise(list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]])))
+                    for start, end in index:
+                        self._add_run(
+                            paragraph, 
+                            line[start:end], 
+                            superscript=True if (start, end) in superscripts else False,
+                            bold=True if line in bold_formatted_text else False
+                        )
+                    if has_more:
+                        paragraph.add_line_break()
+                else:
+                    if not is_not_last and not has_more:
+                        self._add_run(paragraph, line, bold=True if line in bold_formatted_text else False)
+                    else:
+                        self._add_run(paragraph, line, has_more=has_more, bold=True if line in bold_formatted_text else False)
+
+
+        # pastor, congregation = PowerPoint._get_pastor(text), PowerPoint._get_congregation(text)
+        # for part in get_parts(pastor, congregation):
+        #     if part[1] is not None:
+        #         p, c = text[part[0][0]:part[0][1]].strip(), text[part[1][0]:part[1][1]].strip()
+        #     else:
+        #         p, c = text[part[0][0]:part[0][1]].strip(), text[part[0][1]:].strip()
                 
-            width_formatted_text = []
-            for line in p.splitlines():
-                width_formatted_text.append(PowerPoint.get_width(line.replace('P:', ''), draw, regular))
+        #     width_formatted_text = []
+        #     for line in p.splitlines():
+        #         width_formatted_text.append(PowerPoint.get_width(line.replace('P:', ''), draw, regular))
                 
-            for line in c.splitlines():
-                width_formatted_text.append(PowerPoint.get_width(line.replace('C:', ''), draw, bold))
+        #     for line in c.splitlines():
+        #         width_formatted_text.append(PowerPoint.get_width(line.replace('C:', ''), draw, bold))
 
-            width_formatted_text = '\n'.join(width_formatted_text)
+        #     width_formatted_text = '\n'.join(width_formatted_text)
 
-            slides = PowerPoint.get_height(width_formatted_text, draw, regular)
+        #     slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
-            for slide in slides:
-                s = self._add_slide_with_header(title)
-                content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(3.5))
-                tf = content.text_frame
-                tf.auto_size = MSO_AUTO_SIZE.NONE
-                tf.vertical_anchor = anchor
-                paragraph = tf.paragraphs[0]
-                for line, has_more in lookahead(slide.splitlines()):
-                    self._add_run(
-                        paragraph, 
-                        line, 
-                        bold=True if line in c else False, 
-                        has_more=has_more
-                    )
+        #     for slide in slides:
+        #         s = self._add_slide_with_header(title)
+        #         content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(3.5))
+        #         tf = content.text_frame
+        #         tf.auto_size = MSO_AUTO_SIZE.NONE
+        #         tf.vertical_anchor = anchor
+        #         paragraph = tf.paragraphs[0]
+        #         for line, has_more in lookahead(slide.splitlines()):
+        #             self._add_run(
+        #                 paragraph, 
+        #                 line, 
+        #                 bold=True if line in c else False, 
+        #                 has_more=has_more
+        #             )
 
 
     def save(self) -> None:
         '''Save the presentation.'''
-        if not os.path.exists(f'services/{self._day}'):
-            os.makedirs(f'services/{self._day}')
-        self.prs.save(f'services/{self._day}/{self._day}.pptx')
+        if not os.path.exists(f'{self._path}/{self._day}'):
+            os.makedirs(f'{self._path}/{self._day}')
+        self.prs.save(f'{self._path}/{self._day}/{self._day}.pptx')
 
 
     def _load_hymns(self) -> list[tuple]:
         '''Load the hymns from the hymns.txt file.'''
-        hymns = open(f'services/{self._day}/hymns.txt', 'r', encoding='utf-8').read()
+        hymns = open(f'{self._path}/{self._day}/hymns.txt', 'r', encoding='utf-8').read()
         return grouper(hymns.splitlines(), 2)
 
 
@@ -350,15 +409,15 @@ class PowerPoint():
 
     def _get_image(self) -> None:
         '''Add an image to the presentation.'''
-        prs = Presentation(f'services/{self._day}/image.pptx')
+        prs = Presentation(f'{self._path}/{self._day}/image.pptx')
         slide = prs.slides[0]
         shape = slide.shapes[0]
         image = shape.image
         blob, ext = image.blob, image.ext
-        with open(f'services/{self._day}/image.{ext}', 'wb') as f:
+        with open(f'{self._path}/{self._day}/image.{ext}', 'wb') as f:
             f.write(blob)
     
-        os.remove(f'services/{self._day}/image.pptx')
+        os.remove(f'{self._path}/{self._day}/image.pptx')
 
 
     def _add_slide_with_header(self, title_text: str) -> Slide:

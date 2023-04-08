@@ -6,12 +6,12 @@ from typing import Iterable
 
 
 def point_to_px(point: int) -> int:
-    '''Converts a point size to a pixel size'''
+    '''Converts a point size to a pixel size.'''
     return int(point * 96 / 72)
 
 
 def inch_to_px(inch: int) -> int:
-    '''Converts an inch size to a pixel size'''
+    '''Converts an inch size to a pixel size.'''
     return int(inch * 96)
 
 
@@ -27,15 +27,34 @@ def grouper(
     n: int, 
     fillvalue = None
 ) -> list[tuple]:
-    '''Collect data into fixed-length chunks or blocks'''
+    '''Collect data into fixed-length groups.'''
     args = [iter(iterable)] * n
     return list(zip_longest(*args, fillvalue=fillvalue))
 
 
 def get_parts(x: str, y: str) -> list[tuple]:
-    '''Gets the start and end of each part of the liturgy'''
+    '''Gets the start and end of each part of the liturgy.'''
     xy = pairwise(list(chain.from_iterable(zip(x, y))))
     return grouper(xy, 2)
+
+
+def split_regular_bold_text(
+    text: str
+) -> tuple[list[tuple[int, str]], list[tuple[int, str]]]:
+    '''Splits a file into regular and bold text.'''
+    regular_text = []
+    bold_text = []
+    line_number = 0
+    for line in text.splitlines():
+        if re.match(r'<b>.*</b>', line):
+            bold_text.append((
+                line_number,
+                line.replace('<b>', '').replace('</b>', '').strip()
+            ))
+        else:
+            regular_text.append((line_number, line.strip()))
+        line_number += 1
+    return regular_text, bold_text
 
 
 def lookahead(iterable: Iterable):
@@ -63,7 +82,11 @@ def get_superscripts(text: str) -> list[tuple[int, int]]:
 
 def clean_text(text: str) -> str:
     '''Normalizes text.'''
-    cleaned = text.encode('utf-8').decode().replace(' | ', ' ').replace('- ', '').replace('  ', ' ').strip()
+    cleaned = (
+        text.encode('utf-8').decode()
+        .replace(' | ', ' ').replace('- ', '').replace('  ', ' ')
+        .strip()
+    )
     return cleaned[:-1] if cleaned.endswith('R') else cleaned 
 
 
