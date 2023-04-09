@@ -17,7 +17,7 @@ if __name__ == '__main__':
 
     this_sunday = get_sunday(date.today())
 
-    path = Path('D:/hosanna/services')
+    path = Path('D:/Documents/Hosanna/services')
     if not os.path.exists(f'{path}/{this_sunday}'):
         os.makedirs(f'{path}/{this_sunday}')
 

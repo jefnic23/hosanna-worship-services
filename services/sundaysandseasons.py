@@ -37,7 +37,7 @@ class SundaysAndSeasons():
     def __init__(
         self, 
         day: date,
-        path: Path = Path('D:/hosanna/services')
+        path: Path = Path('D:/Documents/Hosanna/services')
     ):
         load_dotenv()
         self._session = requests.Session()
