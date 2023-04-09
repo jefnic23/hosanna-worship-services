@@ -332,6 +332,7 @@ class PowerPoint():
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
             tf.auto_size = MSO_AUTO_SIZE.NONE
+            tf.vertical_anchor = anchor
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.LEFT
             for line, has_more in lookahead(slide.splitlines()):
@@ -352,40 +353,6 @@ class PowerPoint():
                         self._add_run(paragraph, line, bold=True if line in bold_formatted_text else False)
                     else:
                         self._add_run(paragraph, line, has_more=has_more, bold=True if line in bold_formatted_text else False)
-
-
-        # pastor, congregation = PowerPoint._get_pastor(text), PowerPoint._get_congregation(text)
-        # for part in get_parts(pastor, congregation):
-        #     if part[1] is not None:
-        #         p, c = text[part[0][0]:part[0][1]].strip(), text[part[1][0]:part[1][1]].strip()
-        #     else:
-        #         p, c = text[part[0][0]:part[0][1]].strip(), text[part[0][1]:].strip()
-                
-        #     width_formatted_text = []
-        #     for line in p.splitlines():
-        #         width_formatted_text.append(PowerPoint.get_width(line.replace('P:', ''), draw, regular))
-                
-        #     for line in c.splitlines():
-        #         width_formatted_text.append(PowerPoint.get_width(line.replace('C:', ''), draw, bold))
-
-        #     width_formatted_text = '\n'.join(width_formatted_text)
-
-        #     slides = PowerPoint.get_height(width_formatted_text, draw, regular)
-
-        #     for slide in slides:
-        #         s = self._add_slide_with_header(title)
-        #         content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(3.5))
-        #         tf = content.text_frame
-        #         tf.auto_size = MSO_AUTO_SIZE.NONE
-        #         tf.vertical_anchor = anchor
-        #         paragraph = tf.paragraphs[0]
-        #         for line, has_more in lookahead(slide.splitlines()):
-        #             self._add_run(
-        #                 paragraph, 
-        #                 line, 
-        #                 bold=True if line in c else False, 
-        #                 has_more=has_more
-        #             )
 
 
     def save(self) -> None:
