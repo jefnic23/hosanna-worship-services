@@ -4,7 +4,7 @@
 - [x] Normalize the readings and gospel
 - [x] Turn off word wrap
 - [x] How to handle lines with multiple superscripts?
-- [ ] Certain lines should be grouped together (calls and responses)
+- [x] Certain lines should be grouped together (calls and responses)
 - [ ] Make test cases
 - [x] Decouple SundaysAndSeasons from PowerPoint
 - [x] Load the liturgy from a class, not the PowerPoint
