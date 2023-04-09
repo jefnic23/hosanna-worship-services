@@ -20,7 +20,10 @@ class WordDocument():
         self._path = path
         self._document = Document()
         self._section = self._document.sections[0]
-        self._section.left_margin = self._section.right_margin = self._section.top_margin = self._section.bottom_margin = Inches(0.5)
+        self._section.left_margin =  \
+        self._section.right_margin = \
+        self._section.top_margin =   \
+        self._section.bottom_margin = Inches(0.5)
 
     def add_reading(self, text: str) -> None:
         '''Add a reading to the document.'''
