@@ -21,11 +21,17 @@ def get_hymn(hymn_number: int) -> object:
 def main():
     this_sunday = get_sunday(date.today())
     typer.echo(f'Welcome to Hosanna Worship Services for {this_sunday}')
-    if not os.path.exists(f'services/{this_sunday}'):
-        os.makedirs(f'services/{this_sunday}')
+    if not os.path.exists(f'D:/Documents/Hosanna/services/{this_sunday}'):
+        os.makedirs(f'D:/Documents/Hosanna/services/{this_sunday}')
     hymns = []
     while True:
-        hymn_number = typer.prompt('Enter hymn number')
+        hymn_number = typer.prompt('Enter hymn number, or "q" to quit')
+        if hymn_number == 'q':
+            with open(f'D:/Documents/Hosanna/services/{this_sunday}/hymns.txt', 'w') as f:
+                for hymn in hymns:
+                    f.write(f'{hymn[1]}\nELW {hymn[0]}\n')
+                f.close()
+            raise typer.Abort()
         hymn = get_hymn(int(hymn_number))
         confirm = typer.confirm(
             f'{hymn["Title"]}\n\nIs this the hymn you want?'
@@ -33,13 +39,6 @@ def main():
         if not confirm:
             continue
         hymns.append((hymn_number, hymn.Title))
-        abort = typer.confirm('Another hymn?')
-        if not abort:
-            with open(f'services/{this_sunday}/hymns.txt', 'w') as f:
-                for hymn in hymns:
-                    f.write(f'{hymn[1]}\nELW {hymn[0]}\n')
-                f.close()
-            raise typer.Abort()
 
 
 if __name__ == '__main__':

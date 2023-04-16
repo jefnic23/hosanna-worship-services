@@ -15,7 +15,7 @@ if __name__ == '__main__':
 
     # TODO: prompt to add hymns if they don't exist
 
-    this_sunday = get_sunday(date.today())
+    this_sunday = get_sunday(date.today(), 7)
 
     path = Path('D:/Documents/Hosanna/services')
     if not os.path.exists(f'{path}/{this_sunday}'):
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     ppt.add_hymn()
     ppt.add_congregation_text('Apostle\'s Creed', lit.creed)
     ppt.add_intercessions(sas.intercession)
-    ppt.add_dialogue(lit.dialogue)
+    ppt.add_call_and_response('Dialogue', lit.dialogue)
     ppt.add_congregation_text('Holy, holy, holy', lit.hosanna)
     ppt.add_call_and_response('Communion Dialogue', lit.communion_dialogue)
     ppt.add_congregation_text('Lord\'s Prayer', lit.lords_prayer)
@@ -58,7 +58,7 @@ if __name__ == '__main__':
     ppt.save()
 
     doc = WordDocument(this_sunday)
-    doc.add_reading(doc._first_reading)
-    doc.add_psalm(doc._psalm)
-    doc.add_reading(doc._second_reading)
+    doc.add_reading(sas.first_reading)
+    doc.add_psalm(sas.psalm)
+    doc.add_reading(sas.second_reading)
     doc.save()

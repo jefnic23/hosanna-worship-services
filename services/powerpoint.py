@@ -278,25 +278,6 @@ class PowerPoint():
         self._add_run(p, text.splitlines()[1], bold=True)
 
 
-    def add_dialogue(self, text: str) -> None:
-        '''Add the dialogue to the presentation.'''
-        text = grouper(text.splitlines(), 2)
-
-        slide = self._add_slide_with_header('Dialogue')
-        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
-        tf = content.text_frame
-        
-        tf.auto_size = MSO_AUTO_SIZE.NONE
-        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-        p = tf.paragraphs[0]
-        for line, has_more in lookahead(text):
-            self._add_run(p, line[0])
-            p.add_line_break()
-            self._add_run(p, line[1], bold=True, has_more=has_more)
-            if has_more:
-                p.add_line_break()
-
-
     def add_call_and_response(
             self, 
             title: str, 
