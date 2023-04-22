@@ -19,6 +19,8 @@ def get_hymn(hymn_number: int) -> object:
 
 
 def main():
+    '''Method that adds hymns to the service.'''
+    
     this_sunday = get_sunday(date.today())
     typer.echo(f'Welcome to Hosanna Worship Services for {this_sunday}')
     if not os.path.exists(f'D:/Documents/Hosanna/services/{this_sunday}'):
