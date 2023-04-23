@@ -15,14 +15,20 @@ class Dropbox:
 
     def __init__(self, day: date):
         self._day: date = day
-        self._token: str = settings.DROPBOX_ACCESS_TOKEN
+        self._app_key: str = settings.DROPBOX_APP_KEY
+        self._app_secret: str = settings.DROPBOX_APP_SECRET
+        self._token: str = settings.DROPBOX_REFRESH_TOKEN
         self._dbx = None
 
     
     def connect(self) -> None:
         '''Connect to Dropbox.'''
         try:
-            self._dbx = dropbox.Dropbox(self._token)
+            self._dbx = dropbox.Dropbox(
+                app_key=self._app_key, 
+                app_secret=self._app_secret,
+                oauth2_refresh_token=self._token
+            )
         except AuthError as err:
             raise err
         

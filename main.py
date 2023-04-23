@@ -1,8 +1,9 @@
 import os
-from pathlib import Path
 from datetime import date
+from pathlib import Path
 
 from services.document import WordDocument
+from services.dropbox import Dropbox
 from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
@@ -15,7 +16,7 @@ if __name__ == '__main__':
 
     # TODO: prompt to add hymns if they don't exist
 
-    this_sunday = get_sunday(date.today(), 6)
+    this_sunday = get_sunday(date.today())
 
     path = Path('D:/Documents/Hosanna/services')
     if not os.path.exists(f'{path}/{this_sunday}'):
@@ -65,3 +66,13 @@ if __name__ == '__main__':
     doc.add_psalm(sas.psalm)
     doc.add_reading(sas.second_reading)
     doc.save()
+
+    dbx = Dropbox(this_sunday)
+    dbx.connect()
+    dbx.upload('pptx')
+    dbx.upload('pdf')
+    dbx.close()
+
+    # TODO: also email the service, just to be safe
+
+    print('Service created and uploaded to Dropbox.')

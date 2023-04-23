@@ -70,7 +70,13 @@ class PowerPoint():
         '''Add an image to the presentation.'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         left = top = Inches(0)
-        slide.shapes.add_picture(f'{self._path}/{self._day}/image.jpg', left, top, self.prs.slide_width, self.prs.slide_height)
+        slide.shapes.add_picture(
+            f'{self._path}/{self._day}/image.jpg', 
+            left, 
+            top,
+            self.prs.slide_width, 
+            self.prs.slide_height
+        )
 
 
     def add_congregation_text(
@@ -110,7 +116,14 @@ class PowerPoint():
         for line, has_more in lookahead(self._hymns.pop(0)):
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.CENTER
-            self._add_run(paragraph, line, bold=True, italic=True if has_more else False, size=24, has_more=has_more)
+            self._add_run(
+                paragraph, 
+                line, 
+                bold=True, 
+                italic=True if has_more else False, 
+                size=24, 
+                has_more=has_more
+            )
 
 
     def add_reading(

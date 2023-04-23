@@ -36,7 +36,9 @@ class WordDocument():
         for line, has_more in lookahead(reading):
             superscripts = get_superscripts(line)
             if len(superscripts) > 0:
-                index = pairwise(list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]])))
+                index = pairwise(
+                    list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]]))
+                )
                 for start, end in index:
                     run = paragraph.add_run(line[start:end].strip())
                     run.font.superscript = True if (start, end) in superscripts else False

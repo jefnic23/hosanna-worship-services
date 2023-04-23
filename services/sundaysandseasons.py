@@ -5,8 +5,8 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
-from config import settings
 
+from config import settings
 from services.utils import clean_text, grouper
 
 
