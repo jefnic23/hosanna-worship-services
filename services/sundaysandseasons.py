@@ -39,19 +39,19 @@ class SundaysAndSeasons():
         day: date,
         path: Path = Path('D:/Documents/Hosanna/services')
     ):
-        self._session = requests.Session()
-        self._username = settings.USER
-        self._password = settings.PASSWORD
-        self._day = day
-        self._path = path
+        self._session: requests.Session = requests.Session()
+        self._username: str = settings.USER
+        self._password: str = settings.PASSWORD
+        self._day: date = day
+        self._path: Path = path
 
-        self.title = None
-        self.prayer = None
-        self.first_reading = None
-        self.psalm = None
-        self.second_reading = None
-        self.gospel = None
-        self.intercession = None
+        self.title: str = None
+        self.prayer: str = None
+        self.first_reading: str = None
+        self.psalm: str = None
+        self.second_reading: str = None
+        self.gospel: str = None
+        self.intercession: str = None
 
 
     def login(self, url: str = LOGIN) -> None:
