@@ -5,7 +5,7 @@ from pathlib import Path
 
 import requests
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
+from config import settings
 
 from services.utils import clean_text, grouper
 
@@ -39,10 +39,9 @@ class SundaysAndSeasons():
         day: date,
         path: Path = Path('D:/Documents/Hosanna/services')
     ):
-        load_dotenv()
         self._session = requests.Session()
-        self._username = os.getenv('user')
-        self._password = os.getenv('password')
+        self._username = settings.USER
+        self._password = settings.PASSWORD
         self._day = day
         self._path = path
 
@@ -141,8 +140,16 @@ class SundaysAndSeasons():
         title = parent.get_text().split('Psalm: ')[1]
 
         psalm = parent.find_next_sibling().find_next_sibling()
-        spans = [clean_text(span.get_text()) for span in psalm.find_all('span', {'class':None}) if 'style' not in span.attrs]
-        self.psalm = title + '\n' + '\n'.join([' '.join(line) for line in grouper(spans, 3)])
+        spans = [
+            clean_text(span.get_text()) 
+            for span in psalm.find_all('span', {'class':None}) 
+            if 'style' not in span.attrs
+        ]
+        self.psalm = (
+            title + 
+            '\n' + 
+            '\n'.join([' '.join(line) for line in grouper(spans, 3)])
+        )
         # TODO: refrain spans are nested; remove them
 
 

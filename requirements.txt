@@ -24,10 +24,10 @@ packaging==23.0
 pandas==2.0.0
 Pillow==9.4.0
 ply==3.11
+pydantic==1.10.7
 Pygments==2.14.0
 python-dateutil==2.8.2
 python-docx==0.8.11
-python-dotenv==1.0.0
 python-pptx==0.6.21
 pytz==2023.3
 PyYAML==6.0
