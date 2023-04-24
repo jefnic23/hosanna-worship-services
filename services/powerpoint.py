@@ -215,13 +215,32 @@ class PowerPoint():
                     superscripts = get_superscripts(line)
                     if superscripts:
                         for start, end in superscripts:
-                            self._add_run(paragraph, line[:start], bold=True if line in c else False)
-                            self._add_run(paragraph, line[start:end], bold=True if line in c else False, superscript=True)
-                            self._add_run(paragraph, line[end:], bold=True if line in c else False, has_more=has_more)
+                            self._add_run(
+                                paragraph, 
+                                line[:start], 
+                                bold=True if line in c else False
+                            )
+                            self._add_run(
+                                paragraph, 
+                                line[start:end], 
+                                bold=True if line in c else False, 
+                                superscript=True
+                            )
+                            self._add_run(
+                                paragraph, 
+                                line[end:], 
+                                bold=True if line in c else False, 
+                                has_more=has_more
+                            )
                     else:
                         self._add_run(paragraph, line, bold=True, has_more=has_more)
                 else:
-                    self._add_run(paragraph, line, bold=True if line in c else False, has_more=has_more)
+                    self._add_run(
+                        paragraph, 
+                        line, 
+                        bold=True if line in c else False, 
+                        has_more=has_more
+                    )
 
 
     def add_gospel(
@@ -264,9 +283,17 @@ class PowerPoint():
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
                 if len(superscripts) > 0:
-                    index = pairwise(list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]])))
+                    index = pairwise(list(chain(*[
+                        [0], 
+                        *[[s, e] for s, e in superscripts], 
+                        [len(line)]
+                    ])))
                     for start, end in index:
-                        self._add_run(paragraph, line[start:end], superscript=True if (start, end) in superscripts else False)
+                        self._add_run(
+                            paragraph, 
+                            line[start:end], 
+                            superscript=True if (start, end) in superscripts else False
+                        )
                     if has_more:
                         paragraph.add_line_break()
                 else:
@@ -332,7 +359,11 @@ class PowerPoint():
             for line, has_more in lookahead(slide.splitlines()):
                 superscripts = get_superscripts(line)
                 if len(superscripts) > 0:
-                    index = pairwise(list(chain(*[[0], *[[s, e] for s, e in superscripts], [len(line)]])))
+                    index = pairwise(list(chain(*[
+                        [0], 
+                        *[[s, e] for s, e in superscripts], 
+                        [len(line)]
+                    ])))
                     for start, end in index:
                         self._add_run(
                             paragraph, 
@@ -344,9 +375,18 @@ class PowerPoint():
                         paragraph.add_line_break()
                 else:
                     if not is_not_last and not has_more:
-                        self._add_run(paragraph, line, bold=True if line in bold_formatted_text else False)
+                        self._add_run(
+                            paragraph, 
+                            line, 
+                            bold=True if line in bold_formatted_text else False
+                        )
                     else:
-                        self._add_run(paragraph, line, has_more=has_more, bold=True if line in bold_formatted_text else False)
+                        self._add_run(
+                            paragraph, 
+                            line, 
+                            has_more=has_more, 
+                            bold=True if line in bold_formatted_text else False
+                        )
 
 
     def save(self) -> None:
@@ -358,14 +398,18 @@ class PowerPoint():
 
     def _load_hymns(self) -> list[tuple]:
         '''Load the hymns from the hymns.txt file.'''
-        hymns = open(f'{self._path}/{self._day}/hymns.txt', 'r', encoding='utf-8').read()
+        hymns = open(
+            f'{self._path}/{self._day}/hymns.txt', 
+            'r', 
+            encoding='utf-8'
+        ).read()
         return grouper(hymns.splitlines(), 2)
 
 
     def _get_layouts(self) -> None:
         '''Get the layouts of the presentation.'''
-        for l in self.prs.slide_layouts:
-            print(l.name)
+        for layout in self.prs.slide_layouts:
+            print(layout.name)
 
 
     def _get_image(self) -> None:
@@ -408,7 +452,13 @@ class PowerPoint():
         tf.auto_size = MSO_AUTO_SIZE.NONE
         paragraph = tf.paragraphs[0]
         paragraph.alignment = PP_ALIGN.RIGHT
-        PowerPoint._add_run(paragraph, header_text, size=12, bold=True, color=(66, 133, 244))
+        PowerPoint._add_run(
+            paragraph, 
+            header_text, 
+            size=12, 
+            bold=True, 
+            color=(66, 133, 244)
+        )
     
     
     @staticmethod
@@ -460,7 +510,12 @@ class PowerPoint():
         else:
             lines = []
             for word in line.split():
-                if PowerPoint.check_size(' '.join(lines[-1:] + [word]), draw, font)['width'] < max_width:
+                width = PowerPoint.check_size(
+                    ' '.join(lines[-1:] + [word]), 
+                    draw, 
+                    font
+                )['width']
+                if width < max_width:
                     lines[-1:] = [' '.join(lines[-1:] + [word])]
                 else:
                     lines += [word]
@@ -481,7 +536,12 @@ class PowerPoint():
         else:
             slides = []
             for line in lines.splitlines():
-                if PowerPoint.check_size('\n'.join(slides[-1:] + [line]), draw, font)['height'] < max_height:
+                height = PowerPoint.check_size(
+                    '\n'.join(slides[-1:] + [line]), 
+                    draw, 
+                    font
+                )['height']
+                if height < max_height:
                     slides[-1:] = ['\n'.join(slides[-1:] + [line])]
                 else:
                     slides += [line]
