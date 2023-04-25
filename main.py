@@ -1,5 +1,6 @@
 import os
 from datetime import date
+import asyncio
 from pathlib import Path
 
 from services.document import WordDocument
@@ -15,6 +16,8 @@ if __name__ == '__main__':
     # https://www.libreoffice.org/download/download-libreoffice/
 
     # TODO: prompt to add hymns if they don't exist
+
+    ###########################################################################
 
     this_sunday = get_sunday(date.today())
 
@@ -72,7 +75,5 @@ if __name__ == '__main__':
     dbx.upload('pptx')
     dbx.upload('pdf')
     dbx.close()
-
-    # TODO: also email the service, just to be safe
 
     print('Service created and uploaded to Dropbox.')

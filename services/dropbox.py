@@ -10,7 +10,7 @@ class Dropbox:
     '''Class for interacting with Dropbox.'''
 
 
-    LOCAL_DIR = 'D:/Documents/Hosanna/services'
+    LOCAL_DIR = settings.LOCAL_DIR
 
 
     def __init__(self, day: date):
