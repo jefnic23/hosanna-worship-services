@@ -1,6 +1,6 @@
 __pycache__
 venv
 .env
-services
-liturgy
 .vscode
+.ruff_cache
+tests
