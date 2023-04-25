@@ -1,6 +1,5 @@
 import os
 from datetime import date
-import asyncio
 from pathlib import Path
 
 from services.document import WordDocument
