@@ -10,7 +10,6 @@ commonmark==0.9.1
 dnspython==2.3.0
 dropbox==11.36.0
 email-validator==2.0.0.post2
-fastapi==0.95.1
 ghp-import==2.1.0
 h11==0.14.0
 httpcore==0.17.0
@@ -38,6 +37,7 @@ Pillow==9.4.0
 ply==3.11
 pydantic==1.10.7
 Pygments==2.14.0
+PySimpleGUI==4.60.4
 python-dateutil==2.8.2
 python-docx==0.8.11
 python-dotenv==1.0.0
