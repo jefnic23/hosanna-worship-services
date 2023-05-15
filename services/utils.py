@@ -1,6 +1,8 @@
 import calendar
+import os
 import re
 from datetime import date, timedelta
+from distutils.spawn import find_executable
 from itertools import chain, tee, zip_longest
 from typing import Iterable
 
@@ -90,7 +92,21 @@ def clean_text(text: str) -> str:
     return cleaned[:-1] if cleaned.endswith('R') else cleaned 
 
 
-def get_sunday(today: date, delta: int = 0) -> date:
+def get_sunday(
+    today: date = date.today(), 
+    delta: int = 0
+) -> date:
     '''Gets the date of the next Sunday.'''
     SUNDAY = calendar.SUNDAY
     return today + timedelta((SUNDAY - today.weekday()) % 7) + timedelta(weeks=delta)
+
+
+def exe_exists(exe: str) -> bool:
+    '''Checks if an executable exists.'''
+    return find_executable(exe) is not None
+
+
+def create_directory(path: str) -> None:
+    '''Creates a directory if it does not exist.'''
+    if not os.path.exists(path):
+        os.makedirs(path)

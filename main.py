@@ -9,14 +9,6 @@ from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
-
-# TODO: prompt to install libreoffice if it doesn't exist
-# https://www.libreoffice.org/download/download-libreoffice/
-
-# TODO: prompt to add hymns if they don't exist
-
-###########################################################################
-
 this_sunday = get_sunday(date.today())
 
 path = Path('D:/Documents/Hosanna/services')
@@ -73,5 +65,3 @@ dbx.connect()
 dbx.upload('pptx')
 dbx.upload('pdf')
 dbx.close()
-
-print('Service created and uploaded to Dropbox.')
