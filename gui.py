@@ -8,26 +8,28 @@ sg.theme('Dark')  # Let's set our own color theme
 
 THIS_SUNDAY = get_sunday()
 DEFAULT_DATE = (THIS_SUNDAY.month, THIS_SUNDAY.day, THIS_SUNDAY.year)
+CURRENT_LAYOUT = 'HOME'
+LAYOUTS = ['HOME', 'START', 'CREATE']
 
-PAGES = ['HOME', 'START', 'CREATE']
 def toggle_layout(
-    page: str, 
-    pages: list[str] = PAGES
+    new: str, 
+    layouts: list[str] = LAYOUTS
 ) -> None:
     '''Toggle between layouts.'''
-    if page is None or page.upper() not in pages:
+    global CURRENT_LAYOUT
+    
+    if new is None or new.upper() not in layouts:
         return
 
-    for p in pages:
-        window[p].update(visible=False)
-
-    window[page.upper()].update(visible=True)
+    window[CURRENT_LAYOUT].update(visible=False)
+    CURRENT_LAYOUT = new.upper()
+    window[new.upper()].update(visible=True)
 
 
 menu = [
     ['File', ['Open', 'Save', 'Properties', 'Exit']],
-    ['Edit', ['Paste', ['Normal', 'Special'], 'Undo']],
-    ['Help', 'About...']
+    ['Edit', ['Undo', 'Paste', ['Normal', 'Special']]],
+    ['Help', ['About...']]
 ]
 
 # STEP 1 define the layout
@@ -77,25 +79,25 @@ add_hymns = sg.Column(
 )
 
 layout = [
-   [sg.Menu(menu)],
-   [sg.VPush()],
-   [
+    [sg.Menu(menu)],
+    [sg.VPush()],
+    [
         sg.Push(),
         sg.pin(home), 
         sg.pin(create_service),
         sg.pin(add_hymns),
         sg.Push()
     ],
-   [sg.VPush()]
+    [sg.VPush()]
 ]
 
 #STEP 2 - create the window
 window = sg.Window(
-   'Hosanna Worship Services', 
-   layout, 
-   size=(1200, 800), 
-   icon='data/icon.ico',
-   finalize=True
+    'Hosanna Worship Services', 
+    layout, 
+    size=(1200, 800), 
+    icon='data/icon.ico',
+    finalize=True
 )
 
 # STEP3 - the event loop
@@ -111,7 +113,7 @@ while True:
         break
 
     if event == 'Create':
-        path = f'{settings.LOCAL_DIR}/{values["DATE"]}'
+        path = f'{settings.LOCAL_DIR}/hosanna/services/{values["DATE"]}'
         create_directory(path)
         hymns = Hymns(values['DATE'])
 
@@ -121,6 +123,5 @@ while True:
 
     if event == 'Save':
         hymns.save_hymns()
-        print('Hymns saved.')
 
 window.close()

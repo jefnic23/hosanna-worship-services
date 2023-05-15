@@ -27,7 +27,7 @@ class Hymns:
 
     def save_hymns(self, path: str = LOCAL_DIR) -> None:
         """Save hymns to file."""
-        with open(f'{path}/services/{self.day}/hymns.txt', 'a') as f:
+        with open(f'{path}/hosanna/services/{self.day}/hymns.txt', 'a') as f:
             for hymn in self.hymns:
                 f.write(f'{hymn.Title}\nELW {hymn.Number}\n')
             f.close()
