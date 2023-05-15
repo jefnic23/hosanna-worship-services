@@ -36,8 +36,8 @@ menu = [
 home = sg.Column(
     [
         [sg.Text('Hosanna Worship Services', font=('Helvetica', 34))],
-        [sg.Button('Start', button_color=('white', 'springgreen4'), size=(10, 1))],
-        [sg.Button('Exit', button_color=('white', 'firebrick3'), size=(10, 1))],
+        [sg.Button('Start', button_color=('white', 'springgreen4'), size=(10, 1), border_width=0)],
+        [sg.Button('Exit', button_color=('white', 'firebrick3'), size=(10, 1), border_width=0)],
     ], 
     element_justification='c', 
     key='HOME'
@@ -62,7 +62,7 @@ create_service = sg.Column(
 add_hymns = sg.Column(
     [
         [sg.Text('Add Hymns', font=('Helvetica', 34))],
-        [sg.Text('', key='HYMN_LIST', size=(50, 10), font=('Helvetica', 12), justification='l')],
+        [sg.Text('', key='HYMN_LIST', size=(50, 10), font=('Helvetica', 12), justification='l', border_width=1, relief='sunken')],
         [
             sg.Push(),
             sg.Text('Hymn Number', size=(12, 1)), 
@@ -76,6 +76,25 @@ add_hymns = sg.Column(
     element_justification='c', 
     visible=False, 
     key='CREATE'
+)
+
+add_liturgy = sg.Column(
+    [
+        [sg.Text('Add Liturgy', font=('Helvetica', 34))],
+        [sg.Text('', key='LITURGY_LIST', size=(50, 10), font=('Helvetica', 12), justification='l', border_width=1, relief='sunken')],
+        [
+            sg.Push(),
+            sg.Text('Liturgy', size=(12, 1)), 
+            sg.Multiline(key='LITURGY')
+        ],
+        [
+            sg.Button('Add', button_color=('white', 'springgreen4'), size=(10, 1)),
+            sg.Button('Save', button_color=('white', 'green'), size=(10, 1))
+        ],
+    ], 
+    element_justification='c', 
+    visible=False, 
+    key='LITURGY'
 )
 
 layout = [
