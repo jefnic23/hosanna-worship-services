@@ -11,4 +11,3 @@
 - [ ] Error handling
 - [ ] Rich text and progress bars
 - [ ] Check Sundays and Seasons for multiple readings
-- [ ] Make a Textual interface?
