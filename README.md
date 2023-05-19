@@ -11,3 +11,12 @@
 - [ ] Error handling
 - [ ] Rich text and progress bars
 - [ ] Check Sundays and Seasons for multiple readings
+
+After installing eel, add these lines to ``def open(start_pages, options):`` in ``browser.py``:
+```
+elif mode == 'brave':
+    for url in start_urls:
+        brave_path = 'brave-portable/brave-portable.exe'
+        wbr.register('brave-portable', None, wbr.BackgroundBrowser(brave_path))
+        wbr.get('brave-portable').open(f'--app={url}')
+```
