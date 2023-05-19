@@ -7,6 +7,7 @@ tests
 *.toml
 
 /brave-portable
+web
 
 # Logs
 ui/logs
@@ -32,5 +33,3 @@ ui/*.ntvs*
 ui/*.njsproj
 ui/*.sln
 ui/*.sw?
-
-web/
