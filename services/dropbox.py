@@ -18,20 +18,8 @@ class Dropbox:
         self._app_key: str = settings.DROPBOX_APP_KEY
         self._app_secret: str = settings.DROPBOX_APP_SECRET
         self._token: str = settings.DROPBOX_REFRESH_TOKEN
-        self._dbx = None
-
-    
-    def connect(self) -> None:
-        '''Connect to Dropbox.'''
-        try:
-            self._dbx = dropbox.Dropbox(
-                app_key=self._app_key, 
-                app_secret=self._app_secret,
-                oauth2_refresh_token=self._token
-            )
-        except AuthError as err:
-            raise err
-        
+        self._dbx: dropbox.Dropbox = self._connect()
+            
     
     def upload(
         self,
@@ -51,3 +39,15 @@ class Dropbox:
     def close(self) -> None: 
         '''Close the connection to Dropbox.'''
         self._dbx.close()
+        
+        
+    def _connect(self) -> dropbox.Dropbox:
+        '''Connect to Dropbox.'''
+        try:
+            return dropbox.Dropbox(
+                app_key=self._app_key, 
+                app_secret=self._app_secret,
+                oauth2_refresh_token=self._token
+            )
+        except AuthError as err:
+            raise err
