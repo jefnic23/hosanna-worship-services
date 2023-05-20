@@ -1,10 +1,10 @@
 <script lang="ts">
-    import Counter from "./lib/Counter.svelte";
+    import DateSelector from "./lib/DateSelector.svelte";
 </script>
 
 <main>
     <div class="card">
-        <Counter />
+        <DateSelector />
     </div>
 </main>
 

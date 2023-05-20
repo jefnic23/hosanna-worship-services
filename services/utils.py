@@ -92,15 +92,6 @@ def clean_text(text: str) -> str:
     return cleaned[:-1] if cleaned.endswith('R') else cleaned 
 
 
-def get_sunday(
-    today: date = date.today(), 
-    delta: int = 0
-) -> date:
-    '''Gets the date of the next Sunday.'''
-    SUNDAY = calendar.SUNDAY
-    return today + timedelta((SUNDAY - today.weekday()) % 7) + timedelta(weeks=delta)
-
-
 def exe_exists(exe: str) -> bool:
     '''Checks if an executable exists.'''
     return find_executable(exe) is not None
