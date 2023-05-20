@@ -9,8 +9,8 @@
 - [x] Decouple SundaysAndSeasons from PowerPoint
 - [x] Load the liturgy from a class, not the PowerPoint
 - [ ] Error handling
-- [ ] Rich text and progress bars
 - [ ] Check Sundays and Seasons for multiple readings
+- [ ] Change naming conventions for uploaded files (service.pptx, readings.pdf)
 
 After installing eel, add these lines to ``def open(start_pages, options):`` in ``browser.py``:
 ```
