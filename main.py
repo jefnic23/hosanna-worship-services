@@ -9,15 +9,21 @@ from services.dropbox import Dropbox
 from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
-from services.utils import get_sunday
 
 eel.init('web')
+
+eel_kwargs = {
+    'host': 'localhost',
+    'port': 8080,
+    'size': (1280, 720)
+}
+
 eel.start(
     'index.html', 
-    mode='brave'
+    mode='brave',
+    **eel_kwargs
 )
 
-# this_sunday = get_sunday(date.today())
 
 # path = Path('D:/Documents/Hosanna/services')
 # if not os.path.exists(f'{path}/{this_sunday}'):
