@@ -1,7 +1,6 @@
 import eel
 
 import os
-from datetime import date
 from pathlib import Path
 
 from services.document import WordDocument
@@ -10,20 +9,25 @@ from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
 
-eel.init('web')
+@eel.expose
+def print_something(x):
+    print(x)
 
-eel_kwargs = {
-    'host': 'localhost',
-    'port': 8080,
-    'size': (1280, 720)
-}
 
-eel.start(
-    'index.html', 
-    mode='brave',
-    **eel_kwargs
-)
+def start_eel():
+    '''Starts the Eel server.'''
+    eel.init('web')
+    eel.start(
+        'index.html', 
+        mode='brave',
+        host='localhost',
+        port=8080,
+        size=(1280, 720)
+    )
 
+
+if __name__ == '__main__':
+    start_eel()
 
 # path = Path('D:/Documents/Hosanna/services')
 # if not os.path.exists(f'{path}/{this_sunday}'):
@@ -75,7 +79,6 @@ eel.start(
 # doc.save()
 
 # dbx = Dropbox(this_sunday)
-# dbx.connect()
 # dbx.upload('pptx')
 # dbx.upload('pdf')
 # dbx.close()

@@ -1,7 +1,5 @@
-import calendar
 import os
 import re
-from datetime import date, timedelta
 from distutils.spawn import find_executable
 from itertools import chain, tee, zip_longest
 from typing import Iterable

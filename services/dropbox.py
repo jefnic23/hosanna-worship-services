@@ -1,7 +1,8 @@
 from datetime import date
 
-import dropbox
+from dropbox import Dropbox as dropbox
 from dropbox.exceptions import ApiError, AuthError
+from dropbox.files import WriteMode
 
 from config import settings
 
@@ -10,7 +11,7 @@ class Dropbox:
     '''Class for interacting with Dropbox.'''
 
 
-    LOCAL_DIR = settings.LOCAL_DIR
+    LOCAL_DIR = settings.LOCAL_DIR + '/services'
 
 
     def __init__(self, day: date):
@@ -18,7 +19,7 @@ class Dropbox:
         self._app_key: str = settings.DROPBOX_APP_KEY
         self._app_secret: str = settings.DROPBOX_APP_SECRET
         self._token: str = settings.DROPBOX_REFRESH_TOKEN
-        self._dbx: dropbox.Dropbox = self._connect()
+        self._dbx: dropbox = self._connect()
             
     
     def upload(
@@ -31,7 +32,11 @@ class Dropbox:
             with open(f'{path}/{self._day}/{self._day}.{ext}', 'rb') as f:
                 file = f.read()
 
-            self._dbx.files_upload(file, f'/{self._day}/{self._day}.{ext}')
+            self._dbx.files_upload(
+                file, 
+                f'/{self._day}/{self._day}.{ext}', 
+                mode=WriteMode.overwrite
+            )
         except ApiError as err:
             raise err
         
@@ -41,10 +46,10 @@ class Dropbox:
         self._dbx.close()
         
         
-    def _connect(self) -> dropbox.Dropbox:
+    def _connect(self) -> dropbox:
         '''Connect to Dropbox.'''
         try:
-            return dropbox.Dropbox(
+            return dropbox(
                 app_key=self._app_key, 
                 app_secret=self._app_secret,
                 oauth2_refresh_token=self._token

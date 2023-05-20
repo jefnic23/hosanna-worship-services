@@ -45,16 +45,18 @@ class SundaysAndSeasons():
         self._day: date = day
         self._path: Path = path
 
-        self.title: str = None
-        self.prayer: str = None
-        self.first_reading: str = None
-        self.psalm: str = None
-        self.second_reading: str = None
-        self.gospel: str = None
-        self.intercession: str = None
+        self.title: str = ''
+        self.prayer: str = ''
+        self.first_reading: str = ''
+        self.psalm: str = ''
+        self.second_reading: str = ''
+        self.gospel: str = ''
+        self.intercession: str = ''
+
+        self._login()
 
 
-    def login(self, url: str = LOGIN) -> None:
+    def _login(self, url: str = LOGIN) -> None:
         '''Login to the Sundays and Seasons website'''
         key, value = self._get_token(url)
         payload = {
