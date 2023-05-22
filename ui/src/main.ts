@@ -7,6 +7,9 @@ declare global {
     }
 }
 
+export const eel = window.eel
+eel.set_host('ws://localhost:8080')
+
 const app = new App({
   target: document.getElementById('app'),
 })

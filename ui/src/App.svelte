@@ -1,11 +1,15 @@
 <script lang="ts">
     import DateSelector from "./lib/DateSelector.svelte";
+    import Hymns from "./lib/Hymns.svelte";
+    import TextEditor from "./lib/TextEditor.svelte";
+    import Tracker from "./lib/Tracker.svelte";
 </script>
 
 <main>
-    <div class="card">
-        <DateSelector />
-    </div>
+    <Tracker />
+    <DateSelector />
+    <!-- <TextEditor /> -->
+    <Hymns />
 </main>
 
 <style>
