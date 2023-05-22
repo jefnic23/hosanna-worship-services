@@ -1,10 +1,21 @@
 <script lang="ts">
-    const eel: any = window.eel;
-    eel.set_host('ws://localhost:8080');
+    import { eel } from "../main";
 
     let delta: number = 0;
     let today: Date = new Date();
+    let formattedDate: string = formatDate(today);
     let sunday: string = getSunday(today, delta);
+
+    /**
+     * Formats the date to the format MM/DD/YYYY
+     * @param date
+     */
+    function formatDate(date: Date): string {
+        return date.toLocaleDateString(
+            'en-CA', 
+            { month: '2-digit', day: '2-digit', year: 'numeric' }
+        );
+    }
 
     /**
      * Returns the date of the next sunday
@@ -13,10 +24,7 @@
      */
     function getSunday(today: Date, delta: number): string {
         today.setDate(today.getDate() + ((7 - today.getDay()) % 7) + (delta * 7));
-        return today.toLocaleDateString(
-            'en-CA', 
-            { month: '2-digit', day: '2-digit', year: 'numeric' }
-        );
+        return formatDate(today);
     }
 
     /**
@@ -25,7 +33,7 @@
      */
     function handleDateChange(e: Event): void {
         today = new Date((e.target as HTMLInputElement).value);
-        eel.print_something(today);
+        eel.print_something(formatDate(today));
     }
 
     /**
@@ -34,12 +42,20 @@
      function handleNextSunday(): void {
         sunday = getSunday(today, delta + 1);
         today = new Date(sunday);
-        eel.print_something(today);
+        formattedDate = formatDate(today);
+        eel.print_something(formatDate(today));
+    }
+
+    /**
+     * Prints the date
+     */
+    function handleSubmit(): void {
+        eel.set_date(formatDate(today));
     }
 </script>
 
 <div>
-    Select day: <input type="date" bind:value={sunday} on:change={handleDateChange}/>
+    Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
     <button on:click={handleNextSunday}>Next sunday</button>
-    You selected: {sunday}
+    <button on:click={handleSubmit}>Submit</button>
 </div>
