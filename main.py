@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import eel
+from config import settings
 
 from services.hymns import Hymns
 
@@ -10,6 +11,12 @@ hymns = Hymns()
 @eel.expose
 def print_something(x: str) -> None:
     print(x)
+
+
+@eel.expose
+def get_settings() -> dict:
+    '''Get all settings.'''
+    return settings.dict()
 
 
 @eel.expose
