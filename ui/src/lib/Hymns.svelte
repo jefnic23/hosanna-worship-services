@@ -14,10 +14,14 @@
     }
 
     /**
-     * Prints the text
+     * Adds the hymn to the service
      */
     function handleSubmit(): void {
-        eel.add_hymn(parseInt(hymn))((n: Hymn[]) => hymns = n);
+        eel.add_hymn(parseInt(hymn))((n: Hymn[]) => {
+            hymns = n
+        });
+
+        hymn = '';
     }
 </script>
 
