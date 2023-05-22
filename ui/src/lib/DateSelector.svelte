@@ -1,30 +1,22 @@
 <script lang="ts">
     import { eel } from "../main";
 
-    let delta: number = 0;
     let today: Date = new Date();
     let formattedDate: string = formatDate(today);
-    let sunday: string = getSunday(today, delta);
 
     /**
-     * Formats the date to the format MM/DD/YYYY
+     * Formats the date to the format YYYY-MM-DD
      * @param date
      */
     function formatDate(date: Date): string {
-        return date.toLocaleDateString(
-            'en-CA', 
-            { month: '2-digit', day: '2-digit', year: 'numeric' }
-        );
+        return date.toISOString().slice(0, 10);
     }
 
     /**
      * Returns the date of the next sunday
-     * @param today
-     * @param delta
      */
-    function getSunday(today: Date, delta: number): string {
-        today.setDate(today.getDate() + ((7 - today.getDay()) % 7) + (delta * 7));
-        return formatDate(today);
+    function getNextSunday(): void {
+        today.setDate(today.getDate() + ((0 - today.getDay()) % 7) + 7);
     }
 
     /**
@@ -32,25 +24,24 @@
      * @param e
      */
     function handleDateChange(e: Event): void {
-        today = new Date((e.target as HTMLInputElement).value);
-        eel.print_something(formatDate(today));
+        let dateParts: string[] = (e.target as HTMLInputElement).value.split('-');
+        today = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+        formattedDate = formatDate(today);
     }
 
-    /**
+    /** 
      * Sets the date to the sunday following the current date
      */
      function handleNextSunday(): void {
-        sunday = getSunday(today, delta + 1);
-        today = new Date(sunday);
+        getNextSunday();
         formattedDate = formatDate(today);
-        eel.print_something(formatDate(today));
     }
 
     /**
      * Prints the date
      */
     function handleSubmit(): void {
-        eel.set_date(formatDate(today));
+        eel.set_date(formatDate(today))();
     }
 </script>
 
