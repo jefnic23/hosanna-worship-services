@@ -14,21 +14,23 @@ class Hymns:
     DF = pandas.read_csv('data/hymnal.csv', index_col='Hymn')
 
 
-    def __init__(self, day: date) -> None:
-        self.day: date = day
-        self.hymns: list[Hymn] = []
+    def __init__(self) -> None:
+        self.day: date = date.today()
+        self._hymns: list[Hymn] = []
     
 
     def add_hymn(self, hymn_number: int) -> None:
         """Add hymn to service."""
         hymn = Hymns.get_hymn(hymn_number)
-        self.hymns.append(Hymn(Number=hymn_number, Title=hymn.Title))
+        self._hymns.append(
+            Hymn(Number=hymn_number, Title=hymn.Title) # type: ignore
+        )
     
 
     def save_hymns(self, path: str = LOCAL_DIR) -> None:
         """Save hymns to file."""
         with open(f'{path}/hosanna/services/{self.day}/hymns.txt', 'a') as f:
-            for hymn in self.hymns:
+            for hymn in self._hymns:
                 f.write(f'{hymn.Title}\nELW {hymn.Number}\n')
             f.close()
 
@@ -39,4 +41,7 @@ class Hymns:
         df: pandas.DataFrame = DF
     ) -> object:
         """Get hymn by hymn number."""
-        return df.loc[hymn_number]
+        try:
+            return df.loc[hymn_number]
+        except KeyError:
+            print(f'Hymn {hymn_number} not found.')
