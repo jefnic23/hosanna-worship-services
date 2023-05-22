@@ -2,7 +2,6 @@ from datetime import datetime
 
 import eel
 
-from models.hymn import Hymn
 from services.hymns import Hymns
 
 hymns = Hymns()
@@ -28,7 +27,11 @@ def add_hymn(hymn_number: int) -> list[dict]:
 
 def start_eel() -> None:
     '''Starts the Eel server.'''
-    cmdline_args = ['brave-portable/brave-portable.exe', '--app=http://localhost:8080/index.html']
+    
+    cmdline_args = [
+        'brave-portable/brave-portable.exe', 
+        '--app=http://localhost:8080/index.html'
+    ]
 
     eel.init('web')
     eel.start(
@@ -36,7 +39,8 @@ def start_eel() -> None:
         mode='custom',
         cmdline_args=cmdline_args,
         host='localhost',
-        port=8080
+        port=8080,
+        size=(1280, 720)
     )
 
 
