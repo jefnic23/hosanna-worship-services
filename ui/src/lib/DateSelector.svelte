@@ -13,10 +13,12 @@
     }
 
     /**
-     * Returns the date of the next sunday
+     * Sets the date to the sunday following the current date
+     * @param day
      */
-    function getNextSunday(): void {
-        today.setDate(today.getDate() + ((0 - today.getDay()) % 7) + 7);
+    function getNextSunday(day: Date): Date {
+        day.setDate(day.getDate() + ((0 - day.getDay()) % 7) + 7);
+        return day;
     }
 
     /**
@@ -33,7 +35,7 @@
      * Sets the date to the sunday following the current date
      */
      function handleNextSunday(): void {
-        getNextSunday();
+        today = getNextSunday(today);
         formattedDate = formatDate(today);
     }
 
