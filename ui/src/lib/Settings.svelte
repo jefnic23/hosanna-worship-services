@@ -13,10 +13,8 @@
     }
 
     async function getDir() {
-        const handleDir = await window.showDirectoryPicker();
-        const dir = await handleDir.getDirectory();
-        const path = dir.path;
-        settings["LOCAL_DIR"] = path;
+        let dir = await eel.get_dir()();
+        settings["LOCAL_DIR"] = dir;
     }
 </script>
 
