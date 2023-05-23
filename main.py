@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import eel
-from config import settings
+from config import settings, Settings
 
 from services.hymns import Hymns
 
@@ -17,6 +17,16 @@ def print_something(x: str) -> None:
 def get_settings() -> dict:
     '''Get all settings.'''
     return settings.dict()
+
+
+@eel.expose
+def update_settings(new_settings: dict) -> None:
+    '''Update settings.'''
+    is_valid = Settings(**new_settings)
+    if not is_valid:
+        print(is_valid.errors())
+    settings.update_settings(new_settings)
+    print(settings.dict())
 
 
 @eel.expose
@@ -47,7 +57,7 @@ def start_eel() -> None:
         cmdline_args=cmdline_args,
         host='localhost',
         port=8080,
-        size=(1280, 720)
+        size=(1600, 1200)
     )
 
 
