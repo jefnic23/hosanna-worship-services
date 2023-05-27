@@ -1,12 +1,14 @@
 from datetime import datetime
+from tkinter import Tk, filedialog
 
 import eel
-from config import settings
 
+from config import Settings, settings
 from services.hymns import Hymns
 
 hymns = Hymns()
 # TODO: instantiate all services here
+
 
 @eel.expose
 def print_something(x: str) -> None:
@@ -17,6 +19,25 @@ def print_something(x: str) -> None:
 def get_settings() -> dict:
     '''Get all settings.'''
     return settings.dict()
+
+
+@eel.expose
+def update_settings(new_settings: dict) -> None:
+    '''Update settings.'''
+    is_valid = Settings(**new_settings)
+    if not is_valid:
+        print(is_valid.errors())
+    settings.update_settings(new_settings)
+    print(settings.dict())
+    
+    
+@eel.expose
+def get_dir():
+    root = Tk()
+    root.withdraw()
+    root.wm_attributes('-topmost', 1)
+    folder = filedialog.askdirectory()
+    return folder
 
 
 @eel.expose
@@ -47,7 +68,7 @@ def start_eel() -> None:
         cmdline_args=cmdline_args,
         host='localhost',
         port=8080,
-        size=(1280, 720)
+        size=(1600, 1200)
     )
 
 

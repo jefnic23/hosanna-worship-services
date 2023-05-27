@@ -4,6 +4,7 @@ import App from './App.svelte'
 declare global {
 	interface Window {
 		eel: any;
+		showDirectoryPicker: any;
 	}
 }
 
