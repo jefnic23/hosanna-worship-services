@@ -1,5 +1,4 @@
 import os
-from datetime import datetime, timedelta
 from pathlib import Path
 
 from services.document import WordDocument
@@ -7,8 +6,10 @@ from services.dropbox import Dropbox
 from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
+from services.utils import get_sunday
 
-this_sunday = datetime.date.today() + timedelta(days=7)
+
+this_sunday = get_sunday()
 
 path = Path('D:/Documents/Hosanna/services')
 if not os.path.exists(f'{path}/{this_sunday}'):
@@ -18,7 +19,7 @@ sas = SundaysAndSeasons(this_sunday)
 sas.get_texts_and_slide()
 sas.logoff()
 
-lit = Liturgy()
+lit = Liturgy('pentecost')
 
 ppt = PowerPoint(this_sunday)
 ppt.add_image()
@@ -46,7 +47,7 @@ ppt.add_congregation_text('Communion Hymn', lit.communion_hymn)
 ppt.add_title_slide('Communion')
 ppt.add_call_and_response('Communion', lit.communion_blessing)
 ppt.add_call_and_response('Prayer after Communion', lit.prayer_after_communion)
-ppt.add_call_and_response('Benediction', lit.benediction)
+ppt.add_call_and_response('Benediction', lit.blessing)
 ppt.add_hymn()
 ppt.add_call_and_response('Dismissal', lit.dismissal)
 ppt.add_image()

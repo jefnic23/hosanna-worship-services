@@ -5,16 +5,18 @@ from pathlib import Path
 class Liturgy():
     '''Loads and stores the liturgy.'''
 
-    PATH = Path('D:/Documents/Hosanna/liturgy')
+    DIR: str = 'D:/Documents/Hosanna/liturgy'
 
 
-    def __init__(self):
-        self._files = Liturgy._open_files()
-        
-    
+    def __init__(self, season: str):
+        self._season = season
+        self._files = Liturgy._open_files(season)
+
+
     @staticmethod
-    def _open_files(path=PATH):
+    def _open_files(season: str, dir: str = DIR):
         '''Open all the liturgy files.'''
+        path = Path(dir, season)
         files = {}
         for file in os.listdir(path):
             if file.endswith('.txt'):
