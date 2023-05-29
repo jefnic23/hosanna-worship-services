@@ -12,9 +12,9 @@
         settings[(e.target as HTMLInputElement).name] = (e.target as HTMLInputElement).value;
     }
 
-    async function getDir() {
+    const getDir = async () => {
         let dir = await eel.get_dir()();
-        settings["LOCAL_DIR"] = dir;
+        settings.LOCAL_DIR = dir;
     }
 </script>
 
