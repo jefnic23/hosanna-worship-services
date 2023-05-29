@@ -25,7 +25,7 @@
     }
 </script>
 
-<input type='text' on:change={handleTextChange} />
+<input type='text' on:change={handleTextChange} placeholder="Enter hymn number" />
 <button on:click={handleSubmit}>Submit</button>
 <div>
     {#each hymns as hymn}

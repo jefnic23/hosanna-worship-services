@@ -1,6 +1,5 @@
 <script lang="ts">
     import DateSelector from "./lib/DateSelector.svelte";
-    import Hymns from "./lib/Hymns.svelte";
     import Planner from "./lib/Planner.svelte";
     import Settings from "./lib/Settings.svelte";
     import TextEditor from "./lib/TextEditor.svelte";
@@ -11,7 +10,6 @@
     <Tracker />
     <DateSelector />
     <!-- <TextEditor /> -->
-    <!-- <Hymns /> -->
     <!-- <Settings /> -->
     <Planner />
 </main>

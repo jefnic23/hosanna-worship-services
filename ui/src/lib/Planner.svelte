@@ -1,4 +1,6 @@
 <script lang="ts">
+    import Hymn from "./Hymn.svelte";
+
     const elements: {} = {
         'Confession': 'call_and_response',
         'Gathering Song': 'hymn',
@@ -15,6 +17,7 @@
         'Creed': 'congregation',
         'Prayers of Intercession': 'intercessions',
         'Dialogue': 'call_and_response',
+        'Preface': 'call_and_response',
         'Holy, Holy, Holy': 'congregation',
         'Thanksgiving': 'call_and_response',
         'Lord\'s Prayer': 'congregation',
@@ -31,7 +34,11 @@
 {#each Object.keys(elements) as element}
     <div class="planner-element">
         <div class="planner-element-name">{element}</div>
-        <div class="planner-element-type">{elements[element]}</div>
+        {#if elements[element] === 'hymn'}
+            <Hymn />
+        {:else}
+            <div class="planner-element-type">{elements[element]}</div>
+        {/if}
     </div>
 {/each}
 
