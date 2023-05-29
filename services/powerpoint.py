@@ -320,7 +320,7 @@ class PowerPoint():
         self._add_run(p, text.splitlines()[1], bold=True)
 
 
-    def add_call_and_response(
+    def add_rich_text(
             self, 
             title: str, 
             text: str, 
