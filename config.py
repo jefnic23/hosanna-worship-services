@@ -21,4 +21,12 @@ class Settings(BaseSettings):
             setattr(self, key, value)
 
 
+    def save_settings(self):
+        '''Save settings to file.'''
+        with open('.env', 'w') as f:
+            for key, value in self.dict().items():
+                f.write(f'{key}={value}\n')
+            f.close()
+
+
 settings = Settings()

@@ -28,11 +28,12 @@ def update_settings(new_settings: dict) -> None:
     if not is_valid:
         print(is_valid.errors())
     settings.update_settings(new_settings)
-    print(settings.dict())
+    settings.save_settings()
     
     
 @eel.expose
 def get_dir():
+    '''Get directory for file storage.'''
     root = Tk()
     root.withdraw()
     root.wm_attributes('-topmost', 1)
