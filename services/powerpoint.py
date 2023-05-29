@@ -19,7 +19,7 @@ from services.utils import (
     grouper, 
     lookahead, 
     pairwise,
-    split_regular_bold_text
+    split_formatted_text
 )
 
 
@@ -32,6 +32,7 @@ class PowerPoint():
     
     REGULAR: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
     BOLD: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
+    ITALIC: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuii.ttf', 24)
     DRAW: ImageDraw.ImageDraw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
     
     def __init__(
@@ -326,22 +327,30 @@ class PowerPoint():
             anchor: str = '',
             draw: ImageDraw.ImageDraw = DRAW,
             regular: FreeTypeFont = REGULAR,
-            bold: FreeTypeFont = BOLD
+            bold: FreeTypeFont = BOLD,
+            italic: FreeTypeFont = ITALIC
         ) -> None:
         '''Add a call and response to the presentation.'''
-        regular_text, bold_text = split_regular_bold_text(text)
+        regular_text, bold_text, italic_text = split_formatted_text(text)
         bold_lines = [line[1] for line in bold_text]
+        italic_lines = [line[1] for line in italic_text]
         lines = [
-            line[1] for line in sorted(regular_text + bold_text, key=lambda x: x[0])
+            line[1] for line in sorted(regular_text + bold_text + italic_text, key=lambda x: x[0])
         ]
         width_formatted_text = []
         bold_formatted_text = []
+        italic_formatted_text = []
         for line in lines:
             if line in bold_lines:
                 bold_line = PowerPoint.get_width(line, draw, bold)
                 width_formatted_text.append(bold_line)
                 for l in bold_line.splitlines():
                     bold_formatted_text.append(l)
+            elif line in italic_lines:
+                italic_line = PowerPoint.get_width(line, draw, italic)
+                width_formatted_text.append(italic_line)
+                for l in italic_line.splitlines():
+                    italic_formatted_text.append(l)
             else:
                 width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
 
@@ -370,7 +379,8 @@ class PowerPoint():
                             paragraph, 
                             ' ' + line[start:end], 
                             superscript=True if (start, end) in superscripts else False,
-                            bold=True if line in bold_formatted_text else False
+                            bold=True if line in bold_formatted_text else False,
+                            italic=True if line in italic_formatted_text else False
                         )
                     if has_more:
                         paragraph.add_line_break()
@@ -379,14 +389,16 @@ class PowerPoint():
                         self._add_run(
                             paragraph, 
                             line, 
-                            bold=True if line in bold_formatted_text else False
+                            bold=True if line in bold_formatted_text else False,
+                            italic=True if line in italic_formatted_text else False
                         )
                     else:
                         self._add_run(
                             paragraph, 
                             line, 
                             has_more=has_more, 
-                            bold=True if line in bold_formatted_text else False
+                            bold=True if line in bold_formatted_text else False,
+                            italic=True if line in italic_formatted_text else False
                         )
 
 

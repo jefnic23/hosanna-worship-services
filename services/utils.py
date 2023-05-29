@@ -40,12 +40,13 @@ def get_parts(x: str, y: str) -> list[tuple]:
     return grouper(xy, 2)
 
 
-def split_regular_bold_text(
+def split_formatted_text(
     text: str
-) -> tuple[list[tuple[int, str]], list[tuple[int, str]]]:
+) -> tuple[list[tuple[int, str]], list[tuple[int, str]], list[tuple[int, str]]]:
     '''Splits a file into regular and bold text.'''
     regular_text = []
     bold_text = []
+    italic_text = []
     line_number = 0
     for line in text.splitlines():
         if re.match(r'<b>.*</b>', line):
@@ -53,10 +54,15 @@ def split_regular_bold_text(
                 line_number,
                 line.replace('<b>', '').replace('</b>', '').strip()
             ))
+        elif re.match(r'<i>.*</i>', line):
+            italic_text.append((
+                line_number, 
+                line.replace('<i>', '').replace('</i>', '').strip()
+            ))
         else:
             regular_text.append((line_number, line.strip()))
         line_number += 1
-    return regular_text, bold_text
+    return regular_text, bold_text, italic_text
 
 
 def lookahead(iterable: Iterable):
