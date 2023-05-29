@@ -223,13 +223,13 @@ class PowerPoint():
                             )
                             self._add_run(
                                 paragraph, 
-                                line[start:end], 
+                                ' ' + line[start:end], 
                                 bold=True if line in c else False, 
                                 superscript=True
                             )
                             self._add_run(
                                 paragraph, 
-                                line[end:], 
+                                line[end:].strip(), 
                                 bold=True if line in c else False, 
                                 has_more=has_more
                             )
@@ -368,7 +368,7 @@ class PowerPoint():
                     for start, end in index:
                         self._add_run(
                             paragraph, 
-                            line[start:end], 
+                            ' ' + line[start:end], 
                             superscript=True if (start, end) in superscripts else False,
                             bold=True if line in bold_formatted_text else False
                         )
@@ -482,7 +482,7 @@ class PowerPoint():
     ) -> None:
         '''Add a run to a paragraph'''
         run = paragraph.add_run()
-        run.text = text.strip()
+        run.text = text
         run.font.name = font
         run.font.bold = bold
         run.font.italic = italic
@@ -543,13 +543,17 @@ class PowerPoint():
         else:
             slides = []
             for line in lines.splitlines():
+                if re.match(r'<br>', line):
+                    # If the line is a break, insert a new slide
+                    slides += ['']
+                    continue
                 height = PowerPoint.check_size(
                     '\n'.join(slides[-1:] + [line]), 
                     draw, 
                     font
                 )['height']
                 if height < max_height:
-                    slides[-1:] = ['\n'.join(slides[-1:] + [line])]
+                    slides[-1:] = ['\n'.join(slides[-1:] + [line]).lstrip()]
                 else:
                     slides += [line]
 
