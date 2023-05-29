@@ -5,6 +5,7 @@ from itertools import chain
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
+from PIL.ImageFont import FreeTypeFont
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_AUTO_SIZE, MSO_VERTICAL_ANCHOR
@@ -14,24 +15,24 @@ from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
 from services.utils import (
-    get_superscripts,
-    grouper,
-    lookahead,
+    get_superscripts, 
+    grouper, 
+    lookahead, 
     pairwise,
-    split_regular_bold_text,
+    split_regular_bold_text
 )
 
 
 class PowerPoint():
     '''A class for creating a PowerPoint presentation.'''
-    DEFAULT_FONT = 'Segoe UI'
-    DEFAULT_FONTSIZE = 18
-    MAX_WIDTH = 565
-    MAX_HEIGHT = 335
+    DEFAULT_FONT: str = 'Segoe UI'
+    DEFAULT_FONTSIZE: int = 18
+    MAX_WIDTH: int = 565
+    MAX_HEIGHT: int = 335
     
-    REGULAR = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
-    BOLD = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
-    DRAW = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
+    REGULAR: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
+    BOLD: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
+    DRAW: ImageDraw.ImageDraw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
     
     def __init__(
         self, 
@@ -83,9 +84,9 @@ class PowerPoint():
             self, 
             title: str, 
             text: str,
-            draw: ImageDraw = DRAW,
-            bold: ImageFont = BOLD,
-            regular: ImageFont = REGULAR
+            draw: ImageDraw.ImageDraw = DRAW,
+            bold: FreeTypeFont = BOLD,
+            regular: FreeTypeFont = REGULAR
         ) -> None:
         '''Add bold text to be read by the congregation to the presentation.'''
         width_formatted_text = []
@@ -130,8 +131,8 @@ class PowerPoint():
             self, 
             title_text: str, 
             text: str,
-            draw: ImageDraw = DRAW,
-            regular: ImageFont = REGULAR
+            draw: ImageDraw.ImageDraw = DRAW,
+            regular: FreeTypeFont = REGULAR
         ) -> None:
         '''Add a reading to the presentation.'''
         title = text.splitlines()[0]
@@ -170,9 +171,9 @@ class PowerPoint():
     def add_psalm(
             self, 
             text: str, 
-            draw: ImageDraw = DRAW, 
-            bold: ImageFont = BOLD, 
-            regular: ImageFont = REGULAR
+            draw: ImageDraw.ImageDraw = DRAW, 
+            bold: FreeTypeFont = BOLD, 
+            regular: FreeTypeFont = REGULAR
         ) -> None:
         '''Add a psalm to the presentation.'''
         text = text.replace('|', '').replace('- ', '')
@@ -247,8 +248,8 @@ class PowerPoint():
             self, 
             text: str,
             header: str = 'Gospel',
-            draw: ImageDraw = DRAW,
-            regular: ImageFont = REGULAR
+            draw: ImageDraw.ImageDraw = DRAW,
+            regular: FreeTypeFont = REGULAR
         ) -> None:
         '''Add the gospel to the presentation.'''
         title = text.splitlines()[0].split()[0]
@@ -322,10 +323,10 @@ class PowerPoint():
             self, 
             title: str, 
             text: str, 
-            anchor: MSO_VERTICAL_ANCHOR = None,
-            draw: ImageDraw = DRAW,
-            regular: ImageFont = REGULAR,
-            bold: ImageFont = BOLD
+            anchor: str = '',
+            draw: ImageDraw.ImageDraw = DRAW,
+            regular: FreeTypeFont = REGULAR,
+            bold: FreeTypeFont = BOLD
         ) -> None:
         '''Add a call and response to the presentation.'''
         regular_text, bold_text = split_regular_bold_text(text)
@@ -350,10 +351,10 @@ class PowerPoint():
 
         for slide, is_not_last in lookahead(slides):
             s = self._add_slide_with_header(title)
-            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
+            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(3))
             tf = content.text_frame
             tf.auto_size = MSO_AUTO_SIZE.NONE
-            tf.vertical_anchor = anchor
+            tf.vertical_anchor = None if not anchor else PowerPoint._anchor_map(anchor)
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.LEFT
             for line, has_more in lookahead(slide.splitlines()):
@@ -396,6 +397,8 @@ class PowerPoint():
         self.prs.save(f'{self._path}/{self._day}/{self._day}.pptx')
 
 
+    #region Private Methods
+
     def _load_hymns(self) -> list[tuple]:
         '''Load the hymns from the hymns.txt file.'''
         hymns = open(
@@ -431,6 +434,10 @@ class PowerPoint():
         self._add_header(slide, title_text)
         return slide
     
+    #endregion
+    
+    
+    #region Static Methods
 
     @staticmethod
     def _get_pastor(text: str) -> list[int]:
@@ -489,8 +496,8 @@ class PowerPoint():
     @staticmethod
     def check_size(
         line: str,
-        draw: ImageDraw,
-        font: ImageFont
+        draw: ImageDraw.ImageDraw,
+        font: FreeTypeFont
     ) -> dict[str, int]:
         '''Checks the size of a line of text.'''
         size = draw.multiline_textbbox((0, 0), line, font)
@@ -500,8 +507,8 @@ class PowerPoint():
     @staticmethod
     def get_width(
         line: str, 
-        draw: ImageDraw, 
-        font: ImageFont, 
+        draw: ImageDraw.ImageDraw, 
+        font: FreeTypeFont, 
         max_width: int = MAX_WIDTH
     ):
         '''Gets the width of a line of text and splits it if it's too long.'''
@@ -526,8 +533,8 @@ class PowerPoint():
     @staticmethod
     def get_height(
         lines: str, 
-        draw: ImageDraw, 
-        font: ImageFont, 
+        draw: ImageDraw.ImageDraw, 
+        font: FreeTypeFont, 
         max_height: int = MAX_HEIGHT
     ) -> list[str]:
         '''Gets the height of a line of text and splits it if it's too long.'''
@@ -552,8 +559,8 @@ class PowerPoint():
     @staticmethod
     def get_slides(
         lines: str, 
-        draw: ImageDraw, 
-        regular: ImageFont,
+        draw: ImageDraw.ImageDraw, 
+        regular: FreeTypeFont,
     ) -> list[str]:
         '''Transforms a string into a list of strings that fit on a slide.'''
         width_formatted_text = []
@@ -562,4 +569,15 @@ class PowerPoint():
         width_formatted_text = '\n'.join(width_formatted_text)
 
         return PowerPoint.get_height(width_formatted_text, draw, regular)
+    
+
+    @staticmethod
+    def _anchor_map(anchor: str) -> MSO_VERTICAL_ANCHOR:
+        '''Returns the vertical anchor position of a text box.'''
+        return {
+            'top': MSO_VERTICAL_ANCHOR.TOP, # type: ignore
+            'middle': MSO_VERTICAL_ANCHOR.MIDDLE, # type: ignore
+            'bottom': MSO_VERTICAL_ANCHOR.BOTTOM # type: ignore
+        }[anchor]
             
+    #endregion
