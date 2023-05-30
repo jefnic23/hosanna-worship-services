@@ -143,15 +143,26 @@ class SundaysAndSeasons():
         title = parent.get_text().split('Psalm: ')[1]
 
         psalm = parent.find_next_sibling().find_next_sibling()
+        superscripts = [
+            superscript.get_text() for superscript in soup.find_all('sup', {'class': None})
+        ]
         spans = [
             clean_text(span.get_text()) 
-            for span in psalm.find_all('span', {'class':None}) 
+            for span in psalm.find_all('span', {'class': None}) 
             if 'style' not in span.attrs
         ]
+
+        text = []
+        for span in spans:
+            if span in superscripts:
+                text.append(f'<sup>{span}</sup>')
+            else:
+                text.append(span)
+
         self.psalm = (
             title + 
             '\n' + 
-            '\n'.join([' '.join(line) for line in grouper(spans, 3)])
+            '\n'.join([' '.join(line) for line in grouper(text, 3)])
         )
         # TODO: refrain spans are nested; remove them
 
