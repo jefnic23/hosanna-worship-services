@@ -43,6 +43,7 @@ def get_dir():
 
 @eel.expose
 def set_date(date: str) -> None:
+    '''Set date for all services.'''
     hymns.day = datetime.strptime(date, '%Y-%m-%d').date()
     # TODO: set date for all services here
     print(hymns.day)
@@ -50,6 +51,7 @@ def set_date(date: str) -> None:
 
 @eel.expose
 def add_hymn(hymn_number: int) -> list[dict]:
+    '''Add a hymn to the list of hymns.'''
     hymns.add_hymn(hymn_number)
     return [hymn.dict() for hymn in hymns._hymns]
 
