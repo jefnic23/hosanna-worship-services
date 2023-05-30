@@ -14,13 +14,8 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
-from services.utils import (
-    get_superscripts, 
-    grouper, 
-    lookahead, 
-    pairwise,
-    split_formatted_text
-)
+from services.utils import (get_superscripts, grouper, lookahead, pairwise,
+                            split_formatted_text)
 
 
 class PowerPoint():
@@ -178,6 +173,7 @@ class PowerPoint():
         ) -> None:
         '''Add a psalm to the presentation.'''
         title = text.splitlines()[0]
+        superscripts = re.findall(r'<sup>(.*?)</sup>', text)
         psalm = [line.strip() for line in text.splitlines()[1:] if line]
 
         self.add_title_slide(title)
@@ -219,11 +215,13 @@ class PowerPoint():
             tf = content.text_frame
             tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
+            i = 0
             for line, has_more in lookahead(slide.splitlines()):
                 if line in first_lines:
-                    superscripts = get_superscripts(line)
-                    if superscripts:
-                        for start, end in superscripts:
+                    # superscripts = get_superscripts(line)
+                    sups = [(s.start(), s.end()) for s in re.finditer(superscripts[i], line)]
+                    if sups:
+                        for start, end in sups:
                             self._add_run(
                                 paragraph, 
                                 line[:start], 
@@ -338,10 +336,9 @@ class PowerPoint():
             italic: FreeTypeFont = ITALIC
         ) -> None:
         '''Add a call and response to the presentation.'''
-        regular_text, bold_text, italic_text, superscripts = split_formatted_text(text)
+        regular_text, bold_text, italic_text = split_formatted_text(text)
         bold_lines = [line[1] for line in bold_text]
         italic_lines = [line[1] for line in italic_text]
-        superscript_lines = [line[1] for line in superscripts]
         lines = [
             line[1] for line in sorted(regular_text + bold_text + italic_text, key=lambda x: x[0])
         ]
