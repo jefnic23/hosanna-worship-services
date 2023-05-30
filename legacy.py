@@ -8,7 +8,6 @@ from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
-
 this_sunday = get_sunday()
 
 path = Path('D:/Documents/Hosanna/services')
