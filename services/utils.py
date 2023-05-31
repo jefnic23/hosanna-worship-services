@@ -91,7 +91,7 @@ def get_superscripts(text: str) -> list[tuple[int, int]]:
 def clean_text(text: str) -> str:
     '''Normalizes text.'''
     cleaned = (
-        text.encode('ascii', errors='ignore').decode()
+        text.encode('utf-8', errors='ignore').decode()
         .replace(' | ', ' ').replace('- ', '').replace('  ', ' ')
         .strip()
     )

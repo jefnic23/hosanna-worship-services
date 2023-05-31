@@ -173,8 +173,8 @@ class PowerPoint():
         ) -> None:
         '''Add a psalm to the presentation.'''
         title = text.splitlines()[0]
-        superscripts = re.findall(r'<sup>(.*?)</sup>', text)
         psalm = [line.strip() for line in text.splitlines()[1:] if line]
+        superscripts = re.findall(r'<sup>(.*?)</sup>', text)
 
         self.add_title_slide(title)
 
@@ -209,16 +209,15 @@ class PowerPoint():
 
         slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
+        i = 0
         for slide in slides:
             s = self._add_slide_with_header(title)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
             tf = content.text_frame
             tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
-            i = 0
             for line, has_more in lookahead(slide.splitlines()):
                 if line in first_lines:
-                    # superscripts = get_superscripts(line)
                     sups = [(s.start(), s.end()) for s in re.finditer(superscripts[i], line)]
                     if sups:
                         for start, end in sups:
@@ -239,6 +238,7 @@ class PowerPoint():
                                 bold=True if line in c else False, 
                                 has_more=has_more
                             )
+                        i += 1
                     else:
                         self._add_run(paragraph, line, bold=True, has_more=has_more)
                 else:
