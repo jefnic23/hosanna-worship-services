@@ -18,7 +18,7 @@ class SundaysAndSeasons():
     LOGOFF = BASE + '/Account/LogOff'
     TEXTS = BASE + '/Home/TextsAndResources/{}/0#texts'
     SLIDES = BASE + '/Visuals/Index/{}/0#projectable'
-    CLIPART = BASE + '/Visuals/Inde/{}/0#clipart'
+    CLIPART = BASE + '/Visuals/Index/{}/0#clipart'
 
     PRAYER = 'Prayer of the Day'
     FIRST_READING = re.compile(r'First Reading:')

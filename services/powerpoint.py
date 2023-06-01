@@ -133,17 +133,21 @@ class PowerPoint():
         '''Add a reading to the presentation.'''
         title = text.splitlines()[0]
         reading = text.splitlines()[1:]
+        superscripts = re.findall(r'<sup>(.*?)</sup>', text)
 
         self.add_title_slide(title)
 
         width_formatted_text = []
         for line in reading:
-            width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
+            width_formatted_text.append(
+                PowerPoint.get_width(line.replace('<sup>', '').replace('</sup>', ''), draw, regular)
+            )
 
         width_formatted_text = '\n'.join(width_formatted_text)
 
         slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
+        i = 0
         for slide, is_not_last in lookahead(slides):
             s = self._add_slide_with_header(title_text)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
@@ -151,12 +155,25 @@ class PowerPoint():
             tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
-                superscripts = get_superscripts(line)
-                if superscripts:
-                    for start, end in superscripts:
-                        self._add_run(paragraph, line[:start])
-                        self._add_run(paragraph, line[start:end], superscript=True)
-                        self._add_run(paragraph, line[end:], has_more=has_more)
+                sups = [(s.start(), s.end()) for s in re.finditer(superscripts[i], line)]
+                if sups:
+                    for start, end in sups:
+                        self._add_run(
+                            paragraph, 
+                            line[:start],
+                        )
+                        self._add_run(
+                            paragraph, 
+                            ' ' + line[start:end],
+                            superscript=True,
+                            color=(220,220,220)
+                        )
+                        self._add_run(
+                            paragraph, 
+                            line[end:].strip(),
+                            has_more=has_more
+                        )
+                    i += 1
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
@@ -432,6 +449,7 @@ class PowerPoint():
             print(layout.name)
 
 
+    # TODO: add image file name to method signature
     def _get_image(self) -> None:
         '''Add an image to the presentation.'''
         prs = Presentation(f'{self._path}/{self._day}/image.pptx')
