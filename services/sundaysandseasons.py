@@ -143,9 +143,7 @@ class SundaysAndSeasons():
         title = parent.get_text().split('Psalm: ')[1]
 
         psalm = parent.find_next_sibling().find_next_sibling()
-        superscripts = [
-            superscript.get_text() for superscript in soup.find_all('sup', {'class': None})
-        ]
+        superscripts = SundaysAndSeasons._get_superscripts(psalm)
         spans = [
             clean_text(span.get_text()) 
             for span in psalm.find_all('span', {'class': None}) 
@@ -223,5 +221,43 @@ class SundaysAndSeasons():
         parent = soup.find('h3', string=regex)
         reading = parent.find_next_sibling().find_next_sibling()
         title = re.split(regex, parent.get_text())[1].strip()
-        text = '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()])
+        
+        superscripts = SundaysAndSeasons._get_superscripts(reading)
+        text = SundaysAndSeasons._add_superscripts(
+            '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()]),
+            superscripts
+        )
         return '\n'.join([title, text, call, response])
+    
+    
+    @staticmethod
+    def _get_superscripts(soup: BeautifulSoup) -> list[str]:
+        '''Get the superscripts in a soup object'''
+        superscripts = [
+            s.get_text() for s in soup.find_all('sup', {'class': None})
+        ]
+        
+        for i, s in enumerate(superscripts):
+            if ':' in s:
+                superscripts[i] = f'{s}{superscripts[i + 1]}'
+                superscripts.pop(i + 1)
+                
+        return superscripts
+    
+    
+    @staticmethod
+    def _add_superscripts(text: str, superscripts: list) -> str:
+        def find_superscript(text: str, superscript: str, start: int = 0):
+            '''Find the start and end index of a superscript in a string'''
+            length = len(superscript)
+            index = text.find(superscript, start)
+            return index, index + length
+
+        start = 0
+        new_text = ""
+        for superscript in superscripts:
+            indeces = find_superscript(text, superscript, start)
+            new_text += text[start:indeces[0]] + f'<sup>{superscript}</sup>'
+            start = indeces[1]
+        new_text += text[start:]
+        return new_text
