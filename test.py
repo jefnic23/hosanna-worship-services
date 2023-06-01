@@ -47,22 +47,3 @@ def add_superscripts_to_text(text: str, superscripts: list) -> str:
 
 print(add_superscripts_to_text(text, superscripts))
 
-# spans = [
-#     clean_text(span.get_text()) 
-#     for span in soup.find_all('span', {'class': None}) 
-#     if 'style' not in span.attrs
-# ]
-
-# text = []
-# for span in spans:
-#     if span in superscripts:
-#         text.append(f'<sup>{span}</sup>')
-#     else:
-#         text.append(span)
-
-# text = '\n'.join([' '.join(line) for line in grouper(text, 3)])
-# superscripts = re.findall(r'<sup>(.*?)</sup>', text)
-# text = text.replace('<sup>', '').replace('</sup>', '')
-
-# for i, line in enumerate(text.splitlines()):
-#     print([(s.start(), s.end()) for s in re.finditer(superscripts[i], line)])
