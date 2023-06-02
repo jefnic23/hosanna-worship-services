@@ -15,7 +15,7 @@ from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
 from services.utils import (get_superscripts, grouper, lookahead, pairwise,
-                            split_formatted_text)
+                            split_formatted_text, find_superscript)
 
 
 class PowerPoint():
@@ -147,7 +147,6 @@ class PowerPoint():
 
         slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
-        i = 0
         for slide, is_not_last in lookahead(slides):
             s = self._add_slide_with_header(title_text)
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
@@ -155,25 +154,28 @@ class PowerPoint():
             tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
-                sups = [(s.start(), s.end()) for s in re.finditer(superscripts[i], line)]
-                if sups:
-                    for start, end in sups:
+                sups = [(s.start(), s.end()) for superscript in superscripts[:2] for s in re.finditer(superscript, line)]
+                if len(sups) > 1:
+                    # if second sup overlaps first sup, remove it
+                    if sups[1][0] < sups[0][1]:
+                        sups.pop(1)
+                if len(sups) > 0:
+                    index = pairwise(list(chain(*[
+                        [0], 
+                        *[[s, e] for s, e in sups], 
+                        [len(line)]
+                    ])))
+                    for start, end in index:
                         self._add_run(
                             paragraph, 
-                            line[:start],
+                            line[start:end], 
+                            superscript=True if (start, end) in sups else False,
+                            color=(86, 86, 86) if (start, end) in sups else (0, 0, 0)
                         )
-                        self._add_run(
-                            paragraph, 
-                            ' ' + line[start:end],
-                            superscript=True,
-                            color=(220,220,220)
-                        )
-                        self._add_run(
-                            paragraph, 
-                            line[end:].strip(),
-                            has_more=has_more
-                        )
-                    i += 1
+                    if has_more:
+                        paragraph.add_line_break()
+                    for _ in range(len(sups)):
+                        superscripts.pop(0)
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
@@ -247,7 +249,8 @@ class PowerPoint():
                                 paragraph, 
                                 ' ' + line[start:end], 
                                 bold=True if line in c else False, 
-                                superscript=True
+                                superscript=True,
+                                color=(86, 86, 86)
                             )
                             self._add_run(
                                 paragraph, 
@@ -316,7 +319,8 @@ class PowerPoint():
                         self._add_run(
                             paragraph, 
                             line[start:end], 
-                            superscript=True if (start, end) in superscripts else False
+                            superscript=True if (start, end) in superscripts else False,
+                            color=(86, 86, 86) if (start, end) in superscripts else (0, 0, 0)
                         )
                     if has_more:
                         paragraph.add_line_break()
@@ -402,7 +406,8 @@ class PowerPoint():
                             ' ' + line[start:end], 
                             superscript=True if (start, end) in superscripts else False,
                             bold=True if line in bold_formatted_text else False,
-                            italic=True if line in italic_formatted_text else False
+                            italic=True if line in italic_formatted_text else False,
+                            color=(86, 86, 86) if (start, end) in superscripts else (0, 0, 0)
                         )
                     if has_more:
                         paragraph.add_line_break()

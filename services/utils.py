@@ -86,6 +86,13 @@ def get_superscripts(text: str) -> list[tuple[int, int]]:
     '''Gets the superscripts in a string.'''
     # TODO: some superscripts have lower case letters, which are not captured
     return [(s.start(), s.end()) for s in re.finditer(r'(\d+:\d+)|\d+', text)] 
+
+
+def find_superscript(text: str, superscript: str, start: int = 0) -> tuple[int, int]:
+    '''Find the start and end index of a superscript in a string'''
+    length = len(superscript)
+    index = text.find(superscript, start)
+    return index, index + length
     
 
 def clean_text(text: str) -> str:

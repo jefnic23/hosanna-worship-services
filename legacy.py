@@ -10,7 +10,7 @@ from services.utils import get_sunday
 
 this_sunday = get_sunday()
 
-path = Path('C:/users/jnicholas/documents')
+path = Path('D:/Documents/Hosanna/Services')
 if not os.path.exists(f'{path}/{this_sunday}'):
     os.makedirs(f'{path}/{this_sunday}')
 
