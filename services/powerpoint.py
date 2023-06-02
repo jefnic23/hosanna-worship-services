@@ -14,8 +14,8 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
-from services.utils import (get_superscripts, grouper, lookahead, pairwise,
-                            split_formatted_text, find_superscript)
+from services.utils import (find_superscript, get_superscripts, grouper,
+                            lookahead, pairwise, split_formatted_text)
 
 
 class PowerPoint():
@@ -137,13 +137,11 @@ class PowerPoint():
 
         self.add_title_slide(title)
 
-        width_formatted_text = []
-        for line in reading:
-            width_formatted_text.append(
-                PowerPoint.get_width(line.replace('<sup>', '').replace('</sup>', ''), draw, regular)
-            )
-
-        width_formatted_text = '\n'.join(width_formatted_text)
+        width_formatted_text: str = ''
+        for line, has_more in lookahead(reading):
+            width_formatted_text += PowerPoint.get_width(line.replace('<sup>', '').replace('</sup>', ''), draw, regular)
+            if has_more:
+                width_formatted_text += '\n'
 
         slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
