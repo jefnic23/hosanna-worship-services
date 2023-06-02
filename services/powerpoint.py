@@ -139,7 +139,8 @@ class PowerPoint():
 
         width_formatted_text: str = ''
         for line, has_more in lookahead(reading):
-            width_formatted_text += PowerPoint.get_width(line.replace('<sup>', '').replace('</sup>', ''), draw, regular)
+            new_line = line.replace('<sup>', '').replace('</sup>', '')
+            width_formatted_text += PowerPoint.get_width(new_line, draw, regular)
             if has_more:
                 width_formatted_text += '\n'
 
