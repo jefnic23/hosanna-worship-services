@@ -87,7 +87,7 @@ class PowerPoint():
         '''Add bold text to be read by the congregation to the presentation.'''
         width_formatted_text = []
         for line in text.splitlines():
-            width_formatted_text.append(PowerPoint.get_width(line, draw, bold))
+            width_formatted_text.append(PowerPoint.get_width(line.strip(), draw, bold))
 
         width_formatted_text = '\n'.join(width_formatted_text)
 
@@ -279,6 +279,7 @@ class PowerPoint():
         '''Add the gospel to the presentation.'''
         title = text.splitlines()[0].split()[0]
         reading = text.splitlines()[1:]
+        superscripts = re.findall(r'<sup>(.*?)</sup>', text)
 
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
@@ -291,11 +292,12 @@ class PowerPoint():
         p.add_line_break()
         self._add_run(p, 'Glory to you, O Lord.', bold=True)
 
-        width_formatted_text = []
-        for line in reading:
-            width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
-
-        width_formatted_text = '\n'.join(width_formatted_text)
+        width_formatted_text: str = ''
+        for line, has_more in lookahead(reading):
+            new_line = line.replace('<sup>', '').replace('</sup>', '')
+            width_formatted_text += PowerPoint.get_width(new_line, draw, regular)
+            if has_more:
+                width_formatted_text += '\n'
 
         slides = PowerPoint.get_height(width_formatted_text, draw, regular)
 
@@ -307,22 +309,45 @@ class PowerPoint():
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.LEFT
             for line, has_more in lookahead(slide.splitlines()):
-                superscripts = get_superscripts(line)
-                if len(superscripts) > 0:
+                sups = [(s.start(), s.end()) for superscript in superscripts[:2] for s in re.finditer(superscript, line)]
+                if len(sups) > 1:
+                    # if second sup overlaps first sup, remove it
+                    if sups[1][0] < sups[0][1]:
+                        sups.pop(1)
+                if len(sups) > 0:
                     index = pairwise(list(chain(*[
                         [0], 
-                        *[[s, e] for s, e in superscripts], 
+                        *[[s, e] for s, e in sups], 
                         [len(line)]
                     ])))
                     for start, end in index:
                         self._add_run(
                             paragraph, 
                             line[start:end], 
-                            superscript=True if (start, end) in superscripts else False,
-                            color=(86, 86, 86) if (start, end) in superscripts else (0, 0, 0)
+                            superscript=True if (start, end) in sups else False,
+                            color=(86, 86, 86) if (start, end) in sups else (0, 0, 0)
                         )
                     if has_more:
                         paragraph.add_line_break()
+                    for _ in range(len(sups)):
+                        superscripts.pop(0)
+            # for line, has_more in lookahead(slide.splitlines()):
+            #     superscripts = get_superscripts(line)
+            #     if len(superscripts) > 0:
+            #         index = pairwise(list(chain(*[
+            #             [0], 
+            #             *[[s, e] for s, e in superscripts], 
+            #             [len(line)]
+            #         ])))
+            #         for start, end in index:
+            #             self._add_run(
+            #                 paragraph, 
+            #                 line[start:end], 
+            #                 superscript=True if (start, end) in superscripts else False,
+            #                 color=(86, 86, 86) if (start, end) in superscripts else (0, 0, 0)
+            #             )
+            #         if has_more:
+            #             paragraph.add_line_break()
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
