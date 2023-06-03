@@ -1,16 +1,21 @@
 import os
+import re
 from datetime import date
 from itertools import chain
 from pathlib import Path
 
 from docx import Document
-from docx.shared import Inches, Pt
+from docx.shared import Inches, Pt, RGBColor
+from docx.text.paragraph import Paragraph
 
 from services.utils import clean_text, get_superscripts, lookahead, pairwise
 
 
 class WordDocument():
     '''A class for creating a Word document.'''
+
+    DEFAULT_FONTSIZE = 14
+
     def __init__(
         self, 
         day: date,
@@ -32,6 +37,7 @@ class WordDocument():
         run.font.bold = True
         run.font.size = Pt(14)
         
+        text = text.replace('<sup>', '').replace('</sup>', '')
         reading = [clean_text(line) for line in text.splitlines()[1:]]
         for line, has_more in lookahead(reading):
             superscripts = get_superscripts(line)
@@ -59,6 +65,7 @@ class WordDocument():
         run.font.bold = True
         run.font.size = Pt(14)
 
+        psalm = psalm.replace('<sup>', '').replace('</sup>', '')
         for i, line in enumerate(psalm.splitlines()[1:]):
             run = paragraph.add_run(line[0:2])
             run.font.superscript = True
@@ -84,4 +91,27 @@ class WordDocument():
             f'{self._path}/{self._day} {self._path}/{self._day}/{self._day}.docx'
         )
         os.remove(f'{self._path}/{self._day}/{self._day}.docx')
+
+
+    @staticmethod
+    def _add_run(
+        paragraph: Paragraph, 
+        text: str, 
+        size: int = DEFAULT_FONTSIZE, 
+        bold: bool = False, 
+        italic: bool = False, 
+        color: tuple = (0, 0, 0), 
+        has_more: bool = False, 
+        superscript: bool = False
+    ) -> None:
+        '''Add a run to a paragraph'''
+        run = paragraph.add_run()
+        run.text = text
+        run.font.bold = bold
+        run.font.italic = italic
+        run.font.size = Pt(size)
+        run.font.color.rgb = RGBColor(*color)
+        run.font.superscript = superscript
+        if has_more:
+            run.add_break()
         
