@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from config import Settings
 from services.document import WordDocument
 from services.dropbox import Dropbox
 from services.liturgy import Liturgy
@@ -9,18 +10,21 @@ from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
 this_sunday = get_sunday()
+settings = Settings()
 
-path = Path('D:/Documents/Hosanna/Services')
+path = Path(settings.LOCAL_DIR, 'services')
 if not os.path.exists(f'{path}/{this_sunday}'):
     os.makedirs(f'{path}/{this_sunday}')
 
-sas = SundaysAndSeasons(this_sunday)
+sas = SundaysAndSeasons(settings, day = this_sunday)
+sas.login()
 sas.get_texts_and_images()
 sas.logoff()
 
-lit = Liturgy('trinity-sunday')
+lit = Liturgy(settings)
+lit.load_files('pentecost')
 
-ppt = PowerPoint(this_sunday)
+ppt = PowerPoint(settings, day = this_sunday)
 ppt.add_image()
 ppt.add_rich_text('Confession and Forgiveness', lit.confession)
 ppt.add_hymn()
@@ -35,11 +39,11 @@ ppt.add_congregation_text('Gospel Acclamation', lit.gospel_acclamation)
 ppt.add_gospel(sas.gospel)
 ppt.add_title_slide('Sermon')
 ppt.add_hymn()
-ppt.add_congregation_text('Athanasian Creed', lit.creed)
+ppt.add_congregation_text('Apostle\'s Creed', lit.creed)
 ppt.add_intercessions(sas.intercession)
 ppt.add_rich_text('Dialogue', lit.dialogue, anchor='middle')
-ppt.add_rich_text('Preface', lit.preface)
-ppt.add_congregation_text('Holy, holy, holy', lit.hosanna)
+# ppt.add_rich_text('Preface', lit.preface)
+# ppt.add_congregation_text('Holy, holy, holy', lit.hosanna)
 ppt.add_rich_text('Thanksgiving', lit.thanksgiving)
 ppt.add_congregation_text('Lord\'s Prayer', lit.lords_prayer)
 ppt.add_title_slide('Communion')
@@ -53,13 +57,14 @@ ppt.add_rich_text('Dismissal', lit.dismissal, anchor='middle')
 ppt.add_image()
 ppt.save()
 
-doc = WordDocument(this_sunday)
+doc = WordDocument(settings, day = this_sunday)
 doc.add_reading(sas.first_reading)
 doc.add_psalm(sas.psalm)
 doc.add_reading(sas.second_reading)
 doc.save()
 
-dbx = Dropbox(this_sunday)
+dbx = Dropbox(settings, day = this_sunday)
+dbx.connect()
 dbx.upload('pptx')
 dbx.upload('pdf')
 dbx.close()
