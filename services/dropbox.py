@@ -4,32 +4,27 @@ from dropbox import Dropbox as dropbox
 from dropbox.exceptions import ApiError, AuthError
 from dropbox.files import WriteMode
 
-from config import settings
+from config import Settings
 
 
 class Dropbox:
     '''Class for interacting with Dropbox.'''
-
-
-    LOCAL_DIR = settings.LOCAL_DIR + '/services'
-
-
-    def __init__(self, day: date):
-        self._day: date = day
+    def __init__(self, settings: Settings):
+        self.day: date = date.today()
+        self._path = f'{settings.LOCAL_DIR}/services'
         self._app_key: str = settings.DROPBOX_APP_KEY
         self._app_secret: str = settings.DROPBOX_APP_SECRET
         self._token: str = settings.DROPBOX_REFRESH_TOKEN
-        self._dbx: dropbox = self._connect()
+        self._dbx: dropbox
             
     
     def upload(
         self,
         ext: str,
-        path: str = LOCAL_DIR
     ) -> None:
         '''Upload a file to Dropbox.'''
         try:
-            with open(f'{path}/{self._day}/{self._day}.{ext}', 'rb') as f:
+            with open(f'{self._path}/{self._day}/{self._day}.{ext}', 'rb') as f:
                 file = f.read()
 
             self._dbx.files_upload(
@@ -46,10 +41,10 @@ class Dropbox:
         self._dbx.close()
         
         
-    def _connect(self) -> dropbox:
+    def connect(self) -> dropbox:
         '''Connect to Dropbox.'''
         try:
-            return dropbox(
+            self._dbx = dropbox(
                 app_key=self._app_key, 
                 app_secret=self._app_secret,
                 oauth2_refresh_token=self._token
