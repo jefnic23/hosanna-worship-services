@@ -14,12 +14,16 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
+from config import Settings
+from models.hymn import Hymn
 from services.utils import (find_superscript, get_superscripts, grouper,
                             lookahead, pairwise, split_formatted_text)
 
 
-class PowerPoint():
-    '''A class for creating a PowerPoint presentation.'''
+class PowerPoint:
+    """
+    A class for creating a PowerPoint presentation.
+    """
     DEFAULT_FONT: str = 'Segoe UI'
     DEFAULT_FONTSIZE: int = 18
     MAX_WIDTH: int = 565
@@ -30,24 +34,20 @@ class PowerPoint():
     ITALIC: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuii.ttf', 24)
     DRAW: ImageDraw.ImageDraw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
     
-    def __init__(
-        self, 
-        day: date,
-        path: Path = Path('D:/Documents/Hosanna/services') 
-    ):
-        self._day = day
-        self._path = path
+    def __init__(self, settings: Settings):
+        self.day: date = date.today()
         self.prs = Presentation()
         self.prs.slide_width = Inches(6)
         self.prs.slide_height = Inches(4)
         self._section_layout = self.prs.slide_layouts[2]
         self._blank_layout = self.prs.slide_layouts[6]
+        self._path = f'{settings.LOCAL_DIR}/services'
 
-        if os.path.exists(f'{path}/{day}/image.pptx'):
-            self._get_image()
+        # if os.path.exists(f'{path}/{day}/image.pptx'):
+        #     self._get_image()
 
-        if os.path.exists(f'{path}/{day}/hymns.txt'):
-            self._hymns = self._load_hymns()
+        # if os.path.exists(f'{path}/{day}/hymns.txt'):
+        #     self._hymns = self._load_hymns()
 
 
     def add_title_slide(self, text: str) -> None:
@@ -68,7 +68,7 @@ class PowerPoint():
         slide = self.prs.slides.add_slide(self._blank_layout)
         left = top = Inches(0)
         slide.shapes.add_picture(
-            f'{self._path}/{self._day}/image.jpg', 
+            f'{self._path}/{self.day}/image.jpg', 
             left, 
             top,
             self.prs.slide_width, 
@@ -103,23 +103,23 @@ class PowerPoint():
                 self._add_run(p, line, bold=True, has_more=has_more)
 
 
-    def add_hymn(self) -> None:
+    def add_hymn(self, hymn: Hymn) -> None:
         '''Add a hymn to the presentation.'''
         slide = self.prs.slides.add_slide(self._blank_layout)
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
         tf = content.text_frame
         tf.auto_size = MSO_AUTO_SIZE.NONE
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-        for line, has_more in lookahead(self._hymns.pop(0)):
+        for key, value in hymn.items():
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.CENTER
             self._add_run(
                 paragraph, 
-                line, 
+                value, 
                 bold=True, 
-                italic=True if has_more else False, 
+                italic=True if key == 'Title' else False, 
                 size=24, 
-                has_more=has_more
+                has_more=True if key == 'Title' else False
             )
 
 
@@ -331,23 +331,6 @@ class PowerPoint():
                         paragraph.add_line_break()
                     for _ in range(len(sups)):
                         superscripts.pop(0)
-            # for line, has_more in lookahead(slide.splitlines()):
-            #     superscripts = get_superscripts(line)
-            #     if len(superscripts) > 0:
-            #         index = pairwise(list(chain(*[
-            #             [0], 
-            #             *[[s, e] for s, e in superscripts], 
-            #             [len(line)]
-            #         ])))
-            #         for start, end in index:
-            #             self._add_run(
-            #                 paragraph, 
-            #                 line[start:end], 
-            #                 superscript=True if (start, end) in superscripts else False,
-            #                 color=(86, 86, 86) if (start, end) in superscripts else (0, 0, 0)
-            #             )
-            #         if has_more:
-            #             paragraph.add_line_break()
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(paragraph, line, bold=True)
@@ -453,43 +436,43 @@ class PowerPoint():
                         )
 
 
-    def save(self) -> None:
-        '''Save the presentation.'''
-        if not os.path.exists(f'{self._path}/{self._day}'):
-            os.makedirs(f'{self._path}/{self._day}')
-        self.prs.save(f'{self._path}/{self._day}/{self._day}.pptx')
+    # TODO: add image file name to method signature
+    def get_image(self) -> None:
+        '''Add an image to the presentation.'''
+        prs = Presentation(f'{self._path}/{self.day}/image.pptx')
+        slide = prs.slides[0]
+        shape = slide.shapes[0]
+        image = shape.image
+        blob, ext = image.blob, image.ext
+        with open(f'{self._path}/{self.day}/image.{ext}', 'wb') as f:
+            f.write(blob)
+    
+        os.remove(f'{self._path}/{self.day}/image.pptx')
 
 
-    #region Private Methods
-
-    def _load_hymns(self) -> list[tuple]:
+    def load_hymns(self) -> list[tuple]:
         '''Load the hymns from the hymns.txt file.'''
         hymns = open(
-            f'{self._path}/{self._day}/hymns.txt', 
+            f'{self._path}/{self.day}/hymns.txt', 
             'r', 
             encoding='utf-8'
         ).read()
         return grouper(hymns.splitlines(), 2)
+    
 
+    def save(self) -> None:
+        '''Save the presentation.'''
+        if not os.path.exists(f'{self._path}/{self.day}'):
+            os.makedirs(f'{self._path}/{self.day}')
+        self.prs.save(f'{self._path}/{self.day}/{self.day}.pptx')
+
+
+    #region Private Methods
 
     def _get_layouts(self) -> None:
         '''Get the layouts of the presentation.'''
         for layout in self.prs.slide_layouts:
             print(layout.name)
-
-
-    # TODO: add image file name to method signature
-    def _get_image(self) -> None:
-        '''Add an image to the presentation.'''
-        prs = Presentation(f'{self._path}/{self._day}/image.pptx')
-        slide = prs.slides[0]
-        shape = slide.shapes[0]
-        image = shape.image
-        blob, ext = image.blob, image.ext
-        with open(f'{self._path}/{self._day}/image.{ext}', 'wb') as f:
-            f.write(blob)
-    
-        os.remove(f'{self._path}/{self._day}/image.pptx')
 
 
     def _add_slide_with_header(self, title_text: str) -> Slide:
@@ -499,7 +482,6 @@ class PowerPoint():
         return slide
     
     #endregion
-    
     
     #region Static Methods
 
