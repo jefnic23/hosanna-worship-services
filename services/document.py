@@ -8,21 +8,18 @@ from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.text.paragraph import Paragraph
 
+from config import Settings
 from services.utils import clean_text, get_superscripts, lookahead, pairwise
 
 
-class WordDocument():
+class WordDocument:
     '''A class for creating a Word document.'''
 
     DEFAULT_FONTSIZE = 14
 
-    def __init__(
-        self, 
-        day: date,
-        path: Path = Path('D:/Documents/Hosanna/services')
-    ):
-        self._day = day
-        self._path = path
+    def __init__(self, settings: Settings):
+        self.day: date = date.today()
+        self._path = f'{settings.LOCAL_DIR}/services'
         self._document = Document()
         self._section = self._document.sections[0]
         self._section.left_margin =  \
@@ -82,15 +79,15 @@ class WordDocument():
 
     def save(self) -> None:
         '''Save the document to the services folder.'''        
-        if not os.path.exists(f'{self._path}/{self._day}'):
-            os.makedirs(f'{self._path}/{self._day}')
-        self._document.save(f'{self._path}/{self._day}/{self._day}.docx')
+        if not os.path.exists(f'{self._path}/{self.day}'):
+            os.makedirs(f'{self._path}/{self.day}')
+        self._document.save(f'{self._path}/{self.day}/{self.day}.docx')
 
         os.system(
             f'soffice --headless --invisible --convert-to pdf --outdir '
-            f'{self._path}/{self._day} {self._path}/{self._day}/{self._day}.docx'
+            f'{self._path}/{self.day} {self._path}/{self.day}/{self.day}.docx'
         )
-        os.remove(f'{self._path}/{self._day}/{self._day}.docx')
+        os.remove(f'{self._path}/{self.day}/{self.day}.docx')
 
 
     @staticmethod
