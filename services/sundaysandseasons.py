@@ -6,11 +6,11 @@ from pathlib import Path
 import requests
 from bs4 import BeautifulSoup
 
-from config import settings
+from config import Settings
 from services.utils import clean_text, grouper
 
 
-class SundaysAndSeasons():
+class SundaysAndSeasons:
     '''Class for scraping Sundays and Seasons.'''
 
     BASE = 'https://members.sundaysandseasons.com'
@@ -35,16 +35,12 @@ class SundaysAndSeasons():
 
     # TODO: error handling
 
-    def __init__(
-        self, 
-        day: date,
-        path: Path = Path('D:/Documents/Hosanna/services')
-    ):
+    def __init__(self, settings: Settings):
+        self.day: date = date.today()
         self._session: requests.Session = requests.Session()
         self._username: str = settings.USER
         self._password: str = settings.PASSWORD
-        self._day: date = day
-        self._path: Path = path
+        self._path: Path = f'{settings.LOCAL_DIR}/services' 
 
         self.title: str = ''
         self.prayer: str = ''
@@ -54,10 +50,8 @@ class SundaysAndSeasons():
         self.gospel: str = ''
         self.intercession: str = ''
 
-        self._login()
 
-
-    def _login(self, url: str = LOGIN) -> None:
+    def login(self, url: str = LOGIN) -> None:
         '''Login to the Sundays and Seasons website'''
         key, value = self._get_token(url)
         payload = {
@@ -94,7 +88,7 @@ class SundaysAndSeasons():
 
     def _get_texts(self, url: str = TEXTS) -> None:
         '''Get all the texts for the current date'''
-        req = self._session.get(url.format(self._day))
+        req = self._session.get(url.format(self.day))
         soup = BeautifulSoup(req.text, 'html.parser')
         self._get_prayer(soup)
         self._get_readings(soup)
@@ -184,7 +178,7 @@ class SundaysAndSeasons():
         base: str = BASE
     ) -> None:
         '''Get the main slide in a soup object'''
-        req = self._session.get(url.format(self._day))
+        req = self._session.get(url.format(self.day))
         soup = BeautifulSoup(req.text, 'html.parser')
         parent = soup.body.find('div', {'id': 'toggle-btn-panel-projectable'})
         children = parent.find_all_next('img')
@@ -197,17 +191,17 @@ class SundaysAndSeasons():
                 file = img['data-download']
                 url = base + file
                 
-                if not os.path.exists(f'{self._path}/{self._day}'):
-                    os.makedirs(f'{self._path}/{self._day}')
+                if not os.path.exists(f'{self._path}/{self.day}'):
+                    os.makedirs(f'{self._path}/{self.day}')
 
-                with open(f'{self._path}/{self._day}/image.ppt', 'wb') as f:
+                with open(f'{self._path}/{self.day}/image.ppt', 'wb') as f:
                     f.write(self._session.get(url).content)
 
                 os.system(
                     f'soffice --headless --invisible --convert-to pptx --outdir '
-                    f'{self._path}/{self._day} {self._path}/{self._day}/image.ppt'
+                    f'{self._path}/{self.day} {self._path}/{self.day}/image.ppt'
                 )
-                os.remove(f'{self._path}/{self._day}/image.ppt')
+                os.remove(f'{self._path}/{self.day}/image.ppt')
 
 
     @staticmethod
