@@ -1,22 +1,39 @@
 import os
 from pathlib import Path
 
-
-class Liturgy():
-    '''Loads and stores the liturgy.'''
-
-    DIR: str = 'D:/Documents/Hosanna/liturgy'
+from config import Settings
 
 
-    def __init__(self, season: str):
-        self._season = season
-        self._files = Liturgy._open_files(season)
+class Liturgy:
+    """
+    A class to handle the liturgy files.
+    """
+    def __init__(self, settings: Settings):
+        self._files: dict[str, str] = {},
+        self._path: str = f'{settings.LOCAL_DIR}/liturgy'
 
 
-    @staticmethod
-    def _open_files(season: str, dir: str = DIR):
-        '''Open all the liturgy files.'''
-        path = Path(dir, season)
+    def __getattr__(self, name: str) -> str:
+        """
+        Return the liturgy file, e.g. liturgy.creed
+        """
+        if name in self._files:
+            return self._files[name]
+        raise AttributeError(f'{name} not found')
+    
+
+    def __dir__(self) -> list[str]:
+        """
+        List all the liturgy files, e.g. dir(liturgy)
+        """
+        return list(self._files.keys())
+
+
+    def load_files(self, season: str) -> dict[str, str]:
+        """
+        Open all the liturgy files for a given season.
+        """
+        path = Path(self._path, season)
         files = {}
         for file in os.listdir(path):
             if file.endswith('.txt'):
@@ -26,10 +43,3 @@ class Liturgy():
                     encoding='utf-8'
                 ).read()
         return files
-    
-
-    def __getattr__(self, name):
-        '''Return the liturgy file.'''
-        if name in self._files:
-            return self._files[name]
-        raise AttributeError(f'{name} not found')
