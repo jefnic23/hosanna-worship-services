@@ -2,20 +2,19 @@ from datetime import date
 
 import pandas as pd
 
-from config import settings
+from config import Settings
 from models.hymn import Hymn
 
 
 class Hymns:
     """Class for adding hymns to the service."""
 
-
-    LOCAL_DIR = settings.LOCAL_DIR
     DF = pd.read_csv('data/hymnal.csv', index_col='Number')
 
 
-    def __init__(self) -> None:
+    def __init__(self, settings: Settings) -> None:
         self.day: date = date.today()
+        self._path: str = f'{settings.LOCAL_DIR}/services'
         self._hymns: list[Hymn] = []
     
 
@@ -27,9 +26,9 @@ class Hymns:
         )
     
 
-    def save_hymns(self, path: str = LOCAL_DIR) -> None:
+    def save_hymns(self) -> None:
         """Save hymns to file."""
-        with open(f'{path}/hosanna/services/{self.day}/hymns.txt', 'a') as f:
+        with open(f'{self._path}/hosanna/services/{self.day}/hymns.txt', 'a') as f:
             for hymn in self._hymns:
                 f.write(f'{hymn.Title}\nELW {hymn.Number}\n')
             f.close()
