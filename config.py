@@ -1,5 +1,6 @@
 from pydantic import BaseSettings
 
+
 class Settings(BaseSettings):
     USER: str = ''
     PASSWORD: str = ''
@@ -7,8 +8,6 @@ class Settings(BaseSettings):
     DROPBOX_APP_SECRET: str = ''
     DROPBOX_REFRESH_TOKEN: str = ''
     LOCAL_DIR: str = ''
-    # HOSTNAME: str = ''
-    # PORT: int = 0
 
 
     class Config:
@@ -27,6 +26,3 @@ class Settings(BaseSettings):
             for key, value in self.dict().items():
                 f.write(f'{key}={value}\n')
             f.close()
-
-
-settings = Settings()
