@@ -16,8 +16,8 @@ from pptx.util import Inches, Pt
 
 from config import Settings
 from models.hymn import Hymn
-from services.utils import (find_superscript, get_superscripts, grouper,
-                            lookahead, pairwise, split_formatted_text)
+from services.utils import (get_superscripts, grouper, lookahead, pairwise,
+                            split_formatted_text)
 
 
 class PowerPoint:
@@ -153,11 +153,7 @@ class PowerPoint:
             tf.auto_size = MSO_AUTO_SIZE.NONE
             paragraph = tf.paragraphs[0]
             for line, has_more in lookahead(slide.splitlines()):
-                sups = [(s.start(), s.end()) for superscript in superscripts[:2] for s in re.finditer(superscript, line)]
-                if len(sups) > 1:
-                    # if second sup overlaps first sup, remove it
-                    if sups[1][0] < sups[0][1]:
-                        sups.pop(1)
+                sups = get_superscripts(superscripts, line)
                 if len(sups) > 0:
                     index = pairwise(list(chain(*[
                         [0], 
@@ -309,11 +305,14 @@ class PowerPoint:
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.LEFT
             for line, has_more in lookahead(slide.splitlines()):
-                sups = [(s.start(), s.end()) for superscript in superscripts[:2] for s in re.finditer(superscript, line)]
-                if len(sups) > 1:
-                    # if second sup overlaps first sup, remove it
-                    if sups[1][0] < sups[0][1]:
-                        sups.pop(1)
+                sups = []
+                for superscript in superscripts:
+                    for s in re.finditer(superscript, line):
+                        if not any(s.start() < start < s.end() for start, end in sups):
+                            sups.append((s.start(), s.end()))
+                # if len(sups) > 1:
+                #     if sups[1][0] < sups[0][1]:
+                #         sups.pop(1)
                 if len(sups) > 0:
                     index = pairwise(list(chain(*[
                         [0], 
@@ -364,7 +363,8 @@ class PowerPoint:
             italic: FreeTypeFont = ITALIC
         ) -> None:
         '''Add a call and response to the presentation.'''
-        regular_text, bold_text, italic_text = split_formatted_text(text)
+        superscripts = re.findall(r'<sup>(.*?)</sup>', text)
+        regular_text, bold_text, italic_text = split_formatted_text(text.replace('<sup>', '').replace('</sup>', ''))
         bold_lines = [line[1] for line in bold_text]
         italic_lines = [line[1] for line in italic_text]
         lines = [
@@ -400,24 +400,26 @@ class PowerPoint:
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.LEFT
             for line, has_more in lookahead(slide.splitlines()):
-                superscripts = get_superscripts(line)
-                if len(superscripts) > 0:
+                sups = get_superscripts(superscripts, line)
+                if len(sups) > 0:
                     index = pairwise(list(chain(*[
                         [0], 
-                        *[[s, e] for s, e in superscripts], 
+                        *[[s, e] for s, e in sups], 
                         [len(line)]
                     ])))
                     for start, end in index:
                         self._add_run(
                             paragraph, 
-                            ' ' + line[start:end], 
-                            superscript=True if (start, end) in superscripts else False,
+                            line[start:end], 
+                            superscript=True if (start, end) in sups else False,
                             bold=True if line in bold_formatted_text else False,
                             italic=True if line in italic_formatted_text else False,
-                            color=(86, 86, 86) if (start, end) in superscripts else (0, 0, 0)
+                            color=(86, 86, 86) if (start, end) in sups else (0, 0, 0)
                         )
                     if has_more:
                         paragraph.add_line_break()
+                    for _ in range(len(sups)):
+                        superscripts.pop(0)
                 else:
                     if not is_not_last and not has_more:
                         self._add_run(
@@ -437,8 +439,11 @@ class PowerPoint:
 
 
     # TODO: add image file name to method signature
-    def get_image(self) -> None:
-        '''Add an image to the presentation.'''
+    def convert_image(self) -> None:
+        """
+        Images downloaded from Sundays and Seasons are in a .pptx format. This method converts 
+        the image to a .jpg that can be added to the powerpoint.
+        """
         prs = Presentation(f'{self._path}/{self.day}/image.pptx')
         slide = prs.slides[0]
         shape = slide.shapes[0]
