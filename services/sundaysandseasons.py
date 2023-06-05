@@ -28,9 +28,9 @@ class SundaysAndSeasons:
     INTERCESSION = re.compile(r'Prayers of Intercession')
 
     READING_CALL = 'The word of the Lord,'
-    READING_RESPONSE = 'Thanks be to God.'
+    READING_RESPONSE = '<b>Thanks be to God.</b>'
     GOSPEL_CALL = 'The gospel of the Lord,'
-    GOSPEL_RESPONSE = 'Praise to you, O Christ.'
+    GOSPEL_RESPONSE = '<b>Praise to you, O Christ.</b>'
 
 
     # TODO: error handling
