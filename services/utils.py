@@ -47,7 +47,6 @@ def split_formatted_text(
     bold_text = []
     italic_text = []
     regular_text = []
-    # line_number = 0
     for line_number, line in enumerate(text.splitlines()):
         if re.match(r'<b>.*</b>', line):
             bold_text.append((
@@ -82,17 +81,32 @@ def lookahead(iterable: Iterable):
     yield last, False
 
 
-def get_superscripts(text: str) -> list[tuple[int, int]]:
-    '''Gets the superscripts in a string.'''
-    # TODO: some superscripts have lower case letters, which are not captured
-    return [(s.start(), s.end()) for s in re.finditer(r'(\d+:\d+)|\d+', text)] 
-
-
 def find_superscript(text: str, superscript: str, start: int = 0) -> tuple[int, int]:
     '''Find the start and end index of a superscript in a string'''
     length = len(superscript)
     index = text.find(superscript, start)
     return index, index + length
+
+
+def get_superscripts(
+    superscripts: list[str],
+    line: str
+) -> list[tuple[int, int]]:
+    """Gets the superscripts in a line of text.
+
+    Args:
+        superscripts (list[str]): List of superscripts to find.
+        line (str): The line of text to search.
+
+    Returns:
+        list[tuple[int, int]]: List of tuples containing the start and end index of each superscript.
+    """
+    superscripts_in_line = []
+    for superscript in superscripts:
+        for s in re.finditer(superscript, line):
+            if not any(start < s.end() for start, _ in superscripts_in_line):
+                superscripts_in_line.append((s.start(), s.end()))
+    return superscripts_in_line
     
 
 def clean_text(text: str) -> str:
