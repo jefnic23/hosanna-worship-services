@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from config import Settings
+from models.reading import Reading
 from services.utils import clean_text, grouper
 
 
@@ -44,10 +45,10 @@ class SundaysAndSeasons:
 
         self.title: str = ''
         self.prayer: str = ''
-        self.first_reading: str = ''
+        self.first_reading: Reading
         self.psalm: str = ''
-        self.second_reading: str = ''
-        self.gospel: str = ''
+        self.second_reading: Reading
+        self.gospel: Reading
         self.intercession: str = ''
 
 
@@ -210,7 +211,7 @@ class SundaysAndSeasons:
         regex: re.Pattern[str], 
         call: str, 
         response: str
-    ) -> str:
+    ) -> Reading:
         '''Get the first reading in a soup object'''
         parent = soup.find('h3', string=regex)
         reading = parent.find_next_sibling().find_next_sibling()
@@ -221,7 +222,11 @@ class SundaysAndSeasons:
             '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()]),
             superscripts
         )
-        return '\n'.join([title, text, call, response])
+        
+        return Reading(
+            Title = title, 
+            Body = '\n'.join(text, call, response)
+        )
     
     
     @staticmethod
