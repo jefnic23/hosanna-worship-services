@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 
 from config import Settings
+from models.reading import Reading
 from services.document import WordDocument
 from services.dropbox import Dropbox
 from services.liturgy import Liturgy
@@ -22,26 +23,29 @@ sas.login()
 sas.get_texts_and_images()
 sas.logoff()
 
-# lit = Liturgy(settings)
-# lit.load_files('pentecost')
+lit = Liturgy(settings)
+lit.load_files('pentecost')
 
 ppt = PowerPoint(settings)
 ppt.day = this_sunday
 # ppt.add_image()
-# ppt.add_rich_text('Confession and Forgiveness', lit.confession)
+ppt.add_rich_text('Confession and Forgiveness', lit.confession)
 # ppt.add_hymn()
 # ppt.add_rich_text('Greeting', lit.greeting)
 # ppt.add_congregation_text('Kyrie', lit.kyrie)
 # ppt.add_rich_text('', lit.lord_be_with_you, anchor='middle')
 # ppt.add_congregation_text('Prayer of the Day', sas.prayer)
-ppt.add_title_slide(sas.first_reading.splitlines()[0])
-ppt.add_rich_text('First Reading', ''.join(sas.first_reading.splitlines()[1:]))
-# ppt.add_psalm(sas.psalm)
-ppt.add_title_slide(sas.second_reading.splitlines()[0])
-ppt.add_rich_text('Second Reading', ''.join(sas.second_reading.splitlines()[1:]))
+ppt.add_title_slide(sas.first_reading.title)
+ppt.add_rich_text('First Reading', sas.first_reading.body)
+
+ppt.add_title_slide(sas.psalm.title)
+ppt.add_rich_text('Psalm', sas.psalm.body)
+
+ppt.add_title_slide(sas.second_reading.title)
+ppt.add_rich_text('Second Reading', sas.second_reading.body)
 # ppt.add_congregation_text('Gospel Acclamation', lit.gospel_acclamation)
-ppt.add_title_slide(sas.gospel.splitlines()[0])
-ppt.add_rich_text('Gospel', ''.join(sas.gospel.splitlines()[1:]))
+ppt.add_title_slide(sas.gospel.title)
+ppt.add_rich_text('Gospel', sas.gospel.body)
 # ppt.add_title_slide('Sermon')
 # ppt.add_hymn()
 # ppt.add_congregation_text('Apostle\'s Creed', lit.creed)
@@ -58,7 +62,7 @@ ppt.add_rich_text('Gospel', ''.join(sas.gospel.splitlines()[1:]))
 # ppt.add_title_slide('Communion')
 # ppt.add_rich_text('Communion', lit.communion_blessing)
 # ppt.add_rich_text('Prayer after Communion', lit.prayer_after_communion)
-# ppt.add_rich_text('Blessing', lit.blessing)
+ppt.add_rich_text('Blessing', lit.blessing)
 # ppt.add_hymn()
 # ppt.add_rich_text('Dismissal', lit.dismissal, anchor='middle')
 # ppt.add_image()
