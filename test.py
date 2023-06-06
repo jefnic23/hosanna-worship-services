@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 
-from services.utils import clean_text
+from services.utils import clean_text, grouper
 
 with open('data/test.html', 'rb') as f:
     soup = BeautifulSoup(f.read(), 'html.parser')
@@ -32,7 +32,11 @@ def add_superscripts_to_text(text: str, superscripts: list) -> str:
     return new_text
 
 text = add_superscripts_to_text(
-    '\n'.join([clean_text(ele) for ele in soup.get_text().splitlines()]),
+    '\n'.join([
+        clean_text(span)
+        for span in soup.find_all('span', {'class': None}) 
+    ]),
     superscripts
 )
-print(text)
+
+print('\n'.join([clean_text(s.string) for s in soup.find_all('span') if s.string]))
