@@ -60,7 +60,6 @@ def split_formatted_text(
             ))
         else:
             regular_text.append((line_number, line.strip()))
-        # line_number += 1
     return regular_text, bold_text, italic_text
 
 

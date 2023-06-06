@@ -22,7 +22,7 @@ class Hymns:
         """Add hymn to service."""
         hymn = Hymns._get_hymn(hymn_number)
         self._hymns.append(
-            Hymn(Number=hymn_number, Title=hymn.Title) # type: ignore
+            Hymn(number=hymn_number, title=hymn.Title) # type: ignore
         )
     
 
@@ -30,7 +30,7 @@ class Hymns:
         """Save hymns to file."""
         with open(f'{self._path}/hosanna/services/{self.day}/hymns.txt', 'a') as f:
             for hymn in self._hymns:
-                f.write(f'{hymn.Title}\nELW {hymn.Number}\n')
+                f.write(f'{hymn.title}\nELW {hymn.number}\n')
             f.close()
 
 

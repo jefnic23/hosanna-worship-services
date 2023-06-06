@@ -29,7 +29,7 @@ class Liturgy:
         return list(self._files.keys())
 
 
-    def load_files(self, season: str) -> dict[str, str]:
+    def load_files(self, season: str) -> None:
         """
         Open all the liturgy files for a given season.
         """
@@ -42,4 +42,4 @@ class Liturgy:
                     'r', 
                     encoding='utf-8'
                 ).read()
-        return files
+        self._files = files
