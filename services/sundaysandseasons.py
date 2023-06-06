@@ -187,7 +187,7 @@ class SundaysAndSeasons:
         
         return Reading(
             title = title, 
-            body = '\n'.join([text, call, response])
+            body = '\n'.join([text, '<div>', call, response, '</div>'])
         )
     
 

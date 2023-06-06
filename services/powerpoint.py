@@ -152,8 +152,8 @@ class PowerPoint:
         """Adds rich text to the presentation.
 
         Args:
-            title (str): The title of the slide. Gets added to the top right.
-            text (str): The body of the slide.
+            title (str): the title of the slide. Gets added to the top right.
+            text (str): the body of the slide.
             anchor (str, optional): _description_. Defaults to ''.
             draw (ImageDraw.ImageDraw, optional): _description_. Defaults to DRAW.
             regular (FreeTypeFont, optional): _description_. Defaults to REGULAR.
@@ -388,26 +388,41 @@ class PowerPoint:
         '''Gets the height of a line of text and splits it if it's too long.'''
         if PowerPoint.check_size(lines, draw, font)['height'] < max_height:
             return [lines]
-        else:
-            group = re.findall(r'<div>(.*?)</div>', lines)
-            print(group)
-            slides = []
-            for line, has_more in lookahead(lines.splitlines()):
-                if re.match(r'<br>', line):
-                    # If the line is a break, insert a new slide
-                    slides += ['']
-                    continue
+
+        regex = re.search(r'<div>(.*?)</div>', lines, re.MULTILINE | re.DOTALL)
+        group = regex.group(1).strip().splitlines() if regex else None
+        slides = []
+        for line in lines.splitlines():
+            if re.match(r'<br>', line):
+                # If the line is a break, insert a new slide
+                slides += ['']
+                continue
+
+            if re.match(r'<div>', line) or re.match(r'</div>', line):
+                continue
+
+            height = PowerPoint.check_size(
+                '\n'.join(slides[-1:] + [line]), 
+                draw, 
+                font
+            )['height']
+            
+            if group is not None and line == group[0]:
+                # check if the call and response will fit on the current slide
                 height = PowerPoint.check_size(
-                    '\n'.join(slides[-1:] + [line]), 
-                    draw, 
+                    '\n'.join(slides[-1:] + [line] + [group[1]]),
+                    draw,
                     font
                 )['height']
-                if height < max_height:
-                    slides[-1:] = ['\n'.join(slides[-1:] + [line]).lstrip()]
-                else:
+                if height > max_height:
                     slides += [line]
-            print(slides)
-            return slides
+                continue
+
+            if height < max_height:
+                slides[-1:] = ['\n'.join(slides[-1:] + [line]).lstrip()]
+            else:
+                slides += [line]
+        return slides
         
 
     @staticmethod
