@@ -149,7 +149,17 @@ class PowerPoint:
             bold: FreeTypeFont = BOLD,
             italic: FreeTypeFont = ITALIC
         ) -> None:
-        '''Add a call and response to the presentation.'''
+        """Adds rich text to the presentation.
+
+        Args:
+            title (str): The title of the slide. Gets added to the top right.
+            text (str): The body of the slide.
+            anchor (str, optional): _description_. Defaults to ''.
+            draw (ImageDraw.ImageDraw, optional): _description_. Defaults to DRAW.
+            regular (FreeTypeFont, optional): _description_. Defaults to REGULAR.
+            bold (FreeTypeFont, optional): _description_. Defaults to BOLD.
+            italic (FreeTypeFont, optional): _description_. Defaults to ITALIC.
+        """
         superscripts = re.findall(r'<sup>(.*?)</sup>', text)
         regular_text, bold_text, italic_text = split_formatted_text(text.replace('<sup>', '').replace('</sup>', ''))
         bold_lines = [line[1] for line in bold_text]
