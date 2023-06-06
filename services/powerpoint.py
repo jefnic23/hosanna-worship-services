@@ -407,7 +407,7 @@ class PowerPoint:
                 font
             )['height']
             
-            if group is not None and line == group[0]:
+            if regex is not None and line == group[0]:
                 # check if the call and response will fit on the current slide
                 height = PowerPoint.check_size(
                     '\n'.join(slides[-1:] + [line] + [group[1]]),
