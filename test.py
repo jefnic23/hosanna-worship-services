@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 
-from services.utils import clean_text, grouper
+from config import Settings
+from services.powerpoint import PowerPoint
+from services.utils import clean_text
 
 with open('data/test.html', 'rb') as f:
     soup = BeautifulSoup(f.read(), 'html.parser')
@@ -32,11 +34,14 @@ def add_superscripts_to_text(text: str, superscripts: list) -> str:
     return new_text
 
 text = add_superscripts_to_text(
-    '\n'.join([
-        clean_text(span)
-        for span in soup.find_all('span', {'class': None}) 
-    ]),
+    '\n'.join([clean_text(span) for span in soup.get_text().splitlines()]),
     superscripts
 )
 
-print('\n'.join([clean_text(s.string) for s in soup.find_all('span') if s.string]))
+call = 'The gospel of the Lord,'
+response = '<b>Praise to you, O Christ.</b>'
+text = '\n'.join([text, '<div>', call, response, '</div>'])
+
+settings = Settings()
+ppt = PowerPoint(settings)
+ppt.add_rich_text('Gospel', text)

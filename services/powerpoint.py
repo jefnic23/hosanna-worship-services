@@ -389,8 +389,10 @@ class PowerPoint:
         if PowerPoint.check_size(lines, draw, font)['height'] < max_height:
             return [lines]
         else:
+            group = re.findall(r'<div>(.*?)</div>', lines)
+            print(group)
             slides = []
-            for line in lines.splitlines():
+            for line, has_more in lookahead(lines.splitlines()):
                 if re.match(r'<br>', line):
                     # If the line is a break, insert a new slide
                     slides += ['']
@@ -404,7 +406,7 @@ class PowerPoint:
                     slides[-1:] = ['\n'.join(slides[-1:] + [line]).lstrip()]
                 else:
                     slides += [line]
-
+            print(slides)
             return slides
         
 
