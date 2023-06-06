@@ -2,11 +2,13 @@ import os
 import re
 from datetime import date
 from pathlib import Path
+from typing import Optional
 
 import requests
 from bs4 import BeautifulSoup
 
 from config import Settings
+from models.petition import Petition
 from models.reading import Reading
 from services.utils import clean_text, grouper
 
@@ -33,9 +35,6 @@ class SundaysAndSeasons:
     GOSPEL_CALL = 'The gospel of the Lord,'
     GOSPEL_RESPONSE = '<b>Praise to you, O Christ.</b>'
 
-
-    # TODO: error handling
-
     def __init__(self, settings: Settings):
         self.day: date = date.today()
         self._session: requests.Session = requests.Session()
@@ -43,13 +42,13 @@ class SundaysAndSeasons:
         self._password: str = settings.PASSWORD
         self._path: Path = f'{settings.LOCAL_DIR}/services' 
 
-        self.title: str = ''
-        self.prayer: str = ''
+        self.title: str
+        self.prayer: str
         self.first_reading: Reading
-        self.psalm: str = ''
+        self.psalm: Reading
         self.second_reading: Reading
         self.gospel: Reading
-        self.intercession: str = ''
+        self.intercession: str
 
 
     def login(self, url: str = LOGIN) -> None:
@@ -77,6 +76,7 @@ class SundaysAndSeasons:
         self._get_texts()
         self._get_slide()
         
+    #region Private Methods
 
     def _get_token(self, url: str = LOGIN) -> tuple[str, str]:
         '''Get the token from the login form'''
@@ -91,86 +91,29 @@ class SundaysAndSeasons:
         '''Get all the texts for the current date'''
         req = self._session.get(url.format(self.day))
         soup = BeautifulSoup(req.text, 'html.parser')
-        self._get_prayer(soup)
-        self._get_readings(soup)
-        self._get_psalm(soup)
-        self._get_intercession(soup)
 
-
-    def _get_title(self, soup: BeautifulSoup) -> None:
-        '''Get the title of the day in a soup object'''
-        self.title = soup.body.find('h1', {'id': 'ribbontitle'}).get_text().strip()
-
-
-    def _get_prayer(self, soup: BeautifulSoup) -> None:
-        '''Get the prayer of the day in a soup object'''
-        parent = soup.body.find(text=SundaysAndSeasons.PRAYER).parent
-        self.prayer = parent.findNext('div', {'class': 'body'}).get_text().strip()
-
-
-    def _get_readings(self, soup: BeautifulSoup) -> None:
-        '''Get the readings in a soup object'''
+        self.title = self._get_title(soup)
+        self.prayer = self._get_prayer(soup)
         self.first_reading = self._get_reading(
             soup, 
             SundaysAndSeasons.FIRST_READING, 
             SundaysAndSeasons.READING_CALL, 
             SundaysAndSeasons.READING_RESPONSE
         )
+        self.psalm = self._get_psalm(soup)
         self.second_reading = self._get_reading(
-            soup, 
-            SundaysAndSeasons.SECOND_READING, 
-            SundaysAndSeasons.READING_CALL, 
-            SundaysAndSeasons.READING_RESPONSE)
-        self.gospel = self._get_reading(
-            soup, 
-            SundaysAndSeasons.GOSPEL, 
-            SundaysAndSeasons.GOSPEL_CALL,
-            SundaysAndSeasons.GOSPEL_RESPONSE)
-
-
-    def _get_psalm(
-        self, 
-        soup: BeautifulSoup, 
-        regex: re.Pattern[str] = PSALM
-    ) -> None:
-        '''Get the psalm in a soup object'''
-        parent = soup.find('h3', string=regex)
-        title = parent.get_text().split('Psalm: ')[1]
-
-        psalm = parent.find_next_sibling().find_next_sibling()
-        superscripts = SundaysAndSeasons._get_superscripts(psalm)
-        spans = [
-            clean_text(span.get_text()) 
-            for span in psalm.find_all('span', {'class': None}) 
-            if 'style' not in span.attrs
-        ]
-
-        text = []
-        for span in spans:
-            if span in superscripts:
-                text.append(f'<sup>{span}</sup>')
-            else:
-                text.append(span)
-
-        self.psalm = (
-            title + 
-            '\n' + 
-            '\n'.join([' '.join(line) for line in grouper(text, 3)])
+            soup,
+            SundaysAndSeasons.SECOND_READING,
+            SundaysAndSeasons.READING_CALL,
+            SundaysAndSeasons.READING_RESPONSE
         )
-        # TODO: refrain spans are nested; remove them
-
-
-    def _get_intercession(
-        self, 
-        soup: BeautifulSoup, 
-        regex: re.Pattern[str] = INTERCESSION
-    ) -> None:
-        '''Get the intercessions in a soup object'''
-        parent = soup.find('h3', string=regex)
-        children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
-        p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
-        c = children[1].get_text().strip()
-        self.intercession = p + '\n' + c
+        self.gospel = self._get_reading(
+            soup,
+            SundaysAndSeasons.GOSPEL,
+            SundaysAndSeasons.GOSPEL_CALL,
+            SundaysAndSeasons.GOSPEL_RESPONSE
+        )
+        self.intercession = self._get_intercession(soup)
 
 
     def _get_slide(
@@ -204,13 +147,32 @@ class SundaysAndSeasons:
                 )
                 os.remove(f'{self._path}/{self.day}/image.ppt')
 
+    #endregion Private Methods
+    
+    #region Static Methods
+
+    @staticmethod
+    def _get_title(soup: BeautifulSoup) -> str:
+        '''Get the title of the day in a soup object'''
+        return soup.body.find('div', {'id': 'ribbondescription'}).get_text().strip()
+
+
+    @staticmethod
+    def _get_prayer(
+        soup: BeautifulSoup,
+        regex: re.Pattern[str] = PRAYER
+    ) -> str:
+        '''Get the prayer of the day in a soup object'''
+        parent = soup.body.find(string=regex).parent
+        return parent.findNext('div', {'class': 'body'}).get_text().strip()
+
 
     @staticmethod
     def _get_reading(
         soup: BeautifulSoup, 
         regex: re.Pattern[str], 
-        call: str, 
-        response: str
+        call: Optional[str], 
+        response: Optional[str]
     ) -> Reading:
         '''Get the first reading in a soup object'''
         parent = soup.find('h3', string=regex)
@@ -224,8 +186,57 @@ class SundaysAndSeasons:
         )
         
         return Reading(
-            Title = title, 
-            Body = '\n'.join(text, call, response)
+            title = title, 
+            body = '\n'.join([text, call, response])
+        )
+    
+
+    @staticmethod
+    def _get_psalm(
+        soup: BeautifulSoup, 
+        regex: re.Pattern[str] = PSALM
+    ) -> None:
+        '''Get the psalm in a soup object'''
+        parent = soup.find('h3', string=regex)
+        title = parent.get_text().split('Psalm: ')[1]
+
+        psalm = parent.find_next_sibling().find_next_sibling()
+        superscripts = SundaysAndSeasons._get_superscripts(psalm)
+        text = SundaysAndSeasons._add_superscripts(
+            '\n'.join([
+                clean_text(span.get_text())
+                for span in psalm.find_all('span', {'class': None}) 
+                if 'style' not in span.attrs 
+            ]),
+            superscripts
+        )
+
+        formatted_text = []
+        for i, line in enumerate(grouper(text.splitlines(), 3)):
+            if i % 2 == 0:
+                formatted_text.append(f"{line[0]}{' '.join(line[1:])}")
+            else:
+                formatted_text.append(f"<b>{line[0]}{' '.join(line[1:])}</b>")
+
+        return Reading(
+            title = title,
+            body = '\n'.join(formatted_text)
+        )
+    
+
+    @staticmethod
+    def _get_intercession(
+        soup: BeautifulSoup, 
+        regex: re.Pattern[str] = INTERCESSION
+    ) -> Petition:
+        '''Get the intercessions in a soup object'''
+        parent = soup.find('h3', string=regex)
+        children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
+        p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
+        c = children[1].get_text().strip()
+        return Petition(
+            call = p,
+            response = c
         )
     
     
@@ -246,6 +257,16 @@ class SundaysAndSeasons:
     
     @staticmethod
     def _add_superscripts(text: str, superscripts: list) -> str:
+        """Finds the superscripts in a text string and surrounds them with the html 
+        superscript tag, which is later used to format the text in the powerpoint slides.
+
+        Args:
+            text (str): The line of text to search for superscripts.
+            superscripts (list): The list of superscripts to search for.
+
+        Returns:
+            str: The original text with <sup></sup> tags surrounding the superscripts.
+        """
         def find_superscript(text: str, superscript: str, start: int = 0):
             '''Find the start and end index of a superscript in a string'''
             length = len(superscript)
@@ -260,3 +281,5 @@ class SundaysAndSeasons:
             start = indeces[1]
         new_text += text[start:]
         return new_text
+
+    #endregion Static Methods
