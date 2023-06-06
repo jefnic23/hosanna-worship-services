@@ -2,5 +2,5 @@ from pydantic import BaseModel
 
 
 class Hymn(BaseModel):
-    Number: int
-    Title: str
+    number: int
+    title: str
