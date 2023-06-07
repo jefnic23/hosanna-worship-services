@@ -44,9 +44,6 @@ class PowerPoint:
         self._blank_layout = self.prs.slide_layouts[6]
         self._path = f'{settings.LOCAL_DIR}/services'
 
-        # if os.path.exists(f'{path}/{day}/image.pptx'):
-        #     self._get_image()
-
         # if os.path.exists(f'{path}/{day}/hymns.txt'):
         #     self._hymns = self._load_hymns()
 
@@ -77,33 +74,6 @@ class PowerPoint:
         )
 
 
-    def add_congregation_text(
-            self, 
-            title: str, 
-            text: str,
-            draw: ImageDraw.ImageDraw = DRAW,
-            bold: FreeTypeFont = BOLD,
-            regular: FreeTypeFont = REGULAR
-        ) -> None:
-        '''Add bold text to be read by the congregation to the presentation.'''
-        width_formatted_text = []
-        for line in text.splitlines():
-            width_formatted_text.append(PowerPoint.get_width(line.strip(), draw, bold))
-
-        width_formatted_text = '\n'.join(width_formatted_text)
-
-        slides = PowerPoint.get_height(width_formatted_text, draw, regular)
-
-        for slide in slides:
-            s = self._add_slide_with_header(title)
-            content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(0))
-            tf = content.text_frame
-            tf.auto_size = MSO_AUTO_SIZE.NONE
-            p = tf.paragraphs[0]
-            for line, has_more in lookahead(slide.splitlines()):
-                self._add_run(p, line, bold=True, has_more=has_more)
-
-
     def add_hymn(self, hymn: Hymn) -> None:
         '''Add a hymn to the presentation.'''
         slide = self.prs.slides.add_slide(self._blank_layout)
@@ -124,7 +94,11 @@ class PowerPoint:
             )
 
 
-    def add_intercessions(self, text: str) -> None:
+    def add_intercessions(
+        self, 
+        call: str,
+        response: str
+    ) -> None:
         '''Add the intercessions to the presentation.'''
         slide = self._add_slide_with_header('Prayers of Intercession')
         content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
@@ -134,9 +108,9 @@ class PowerPoint:
         p = tf.paragraphs[0]
         self._add_run(p, 'Each petition ends:', italic=True)
         p.add_line_break()
-        self._add_run(p, text.splitlines()[0])
+        self._add_run(p, call)
         p.add_line_break()
-        self._add_run(p, text.splitlines()[1], bold=True)
+        self._add_run(p, response, bold=True)
 
 
     def add_rich_text(
@@ -144,6 +118,7 @@ class PowerPoint:
             title: str, 
             text: str, 
             anchor: str = '',
+            spoken: bool = False,
             draw: ImageDraw.ImageDraw = DRAW,
             regular: FreeTypeFont = REGULAR,
             bold: FreeTypeFont = BOLD,
@@ -155,11 +130,14 @@ class PowerPoint:
             title (str): the title of the slide. Gets added to the top right.
             text (str): the body of the slide.
             anchor (str, optional): _description_. Defaults to ''.
+            spoken (bool, optional): wraps all text in bold tags if True. Defaults to False.
             draw (ImageDraw.ImageDraw, optional): _description_. Defaults to DRAW.
             regular (FreeTypeFont, optional): _description_. Defaults to REGULAR.
             bold (FreeTypeFont, optional): _description_. Defaults to BOLD.
             italic (FreeTypeFont, optional): _description_. Defaults to ITALIC.
         """
+        if spoken:
+            text = '\n'.join([f'<b>{line}</b>' for line in text.splitlines()])
         superscripts = re.findall(r'<sup>(.*?)</sup>', text)
         regular_text, bold_text, italic_text = split_formatted_text(text.replace('<sup>', '').replace('</sup>', ''))
         bold_lines = [line[1] for line in bold_text]
@@ -237,9 +215,8 @@ class PowerPoint:
 
     # TODO: add image file name to method signature
     def convert_image(self) -> None:
-        """
-        Images downloaded from Sundays and Seasons are in a .pptx format. This method converts 
-        the image to a .jpg that can be added to the powerpoint.
+        """Images downloaded from Sundays and Seasons are in a .pptx format. 
+        This method converts the image to a .jpg that can be added to the powerpoint.
         """
         prs = Presentation(f'{self._path}/{self.day}/image.pptx')
         slide = prs.slides[0]

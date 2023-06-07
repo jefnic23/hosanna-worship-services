@@ -48,7 +48,7 @@ class SundaysAndSeasons:
         self.psalm: Reading
         self.second_reading: Reading
         self.gospel: Reading
-        self.intercession: str
+        self.intercession: Petition
 
 
     def login(self, url: str = LOGIN) -> None:
