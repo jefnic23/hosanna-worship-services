@@ -3,10 +3,11 @@ from tkinter import Tk, filedialog
 
 import eel
 
-from config import Settings, settings
+from config import Settings
 from services.hymns import Hymns
 
-hymns = Hymns()
+settings = Settings()
+hymns = Hymns(settings)
 # TODO: instantiate all services here
 
 

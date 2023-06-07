@@ -1,8 +1,6 @@
 <script lang="ts">
     import DateSelector from "./lib/DateSelector.svelte";
     import Planner from "./lib/Planner.svelte";
-    import Settings from "./lib/Settings.svelte";
-    import TextEditor from "./lib/TextEditor.svelte";
     import Tracker from "./lib/Tracker.svelte";
 </script>
 
