@@ -2,10 +2,14 @@
     import DateSelector from "./lib/DateSelector.svelte";
     import Planner from "./lib/Planner.svelte";
     import Tracker from "./lib/Tracker.svelte";
+    import Sidebar from "./lib/components/Sidebar.svelte";
 </script>
 
 <main>
-    <Tracker />
+    <Sidebar>
+        <Tracker />
+    </Sidebar>
+    
     <DateSelector />
     <!-- <TextEditor /> -->
     <!-- <Settings /> -->
