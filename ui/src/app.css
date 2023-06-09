@@ -14,11 +14,6 @@
 	-webkit-text-size-adjust: 100%;
 }
 
-.grid-item {
-	grid-row: 1;
-	grid-column: 1;
-}
-
 a {
 	font-weight: 500;
 	color: #646cff;

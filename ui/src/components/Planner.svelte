@@ -35,7 +35,7 @@
 </script>
 
 {#if isActive}
-    <div class="grid-item flex" transition:fly="{{ y: 200, duration: 300 }}">
+    <div class="flex" transition:fly="{{ y: 200, duration: 300 }}">
         {#each Object.keys(elements) as element}
             <div class="planner-element">
                 <div class="planner-element-name">{element}</div>

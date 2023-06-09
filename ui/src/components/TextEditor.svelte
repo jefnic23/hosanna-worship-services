@@ -23,7 +23,7 @@
 </script>
 
 {#if isActive}
-    <div class='grid-item' transition:fly="{{ y: 200, duration: 300 }}">
+    <div transition:fly="{{ y: 200, duration: 300 }}">
         <textarea bind:value={text} on:change={handleTextChange}></textarea>
         <button on:click={handleSubmit}>Submit</button>
     </div>

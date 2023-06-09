@@ -54,7 +54,7 @@
 </script>
 
 {#if isActive}
-    <div class="grid-item" transition:fly="{{ y: 200, duration: 300 }}">
+    <div transition:fly="{{ y: 200, duration: 300 }}">
         Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
         <button on:click={handleNextSunday}>Next sunday</button>
         <button on:click={handleSubmit}>Submit</button>

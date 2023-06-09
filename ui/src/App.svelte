@@ -10,17 +10,19 @@
     <Sidebar />
     
     <div class='container'>
-        {#if $activeTab === 'date'}
-            <DateSelector isActive={true} />
-        {:else if $activeTab === 'liturgy'}
-            <TextEditor isActive={true} />
-        {:else if $activeTab === 'powerpoint'}
-            <Planner isActive={true} />
-        {:else if $activeTab === 'review'}
-            <Planner isActive={true} />
-        {:else}
-            <DateSelector isActive={true} />
-        {/if}
+        <div class='container-item'>
+            {#if $activeTab === 'date'}
+                <DateSelector isActive={true} />
+            {:else if $activeTab === 'liturgy'}
+                <TextEditor isActive={true} />
+            {:else if $activeTab === 'powerpoint'}
+                <Planner isActive={true} />
+            {:else if $activeTab === 'review'}
+                <Planner isActive={true} />
+            {:else}
+                <DateSelector isActive={true} />
+            {/if}
+        </div>
     </div>
 </main>
 
@@ -29,5 +31,10 @@
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: 1fr;
+    }
+
+    .container-item {
+        grid-row: 1;
+        grid-column: 1;
     }
 </style>
