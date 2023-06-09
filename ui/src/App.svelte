@@ -1,19 +1,25 @@
 <script lang="ts">
-    import DateSelector from "./lib/DateSelector.svelte";
-    import Planner from "./lib/Planner.svelte";
-    import Tracker from "./lib/Tracker.svelte";
-    import Sidebar from "./lib/components/Sidebar.svelte";
+    import DateSelector from "./components/DateSelector.svelte";
+    import Planner from "./components/Planner.svelte";
+    import Sidebar from "./components/Sidebar.svelte";
+    import TextEditor from "./components/TextEditor.svelte";
+    import { activeTab } from "./stores";
 </script>
 
 <main>
-    <Sidebar>
-        <Tracker />
-    </Sidebar>
+    <Sidebar />
     
-    <DateSelector />
-    <!-- <TextEditor /> -->
-    <!-- <Settings /> -->
-    <Planner />
+    {#if $activeTab === 'date'}
+        <DateSelector />
+    {:else if $activeTab === 'liturgy'}
+        <TextEditor />
+    {:else if $activeTab === 'powerpoint'}
+        <Planner />
+    {:else if $activeTab === 'review'}
+        <Planner />
+    {:else}
+        <DateSelector />
+    {/if}
 </main>
 
 <style>
