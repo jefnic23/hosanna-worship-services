@@ -1,11 +1,11 @@
 <script lang="ts">
     import { eel } from "../main";
-    import { activeTab } from "../stores";
     import { fly } from "svelte/transition";
+
+    export let isActive: boolean;
 
     let today: Date = new Date();
     let formattedDate: string = formatDate(today);
-    let isActive: boolean = $activeTab === 'date';
 
     /**
      * Formats the date to the format YYYY-MM-DD

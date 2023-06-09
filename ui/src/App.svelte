@@ -11,21 +11,23 @@
     
     <div class='container'>
         {#if $activeTab === 'date'}
-            <DateSelector />
+            <DateSelector isActive={true} />
         {:else if $activeTab === 'liturgy'}
-            <TextEditor />
+            <TextEditor isActive={true} />
         {:else if $activeTab === 'powerpoint'}
-            <Planner />
+            <Planner isActive={true} />
         {:else if $activeTab === 'review'}
-            <Planner />
+            <Planner isActive={true} />
         {:else}
-            <DateSelector />
+            <DateSelector isActive={true} />
         {/if}
     </div>
 </main>
 
 <style>
     .container {
-        display: grid;  
+        display: grid;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr;
     }
 </style>

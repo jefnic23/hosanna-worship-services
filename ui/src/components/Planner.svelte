@@ -1,9 +1,8 @@
 <script lang="ts">
     import Hymn from "./Hymn.svelte";
-    import { activeTab } from "../stores";
     import { fly } from "svelte/transition";
 
-    let isActive: boolean = $activeTab === 'powerpoint';
+    export let isActive: boolean;
 
     const elements: {} = {
         'Confession': 'call_and_response',

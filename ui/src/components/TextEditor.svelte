@@ -1,10 +1,10 @@
 <script lang="ts">
     import { eel } from "../main";
-    import { activeTab } from "../stores";
     import { fly } from "svelte/transition";
 
+    export let isActive: boolean;
+
     let text: string = '';
-    let isActive: boolean = $activeTab === 'liturgy';
 
     /**
      * Sets the text to the selected text
