@@ -1,6 +1,6 @@
 <script lang="ts">
     import { eel } from "../main";
-    import type { Settings } from "./types/settings";
+    import type { Settings } from "../types/settings";
 
     let settings: Settings = {};
 

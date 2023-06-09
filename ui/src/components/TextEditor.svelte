@@ -1,7 +1,10 @@
 <script lang="ts">
     import { eel } from "../main";
+    import { activeTab } from "../stores";
+    import { fly } from "svelte/transition";
 
     let text: string = '';
+    let isActive: boolean = $activeTab === 'liturgy';
 
     /**
      * Sets the text to the selected text
@@ -19,10 +22,12 @@
     }
 </script>
 
-<div>
-    <textarea bind:value={text} on:change={handleTextChange}></textarea>
-    <button on:click={handleSubmit}>Submit</button>
-</div>
+{#if isActive}
+    <div class='grid-item' transition:fly="{{ y: 200, duration: 300 }}">
+        <textarea bind:value={text} on:change={handleTextChange}></textarea>
+        <button on:click={handleSubmit}>Submit</button>
+    </div>
+{/if}
 
 <style>
     textarea {

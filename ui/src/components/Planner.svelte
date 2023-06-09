@@ -1,5 +1,9 @@
 <script lang="ts">
     import Hymn from "./Hymn.svelte";
+    import { activeTab } from "../stores";
+    import { fly } from "svelte/transition";
+
+    let isActive: boolean = $activeTab === 'powerpoint';
 
     const elements: {} = {
         'Confession': 'call_and_response',
@@ -31,18 +35,28 @@
     }
 </script>
 
-{#each Object.keys(elements) as element}
-    <div class="planner-element">
-        <div class="planner-element-name">{element}</div>
-        {#if elements[element] === 'hymn'}
-            <Hymn />
-        {:else}
-            <div class="planner-element-type">{elements[element]}</div>
-        {/if}
+{#if isActive}
+    <div class="grid-item flex" transition:fly="{{ y: 200, duration: 300 }}">
+        {#each Object.keys(elements) as element}
+            <div class="planner-element">
+                <div class="planner-element-name">{element}</div>
+                {#if elements[element] === 'hymn'}
+                    <Hymn />
+                {:else}
+                    <div class="planner-element-type">{elements[element]}</div>
+                {/if}
+            </div>
+        {/each}
     </div>
-{/each}
+{/if}
+    
 
 <style>
+    .flex {
+        display: flex;
+        flex-direction: column;
+    }
+    
     .planner-element {
         display: flex;
         flex-direction: row;

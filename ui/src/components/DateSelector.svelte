@@ -1,8 +1,11 @@
 <script lang="ts">
     import { eel } from "../main";
+    import { activeTab } from "../stores";
+    import { fly } from "svelte/transition";
 
     let today: Date = new Date();
     let formattedDate: string = formatDate(today);
+    let isActive: boolean = $activeTab === 'date';
 
     /**
      * Formats the date to the format YYYY-MM-DD
@@ -37,7 +40,7 @@
     /** 
      * Sets the date to the sunday following the current date
      */
-     function handleNextSunday(): void {
+    function handleNextSunday(): void {
         today = getNextSunday(today);
         formattedDate = formatDate(today);
     }
@@ -50,8 +53,10 @@
     }
 </script>
 
-<div>
-    Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
-    <button on:click={handleNextSunday}>Next sunday</button>
-    <button on:click={handleSubmit}>Submit</button>
-</div>
+{#if isActive}
+    <div class="grid-item" transition:fly="{{ y: 200, duration: 300 }}">
+        Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
+        <button on:click={handleNextSunday}>Next sunday</button>
+        <button on:click={handleSubmit}>Submit</button>
+    </div>
+{/if}
