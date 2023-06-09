@@ -2,8 +2,6 @@
     import { eel } from "../main";
     import { fly } from "svelte/transition";
 
-    export let isActive: boolean;
-
     let today: Date = new Date();
     let formattedDate: string = formatDate(today);
 
@@ -53,10 +51,9 @@
     }
 </script>
 
-{#if isActive}
-    <div transition:fly="{{ y: 200, duration: 300 }}">
-        Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
-        <button on:click={handleNextSunday}>Next sunday</button>
-        <button on:click={handleSubmit}>Submit</button>
-    </div>
-{/if}
+
+<div transition:fly="{{ y: 200, duration: 300 }}">
+    Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
+    <button on:click={handleNextSunday}>Next sunday</button>
+    <button on:click={handleSubmit}>Submit</button>
+</div>

@@ -8,16 +8,16 @@
 
 <ul>
     <li>
-        <span on:click={() => handleClick('date')}>Select date</span>
+        <button on:click={() => handleClick('date')}>Select date</button>
     </li>
     <li>
-        <span on:click={() => handleClick('liturgy')}>Select liturgy</span>
+        <button on:click={() => handleClick('liturgy')}>Select liturgy</button>
     </li>
     <li>
-        <span on:click={() => handleClick('powerpoint')}>Build PowerPoint</span>
+        <button on:click={() => handleClick('powerpoint')}>Build PowerPoint</button>
     </li>
     <li>
-        <span on:click={() => handleClick('review')}>Review & confirm</span>
+        <button on:click={() => handleClick('review')}>Review & confirm</button>
     </li>
 </ul>
 
@@ -31,7 +31,7 @@
         margin: 1rem 0;
     }
 
-    span:hover {
+    button:hover {
         cursor: pointer;
     }
 </style>

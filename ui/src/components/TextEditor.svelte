@@ -2,8 +2,6 @@
     import { eel } from "../main";
     import { fly } from "svelte/transition";
 
-    export let isActive: boolean;
-
     let text: string = '';
 
     /**
@@ -22,12 +20,10 @@
     }
 </script>
 
-{#if isActive}
-    <div transition:fly="{{ y: 200, duration: 300 }}">
-        <textarea bind:value={text} on:change={handleTextChange}></textarea>
-        <button on:click={handleSubmit}>Submit</button>
-    </div>
-{/if}
+<div transition:fly="{{ y: 200, duration: 300 }}">
+    <textarea bind:value={text} on:change={handleTextChange}></textarea>
+    <button on:click={handleSubmit}>Submit</button>
+</div>
 
 <style>
     textarea {

@@ -12,15 +12,15 @@
     <div class='container'>
         <div class='container-item'>
             {#if $activeTab === 'date'}
-                <DateSelector isActive={true} />
+                <DateSelector />
             {:else if $activeTab === 'liturgy'}
-                <TextEditor isActive={true} />
+                <TextEditor />
             {:else if $activeTab === 'powerpoint'}
-                <Planner isActive={true} />
+                <Planner />
             {:else if $activeTab === 'review'}
-                <Planner isActive={true} />
+                <Planner />
             {:else}
-                <DateSelector isActive={true} />
+                <DateSelector />
             {/if}
         </div>
     </div>

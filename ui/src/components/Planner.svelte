@@ -2,8 +2,6 @@
     import Hymn from "./Hymn.svelte";
     import { fly } from "svelte/transition";
 
-    export let isActive: boolean;
-
     const elements: {} = {
         'Confession': 'call_and_response',
         'Gathering Song': 'hymn',
@@ -34,20 +32,18 @@
     }
 </script>
 
-{#if isActive}
-    <div class="flex" transition:fly="{{ y: 200, duration: 300 }}">
-        {#each Object.keys(elements) as element}
-            <div class="planner-element">
-                <div class="planner-element-name">{element}</div>
-                {#if elements[element] === 'hymn'}
-                    <Hymn />
-                {:else}
-                    <div class="planner-element-type">{elements[element]}</div>
-                {/if}
-            </div>
-        {/each}
-    </div>
-{/if}
+<div class="flex" transition:fly="{{ y: 200, duration: 300 }}">
+    {#each Object.keys(elements) as element}
+        <div class="planner-element">
+            <div class="planner-element-name">{element}</div>
+            {#if elements[element] === 'hymn'}
+                <Hymn />
+            {:else}
+                <div class="planner-element-type">{elements[element]}</div>
+            {/if}
+        </div>
+    {/each}
+</div>
     
 
 <style>
