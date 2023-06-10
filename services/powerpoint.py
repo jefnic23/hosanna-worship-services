@@ -81,16 +81,16 @@ class PowerPoint:
         tf = content.text_frame
         tf.auto_size = MSO_AUTO_SIZE.NONE
         tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
-        for key, value in hymn.items():
+        for i, value in enumerate([hymn.title, hymn.number]):
             paragraph = tf.paragraphs[0]
             paragraph.alignment = PP_ALIGN.CENTER
             self._add_run(
                 paragraph, 
                 value, 
                 bold=True, 
-                italic=True if key == 'Title' else False, 
+                italic=True if i == 0 else False, 
                 size=24, 
-                has_more=True if key == 'Title' else False
+                has_more=True if i == 0 else False
             )
 
 
@@ -227,16 +227,6 @@ class PowerPoint:
             f.write(blob)
     
         os.remove(f'{self._path}/{self.day}/image.pptx')
-
-
-    def load_hymns(self) -> list[tuple]:
-        '''Load the hymns from the hymns.txt file.'''
-        hymns = open(
-            f'{self._path}/{self.day}/hymns.txt', 
-            'r', 
-            encoding='utf-8'
-        ).read()
-        return grouper(hymns.splitlines(), 2)
     
 
     def save(self) -> None:

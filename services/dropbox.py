@@ -24,12 +24,12 @@ class Dropbox:
     ) -> None:
         '''Upload a file to Dropbox.'''
         try:
-            with open(f'{self._path}/{self._day}/{self._day}.{ext}', 'rb') as f:
+            with open(f'{self._path}/{self.day}/{self.day}.{ext}', 'rb') as f:
                 file = f.read()
 
             self._dbx.files_upload(
                 file, 
-                f'/{self._day}/{self._day}.{ext}', 
+                f'/{self.day}/{self.day}.{ext}', 
                 mode=WriteMode.overwrite
             )
         except ApiError as err:
