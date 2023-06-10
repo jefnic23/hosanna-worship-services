@@ -2,9 +2,9 @@ import os
 from pathlib import Path
 
 from config import Settings
-from models.reading import Reading
 from services.document import WordDocument
 from services.dropbox import Dropbox
+from services.hymns import Hymns
 from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
@@ -26,13 +26,19 @@ sas.logoff()
 lit = Liturgy(settings)
 lit.load_files('pentecost')
 
+hymns = Hymns(settings)
+hymns.day = this_sunday
+hymns.add_hymn(556)
+hymns.add_hymn(858)
+hymns.add_hymn(543)
+
 ppt = PowerPoint(settings)
 ppt.day = this_sunday
 ppt.convert_image()
 
 ppt.add_image()
 ppt.add_rich_text('Confession and Forgiveness', lit.confession)
-# ppt.add_hymn()
+ppt.add_hymn(hymns._hymns[0])
 ppt.add_rich_text('Greeting', lit.greeting)
 ppt.add_rich_text('Kyrie', lit.kyrie, spoken=True)
 ppt.add_rich_text('', lit.lord_be_with_you, anchor='middle')
@@ -49,7 +55,7 @@ ppt.add_rich_text('Gospel Acclamation', lit.gospel_acclamation, spoken=True)
 ppt.add_title_slide(sas.gospel.title)
 ppt.add_rich_text('Gospel', sas.gospel.body)
 ppt.add_title_slide('Sermon')
-# ppt.add_hymn()
+ppt.add_hymn(hymns._hymns[1])
 ppt.add_rich_text('Apostle\'s Creed', lit.creed, spoken=True)
 ppt.add_intercessions(sas.intercession.call, sas.intercession.response)
 ppt.add_rich_text('Dialogue', lit.dialogue, anchor='middle')
@@ -65,19 +71,21 @@ ppt.add_title_slide('Communion')
 ppt.add_rich_text('Communion', lit.communion_blessing)
 ppt.add_rich_text('Prayer after Communion', lit.prayer_after_communion)
 ppt.add_rich_text('Blessing', lit.blessing)
-# ppt.add_hymn()
+ppt.add_hymn(hymns._hymns[2])
 ppt.add_rich_text('Dismissal', lit.dismissal, anchor='middle')
 ppt.add_image()
 ppt.save()
 
-# doc = WordDocument(settings, day = this_sunday)
-# doc.add_reading(sas.first_reading)
-# doc.add_psalm(sas.psalm)
-# doc.add_reading(sas.second_reading)
-# doc.save()
+doc = WordDocument(settings)
+doc.day = this_sunday
+doc.add_reading(sas.first_reading)
+doc.add_psalm(sas.psalm)
+doc.add_reading(sas.second_reading)
+doc.save()
 
-# dbx = Dropbox(settings, day = this_sunday)
-# dbx.connect()
-# dbx.upload('pptx')
-# dbx.upload('pdf')
-# dbx.close()
+dbx = Dropbox(settings)
+dbx.day = this_sunday
+dbx.connect()
+dbx.upload('pptx')
+dbx.upload('pdf')
+dbx.close()
