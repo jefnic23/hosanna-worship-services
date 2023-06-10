@@ -8,14 +8,14 @@
 
 <main>
     <Sidebar />
-    <div class='container'>
-        {#if $activeTab === 'date'}
+    <div class="container">
+        {#if $activeTab === "date"}
             <DateSelector />
-        {:else if $activeTab === 'liturgy'}
+        {:else if $activeTab === "liturgy"}
             <TextEditor />
-        {:else if $activeTab === 'powerpoint'}
+        {:else if $activeTab === "powerpoint"}
             <Planner />
-        {:else if $activeTab === 'review'}
+        {:else if $activeTab === "review"}
             <Planner />
         {:else}
             <DateSelector />
@@ -35,5 +35,7 @@
         grid-template-rows: 1fr;
         grid-template-columns: 1fr;
         min-height: 100vh;
+        margin-left: 250px;
+        width: calc(100vw - 250px);
     }
 </style>
