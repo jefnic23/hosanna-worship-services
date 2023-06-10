@@ -8,33 +8,32 @@
 
 <main>
     <Sidebar />
-    
     <div class='container'>
-        <div class='container-item'>
-            {#if $activeTab === 'date'}
-                <DateSelector />
-            {:else if $activeTab === 'liturgy'}
-                <TextEditor />
-            {:else if $activeTab === 'powerpoint'}
-                <Planner />
-            {:else if $activeTab === 'review'}
-                <Planner />
-            {:else}
-                <DateSelector />
-            {/if}
-        </div>
+        {#if $activeTab === 'date'}
+            <DateSelector />
+        {:else if $activeTab === 'liturgy'}
+            <TextEditor />
+        {:else if $activeTab === 'powerpoint'}
+            <Planner />
+        {:else if $activeTab === 'review'}
+            <Planner />
+        {:else}
+            <DateSelector />
+        {/if}
     </div>
 </main>
 
 <style>
+    main {
+        display: grid;
+        grid-template-columns: 250px 5fr;
+        height: 100vh;
+    }
+
     .container {
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: 1fr;
-    }
-
-    .container-item {
-        grid-row: 1;
-        grid-column: 1;
+        min-height: 100vh;
     }
 </style>
