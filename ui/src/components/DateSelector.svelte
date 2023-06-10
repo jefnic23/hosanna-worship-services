@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { eel } from "../main";
     import { fly } from "svelte/transition";
+    import { eel } from "../main";
 
     let today: Date = new Date();
     let formattedDate: string = formatDate(today);
@@ -52,8 +52,22 @@
 </script>
 
 
-<div transition:fly="{{ y: 200, duration: 300 }}">
-    Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
-    <button on:click={handleNextSunday}>Next sunday</button>
-    <button on:click={handleSubmit}>Submit</button>
+<div 
+    class='container-item'
+    in:fly="{{ y: -200, duration: 300 }}"
+    out:fly="{{ y: 200, duration: 300 }}"
+>
+    <div class='flex'>
+        Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
+        <button on:click={handleNextSunday}>Next sunday</button>
+        <button on:click={handleSubmit}>Submit</button>
+    </div>
 </div>
+
+<style>
+    .flex {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+</style>

@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { eel } from "../main";
     import { fly } from "svelte/transition";
+    import { eel } from "../main";
 
     let text: string = '';
 
@@ -20,16 +20,21 @@
     }
 </script>
 
-<div transition:fly="{{ y: 200, duration: 300 }}">
-    <textarea bind:value={text} on:change={handleTextChange}></textarea>
-    <button on:click={handleSubmit}>Submit</button>
+<div 
+    class='container-item'
+    in:fly="{{ y: -200, duration: 300 }}"
+    out:fly="{{ y: 200, duration: 300 }}"
+>
+    <div class='flex'>
+        <textarea bind:value={text} on:change={handleTextChange}></textarea>
+        <button on:click={handleSubmit}>Submit</button>
+    </div>
 </div>
 
 <style>
-    textarea {
-        width: 100%;
-        height: 100%;
-        resize: none;
-        overflow: hidden;
+    .flex {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 </style>

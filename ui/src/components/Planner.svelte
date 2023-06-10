@@ -1,7 +1,7 @@
 <script lang="ts">
-    import Hymn from "./Hymn.svelte";
     import { fly } from "svelte/transition";
-
+    import Hymn from "./Hymn.svelte";
+    
     const elements: {} = {
         'Confession': 'call_and_response',
         'Gathering Song': 'hymn',
@@ -32,7 +32,11 @@
     }
 </script>
 
-<div class="flex" transition:fly="{{ y: 200, duration: 300 }}">
+<div 
+    class="flex container-item scrollable" 
+    in:fly="{{ y: -200, duration: 300 }}"
+    out:fly="{{ y: 200, duration: 300 }}"
+>
     {#each Object.keys(elements) as element}
         <div class="planner-element">
             <div class="planner-element-name">{element}</div>
@@ -50,6 +54,11 @@
     .flex {
         display: flex;
         flex-direction: column;
+        overflow: auto;
+    }
+
+    .scrollable {
+        overflow-y: auto;
     }
     
     .planner-element {
