@@ -29,7 +29,7 @@
 <button on:click={handleSubmit}>Submit</button>
 <div>
     {#each hymns as hymn}
-        <p>{hymn.Title}</p>
-        <p>ELW {hymn.Number}</p>
+        <p>{hymn.title}</p>
+        <p>ELW {hymn.number}</p>
     {/each}
 </div>
