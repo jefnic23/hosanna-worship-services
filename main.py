@@ -4,11 +4,20 @@ from tkinter import Tk, filedialog
 import eel
 
 from config import Settings
+from services.document import WordDocument
+from services.dropbox import Dropbox
 from services.hymns import Hymns
+from services.liturgy import Liturgy
+from services.powerpoint import PowerPoint
+from services.sundaysandseasons import SundaysAndSeasons
 
 settings = Settings()
+doc = WordDocument(settings)
+dbx = Dropbox(settings)
 hymns = Hymns(settings)
-# TODO: instantiate all services here
+lit = Liturgy(settings)
+ppt = PowerPoint(settings)
+sas = SundaysAndSeasons(settings)
 
 
 @eel.expose
@@ -45,9 +54,15 @@ def get_dir():
 @eel.expose
 def set_date(date: str) -> None:
     '''Set date for all services.'''
-    hymns.day = datetime.strptime(date, '%Y-%m-%d').date()
-    # TODO: set date for all services here
-    print(hymns.day)
+    day = datetime.strptime(date, '%Y-%m-%d').date()
+
+    doc.day = day
+    dbx.day = day
+    hymns.day = day
+    ppt.day = day
+    sas.day = day
+
+    print(day)
 
 
 @eel.expose
