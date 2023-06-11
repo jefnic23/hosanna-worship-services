@@ -52,8 +52,10 @@ ppt.add_rich_text('Psalm', sas.psalm.body)
 ppt.add_title_slide(sas.second_reading.title)
 ppt.add_rich_text('Second Reading', sas.second_reading.body)
 ppt.add_rich_text('Gospel Acclamation', lit.gospel_acclamation, spoken=True)
-ppt.add_title_slide(sas.gospel.title)
+
+ppt.add_gospel_title(sas.gospel.title)
 ppt.add_rich_text('Gospel', sas.gospel.body)
+
 ppt.add_title_slide('Sermon')
 ppt.add_hymn(hymns._hymns[1])
 ppt.add_rich_text('Apostle\'s Creed', lit.creed, spoken=True)

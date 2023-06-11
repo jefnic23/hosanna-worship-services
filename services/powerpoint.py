@@ -94,6 +94,20 @@ class PowerPoint:
             )
 
 
+    def add_gospel_title(self, title: str) -> None:
+        '''Add the title of the Gospel reading to the presentation.'''
+        slide = self.prs.slides.add_slide(self._blank_layout)
+        content = slide.shapes.add_textbox(Inches(0), Inches(0), Inches(6), Inches(4))
+        tf = content.text_frame
+        tf.auto_size = MSO_AUTO_SIZE.NONE
+        tf.vertical_anchor = MSO_VERTICAL_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.LEFT
+        self._add_run(p, f'The holy gospel according to {title.split()[0]}.')
+        p.add_line_break()
+        self._add_run(p, 'Glory to you, O Lord.', bold=True)
+
+
     def add_intercessions(
         self, 
         call: str,
