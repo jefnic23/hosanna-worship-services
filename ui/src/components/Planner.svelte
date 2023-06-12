@@ -34,8 +34,8 @@
 
 <div 
     class="flex container-item scrollable" 
-    in:fly="{{ y: -200, duration: 300 }}"
-    out:fly="{{ y: 200, duration: 300 }}"
+    in:fly="{{ x: -1000, duration: 300 }}"
+    out:fly="{{ x: 1000, duration: 300 }}"
 >
     {#each Object.keys(elements) as element}
         <div class="planner-element">

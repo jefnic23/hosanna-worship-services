@@ -54,8 +54,8 @@
 
 <div 
     class='container-item'
-    in:fly="{{ y: -200, duration: 300 }}"
-    out:fly="{{ y: 200, duration: 300 }}"
+    in:fly="{{ x: -1000, duration: 300 }}"
+    out:fly="{{ x: 1000, duration: 300 }}"
 >
     <div class='flex'>
         Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
