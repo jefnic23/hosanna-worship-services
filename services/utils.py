@@ -80,13 +80,6 @@ def lookahead(iterable: Iterable):
     yield last, False
 
 
-def find_superscript(text: str, superscript: str, start: int = 0) -> tuple[int, int]:
-    '''Find the start and end index of a superscript in a string'''
-    length = len(superscript)
-    index = text.find(superscript, start)
-    return index, index + length
-
-
 def get_superscripts(
     superscripts: list[str],
     line: str
