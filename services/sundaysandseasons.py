@@ -213,6 +213,7 @@ class SundaysAndSeasons:
 
         formatted_text = []
         for i, line in enumerate(grouper(text.splitlines(), 3)):
+            print(line)
             if i % 2 == 0:
                 formatted_text.append(f"{line[0]}{' '.join(line[1:])}")
             else:

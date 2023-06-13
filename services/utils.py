@@ -3,7 +3,7 @@ import os
 import re
 from datetime import date, timedelta
 from distutils.spawn import find_executable
-from itertools import chain, tee, zip_longest
+from itertools import chain, pairwise, zip_longest
 from typing import Iterable
 
 
@@ -15,13 +15,6 @@ def point_to_px(point: int) -> int:
 def inch_to_px(inch: int) -> int:
     '''Converts an inch size to a pixel size.'''
     return int(inch * 96)
-
-
-def pairwise(iterable: Iterable) -> list[tuple]:
-    '''s -> (s0,s1), (s1,s2), (s2, s3), ...'''
-    a, b = tee(iterable)
-    next(b, None)
-    return list(zip(a, b))
 
 
 def grouper(
@@ -44,9 +37,9 @@ def split_formatted_text(
     text: str
 ) -> tuple[list[tuple[int, str]], list[tuple[int, str]], list[tuple[int, str]]]:
     '''Splits a file into regular and bold text.'''
-    bold_text = []
-    italic_text = []
-    regular_text = []
+    bold_text: list[tuple[int, str]] = []
+    italic_text: list[tuple[int, str]] = []
+    regular_text: list[tuple[int, str]] = []
     for line_number, line in enumerate(text.splitlines()):
         if re.match(r'<b>.*</b>', line):
             bold_text.append((
@@ -96,6 +89,7 @@ def get_superscripts(
     superscripts_in_line = []
     for superscript in superscripts:
         for s in re.finditer(superscript, line):
+            print(superscript, s)
             if not any(start < s.end() for start, _ in superscripts_in_line):
                 superscripts_in_line.append((s.start(), s.end()))
     return superscripts_in_line
@@ -108,7 +102,7 @@ def clean_text(text: str) -> str:
         .replace(' | ', ' ').replace('- ', '').replace('  ', ' ')
         .strip()
     )
-    return cleaned[:-1] if cleaned.endswith('R') else cleaned 
+    return cleaned[:-1].strip() if cleaned.endswith('R') else cleaned 
 
 
 def exe_exists(exe: str) -> bool:

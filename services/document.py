@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import date
-from itertools import chain
+from itertools import chain, pairwise
 from pathlib import Path
 
 from docx import Document
@@ -10,7 +10,7 @@ from docx.text.paragraph import Paragraph, Run
 
 from config import Settings
 from models.reading import Reading
-from services.utils import (clean_text, get_superscripts, lookahead, pairwise,
+from services.utils import (clean_text, get_superscripts, lookahead,
                             split_formatted_text)
 
 

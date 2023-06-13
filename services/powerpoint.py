@@ -1,7 +1,7 @@
 import os
 import re
 from datetime import date
-from itertools import chain
+from itertools import chain, pairwise
 from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFont
@@ -17,8 +17,7 @@ from pptx.util import Inches, Pt
 from config import Settings
 from models.hymn import Hymn
 from models.reading import Reading
-from services.utils import (get_superscripts, grouper, lookahead, pairwise,
-                            split_formatted_text)
+from services.utils import get_superscripts, lookahead, split_formatted_text
 
 
 class PowerPoint:
