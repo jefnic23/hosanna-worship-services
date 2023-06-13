@@ -18,7 +18,7 @@
     "paths": {
       "@components/*": ["src/components/*"],
       "@stores": ["src/stores"],
-      "@types/*": ["src/types/*"],
+      "@interfaces/*": ["src/interfaces/*"],
     }
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
