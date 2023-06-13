@@ -57,7 +57,7 @@ formatted_text = []
 for i, line in enumerate(text.splitlines()):
     if line.replace('<sup>', '').replace('</sup>', '') in superscripts:
         try:
-            if text.splitlines()[i+1] in bold_text:
+            if text.splitlines()[i+1] in bold_text or text.splitlines()[i-1] in bold_text and i != 0:
                 formatted_text.append(None)
         except IndexError:
             pass
@@ -65,8 +65,14 @@ for i, line in enumerate(text.splitlines()):
     else:
         formatted_text.append(line)
 
-for line in split(formatted_text, lambda x: x is None):
-    print(line)
+psalm = ''
+for i, line in enumerate(split(formatted_text, lambda x: x is None)):
+    if i % 2 == 0:
+        psalm += f"{line[0]}{' '.join(line[1:])}"
+    else:
+        psalm += f"<b>{line[0]}{' '.join(line[1:])}</b>"
+        
+print(psalm)
 
 # settings = Settings()
 # ppt = PowerPoint(settings)

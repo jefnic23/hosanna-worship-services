@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Optional
 
 import requests
+from boltons.iterutils import split
 from bs4 import BeautifulSoup
 
 from config import Settings
@@ -201,6 +202,7 @@ class SundaysAndSeasons:
         title = parent.get_text().split('Psalm: ')[1]
 
         psalm = parent.find_next_sibling().find_next_sibling()
+        bold_text = [clean_text(strong.get_text()) for strong in soup.find_all('strong')]
         superscripts = SundaysAndSeasons._get_superscripts(psalm)
         text = SundaysAndSeasons._add_superscripts(
             '\n'.join([
@@ -212,16 +214,27 @@ class SundaysAndSeasons:
         )
 
         formatted_text = []
-        for i, line in enumerate(grouper(text.splitlines(), 3)):
-            print(line)
-            if i % 2 == 0:
-                formatted_text.append(f"{line[0]}{' '.join(line[1:])}")
+        for i, line in enumerate(text.splitlines()):
+            if line.replace('<sup>', '').replace('</sup>', '') in superscripts:
+                try:
+                    if text.splitlines()[i+1] in bold_text or text.splitlines()[i-1] in bold_text and i != 0:
+                        formatted_text.append(None)
+                except IndexError:
+                    pass
+                formatted_text.append(line) 
             else:
-                formatted_text.append(f"<b>{line[0]}{' '.join(line[1:])}</b>")
+                formatted_text.append(line)
+
+        body = []
+        for i, line in enumerate(split(formatted_text, lambda x: x is None)):
+            if i % 2 == 0:
+                body.append(f"{line[0]}{' '.join(line[1:])}")
+            else:
+                body.append(f"<b>{line[0]}{' '.join(line[1:])}</b>")
 
         return Reading(
             title = title,
-            body = '\n'.join(formatted_text)
+            body = '\n'.join(body)
         )
     
 
