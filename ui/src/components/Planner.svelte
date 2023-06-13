@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import Hymn from "./Hymn.svelte";
+    import Hymn from "@components/Hymn.svelte";
     
     const elements: {} = {
         'Confession': 'call_and_response',

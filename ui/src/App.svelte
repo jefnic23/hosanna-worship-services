@@ -1,9 +1,9 @@
 <script lang="ts">
-    import DateSelector from "./components/DateSelector.svelte";
-    import Planner from "./components/Planner.svelte";
-    import Sidebar from "./components/Sidebar.svelte";
-    import TextEditor from "./components/TextEditor.svelte";
-    import { activeTab } from "./stores";
+    import DateSelector from "@components/DateSelector.svelte";
+    import Planner from "@components/Planner.svelte";
+    import Sidebar from "@components/Sidebar.svelte";
+    import TextEditor from "@components/TextEditor.svelte";
+    import { activeTab } from "@stores";
 </script>
 
 <main>

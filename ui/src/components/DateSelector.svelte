@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { eel } from "../main";
+    import { eel } from "@stores";
 
     let today: Date = new Date();
     let formattedDate: string = formatDate(today);

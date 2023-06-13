@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { eel } from "../main";
-    import type { Hymn } from "../types/hymn";
+    import { eel } from "@stores";
+    import type { Hymn } from "@interfaces/hymn";
 
     let hymn: string = '';
     let hymns: Hymn[] = [];

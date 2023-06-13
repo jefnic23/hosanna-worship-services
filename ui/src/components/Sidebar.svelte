@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Tracker from "./Tracker.svelte";
+    import Tracker from "@components/Tracker.svelte";
 </script>
 
 <nav>

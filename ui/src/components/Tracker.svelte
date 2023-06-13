@@ -1,5 +1,5 @@
 <script lang='ts'>
-    import { activeTab } from "../stores";
+    import { activeTab } from "@stores";
 
     const handleClick = (tab: string) => {
         activeTab.set(tab);

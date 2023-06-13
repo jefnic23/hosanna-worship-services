@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import { eel } from "../main";
+    import { eel } from "@stores";
 
     let text: string = '';
 
