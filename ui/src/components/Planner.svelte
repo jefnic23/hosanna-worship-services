@@ -33,7 +33,7 @@
 </script>
 
 <div 
-    class="flex container-item scrollable" 
+    class="flex container-item" 
     in:fly="{{ x: -1000, duration: 300 }}"
     out:fly="{{ x: 1000, duration: 300 }}"
 >
@@ -55,10 +55,6 @@
         display: flex;
         flex-direction: column;
         overflow: auto;
-    }
-
-    .scrollable {
-        overflow-y: auto;
     }
     
     .planner-element {
