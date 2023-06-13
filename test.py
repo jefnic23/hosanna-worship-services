@@ -1,3 +1,6 @@
+import re
+
+from boltons.iterutils import split
 from bs4 import BeautifulSoup
 
 from config import Settings
@@ -8,14 +11,19 @@ with open('data/test.html', 'rb') as f:
     soup = BeautifulSoup(f.read(), 'html.parser')
 
 
-# get superscripts from soup
-superscripts = [
-    superscript.get_text() for superscript in soup.find_all('sup', {'class': None})
-]
-for i, s in enumerate(superscripts):
-    if ':' in s:
-        superscripts[i] = f'{s}{superscripts[i + 1]}'
-        superscripts.pop(i + 1)
+def get_superscripts(soup: BeautifulSoup) -> list[str]:
+    '''Get the superscripts in a soup object'''
+    superscripts = [
+        s.get_text() for s in soup.find_all('sup', {'class': None})
+    ]
+    
+    for i, s in enumerate(superscripts):
+        if ':' in s:
+            superscripts[i] = f'{s}{superscripts[i + 1]}'
+            superscripts.pop(i + 1)
+            
+    return superscripts
+
 
 def add_superscripts_to_text(text: str, superscripts: list) -> str:
     def find_superscript(text: str, superscript: str, start: int = 0):
@@ -33,15 +41,32 @@ def add_superscripts_to_text(text: str, superscripts: list) -> str:
     new_text += text[start:]
     return new_text
 
+
+bold_text = [clean_text(span.get_text()) for span in soup.find_all('strong')]
+superscripts = get_superscripts(soup)
 text = add_superscripts_to_text(
-    '\n'.join([clean_text(span) for span in soup.get_text().splitlines()]),
+    '\n'.join([
+        clean_text(span.get_text())
+        for span in soup.find_all('span', {'class': None})
+        if 'style' not in span.attrs 
+    ]),
     superscripts
 )
 
-call = 'The gospel of the Lord,'
-response = '<b>Praise to you, O Christ.</b>'
-text = '\n'.join([text, '<div>', call, response, '</div>'])
+formatted_text = []
+for i, line in enumerate(text.splitlines()):
+    if line.replace('<sup>', '').replace('</sup>', '') in superscripts:
+        try:
+            if text.splitlines()[i+1] in bold_text:
+                formatted_text.append(None)
+        except IndexError:
+            pass
+        formatted_text.append(line) 
+    else:
+        formatted_text.append(line)
 
-settings = Settings()
-ppt = PowerPoint(settings)
-ppt.add_rich_text('Gospel', text)
+for line in split(formatted_text, lambda x: x is None):
+    print(line)
+
+# settings = Settings()
+# ppt = PowerPoint(settings)
