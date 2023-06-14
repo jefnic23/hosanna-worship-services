@@ -180,9 +180,11 @@ class SundaysAndSeasons:
         reading = parent.find_next_sibling().find_next_sibling()
         title = re.split(regex, parent.get_text())[1].strip()
         
+        for br in reading.find_all('br'):
+            br.replace_with('\n')
         superscripts = SundaysAndSeasons._get_superscripts(reading)
         text = SundaysAndSeasons._add_superscripts(
-            '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines()]),
+            '\n'.join([clean_text(ele) for ele in reading.get_text().splitlines() if ele]),
             superscripts
         )
         
@@ -200,14 +202,16 @@ class SundaysAndSeasons:
         '''Get the psalm in a soup object'''
         parent = soup.find('h3', string=regex)
         title = parent.get_text().split('Psalm: ')[1]
-
         psalm = parent.find_next_sibling().find_next_sibling()
+        
+        for br in psalm.find_all('br'):
+            br.replace_with('\n')
         superscripts = SundaysAndSeasons._get_superscripts(psalm)
         text = SundaysAndSeasons._add_superscripts(
             '\n'.join([
                 clean_text(span.get_text())
                 for span in psalm.find_all('span', {'class': None}) 
-                if 'style' not in span.attrs 
+                if span.get_text() and 'style' not in span.attrs 
             ]),
             superscripts
         )
