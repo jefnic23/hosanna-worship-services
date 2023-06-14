@@ -41,19 +41,11 @@ def add_superscripts_to_text(text: str, superscripts: list) -> str:
 
 
 superscripts = get_superscripts(soup)
+for br in soup.find_all('br'):
+    br.replace_with('\n')
 text = add_superscripts_to_text(
-    '\n'.join([clean_text(ele) for ele in soup.get_text().splitlines()]),
+    '\n'.join([clean_text(ele) for ele in soup.get_text().splitlines() if ele]),
     superscripts
 )
-call = 'The gospel of the Lord,'
-response = '<b>Praise to you, O Christ.</b>'
-reading = Reading(
-    title='Test',
-    body='\n'.join([text, '<div>', call, response, '</div>'])
-)
 
-
-settings = Settings()
-document = WordDocument(settings)
-document.add_rich_text(reading)
-document.save()
+print(text)
