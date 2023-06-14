@@ -1,13 +1,11 @@
-import re
-
-from boltons.iterutils import split
 from bs4 import BeautifulSoup
 
 from config import Settings
-from services.powerpoint import PowerPoint
+from models.reading import Reading
+from services.document import WordDocument
 from services.utils import clean_text
 
-with open('data/test.html', 'rb') as f:
+with open('test.html', 'rb') as f:
     soup = BeautifulSoup(f.read(), 'html.parser')
 
 
@@ -42,37 +40,20 @@ def add_superscripts_to_text(text: str, superscripts: list) -> str:
     return new_text
 
 
-bold_text = [clean_text(span.get_text()) for span in soup.find_all('strong')]
 superscripts = get_superscripts(soup)
 text = add_superscripts_to_text(
-    '\n'.join([
-        clean_text(span.get_text())
-        for span in soup.find_all('span', {'class': None})
-        if 'style' not in span.attrs 
-    ]),
+    '\n'.join([clean_text(ele) for ele in soup.get_text().splitlines()]),
     superscripts
 )
+call = 'The gospel of the Lord,'
+response = '<b>Praise to you, O Christ.</b>'
+reading = Reading(
+    title='Test',
+    body='\n'.join([text, '<div>', call, response, '</div>'])
+)
 
-formatted_text = []
-for i, line in enumerate(text.splitlines()):
-    if line.replace('<sup>', '').replace('</sup>', '') in superscripts:
-        try:
-            if text.splitlines()[i+1] in bold_text or text.splitlines()[i-1] in bold_text and i != 0:
-                formatted_text.append(None)
-        except IndexError:
-            pass
-        formatted_text.append(line) 
-    else:
-        formatted_text.append(line)
 
-psalm = ''
-for i, line in enumerate(split(formatted_text, lambda x: x is None)):
-    if i % 2 == 0:
-        psalm += f"{line[0]}{' '.join(line[1:])}"
-    else:
-        psalm += f"<b>{line[0]}{' '.join(line[1:])}</b>"
-        
-print(psalm)
-
-# settings = Settings()
-# ppt = PowerPoint(settings)
+settings = Settings()
+document = WordDocument(settings)
+document.add_rich_text(reading)
+document.save()
