@@ -202,7 +202,6 @@ class SundaysAndSeasons:
         title = parent.get_text().split('Psalm: ')[1]
 
         psalm = parent.find_next_sibling().find_next_sibling()
-        bold_text = [clean_text(strong.get_text()) for strong in soup.find_all('strong')]
         superscripts = SundaysAndSeasons._get_superscripts(psalm)
         text = SundaysAndSeasons._add_superscripts(
             '\n'.join([
@@ -213,6 +212,7 @@ class SundaysAndSeasons:
             superscripts
         )
 
+        bold_text = [clean_text(strong.get_text()) for strong in psalm.find_all('strong')]
         formatted_text = []
         for i, line in enumerate(text.splitlines()):
             if line.replace('<sup>', '').replace('</sup>', '') in superscripts:

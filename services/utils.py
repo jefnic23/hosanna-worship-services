@@ -86,12 +86,15 @@ def get_superscripts(
     Returns:
         list[tuple[int, int]]: List of tuples containing the start and end index of each superscript.
     """
+    sups: re.Pattern = re.compile('|'.join(superscripts))
     superscripts_in_line = []
-    for superscript in superscripts:
-        for s in re.finditer(superscript, line):
-            print(superscript, s)
-            if not any(start < s.end() for start, _ in superscripts_in_line):
-                superscripts_in_line.append((s.start(), s.end()))
+    if len(superscripts) != 0:
+        for m in sups.finditer(line):
+            superscripts_in_line.append((m.start(), m.end()))
+    # for superscript in superscripts:
+    #     for s in re.finditer(superscript, line):
+            # if not any (s.start() < sup[1] for sup in superscripts_in_line):
+                # superscripts_in_line.append((s.start(), s.end()))
     return superscripts_in_line
     
 

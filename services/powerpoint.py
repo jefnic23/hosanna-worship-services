@@ -71,6 +71,7 @@ class PowerPoint:
             self.prs.slide_width, 
             self.prs.slide_height
         )
+        # TODO: delete image after adding to presentation
 
 
     def add_hymn(self, hymn: Hymn) -> None:
@@ -396,6 +397,8 @@ class PowerPoint:
                 )['height']
                 if height > max_height:
                     slides += [line]
+                else:
+                    slides[-1:] = ['\n'.join(slides[-1:] + [line])]
                 continue
 
             if height < max_height:

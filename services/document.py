@@ -60,7 +60,7 @@ class WordDocument:
                 for start, end in index:
                     run = WordDocument._add_run(
                         paragraph, 
-                        line[start:end].strip(), 
+                        line[start:end], 
                         superscript=True if (start, end) in sups else False,
                         bold=True if line in bold_lines else False,
                         color=(86, 86, 86) if (start, end) in sups else (0, 0, 0),
@@ -70,7 +70,7 @@ class WordDocument:
             else:
                 run = WordDocument._add_run(
                     paragraph, 
-                    line.strip(), 
+                    line, 
                     bold=True if line in bold_lines else False,
                     color=(86, 86, 86) if line in sups else (0, 0, 0),
                 )
