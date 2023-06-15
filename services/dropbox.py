@@ -4,7 +4,7 @@ from dropbox import Dropbox as dropbox
 from dropbox.exceptions import ApiError, AuthError
 from dropbox.files import WriteMode
 
-from config import Settings
+from services.settings import Settings
 
 
 class Dropbox:

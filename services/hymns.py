@@ -2,8 +2,8 @@ from datetime import date
 
 import pandas as pd
 
-from config import Settings
 from models.hymn import Hymn
+from services.settings import Settings
 
 
 class Hymns:

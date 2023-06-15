@@ -4,12 +4,12 @@ from tkinter import Tk, filedialog
 
 import eel
 
-from config import Settings
 from services.document import WordDocument
 from services.dropbox import Dropbox
 from services.hymns import Hymns
 from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
+from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 
 settings = Settings()

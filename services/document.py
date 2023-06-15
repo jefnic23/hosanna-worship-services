@@ -8,8 +8,8 @@ from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.text.paragraph import Paragraph, Run
 
-from config import Settings
 from models.reading import Reading
+from services.settings import Settings
 from services.utils import (clean_text, get_superscripts, lookahead,
                             split_formatted_text)
 

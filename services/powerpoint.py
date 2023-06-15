@@ -14,9 +14,9 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
-from config import Settings
 from models.hymn import Hymn
 from models.reading import Reading
+from services.settings import Settings
 from services.utils import get_superscripts, lookahead, split_formatted_text
 
 

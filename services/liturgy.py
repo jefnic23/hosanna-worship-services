@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from config import Settings
+from services.settings import Settings
 
 
 class Liturgy:

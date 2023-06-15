@@ -8,9 +8,9 @@ import requests
 from boltons.iterutils import split
 from bs4 import BeautifulSoup
 
-from config import Settings
 from models.petition import Petition
 from models.reading import Reading
+from services.settings import Settings
 from services.utils import clean_text, grouper
 
 
