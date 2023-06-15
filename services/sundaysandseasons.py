@@ -231,10 +231,11 @@ class SundaysAndSeasons:
 
         body = []
         for i, line in enumerate(split(formatted_text, lambda x: x is None)):
+            new_line = SundaysAndSeasons._remove_whitespace(f"{line[0]}{' '.join(line[1:])}")
             if i % 2 == 0:
-                body.append(f"{line[0]}{' '.join(line[1:])}")
+                body.append(new_line)
             else:
-                body.append(f"<b>{line[0]}{' '.join(line[1:])}</b>")
+                body.append(f"<b>{new_line}</b>")
 
         return Reading(
             title = title,
@@ -299,5 +300,11 @@ class SundaysAndSeasons:
             start = indeces[1]
         new_text += text[start:]
         return new_text
+    
+
+    @staticmethod
+    def _remove_whitespace(text: str) -> str:
+        '''Remove whitespace between superscripts and text'''
+        return re.sub(r'(?<=<\/sup>)\s+', '', text)
 
     #endregion Static Methods

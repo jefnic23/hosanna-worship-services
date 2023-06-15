@@ -119,10 +119,8 @@ def create_directory(path: str) -> None:
         os.makedirs(path)
 
 
-def get_sunday(
-    today: date = date.today(), 
-    delta: int = 0
-) -> date:
+def get_sunday(delta: int = 0) -> date:
     '''Gets the date of the next Sunday.'''
-    SUNDAY = calendar.SUNDAY
-    return today + timedelta((SUNDAY - today.weekday()) % 7) + timedelta(weeks=delta)
+    TODAY: date = date.today()
+    SUNDAY: int = calendar.SUNDAY
+    return TODAY + timedelta((SUNDAY - TODAY.weekday()) % 7) + timedelta(weeks=delta)
