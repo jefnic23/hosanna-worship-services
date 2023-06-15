@@ -1,12 +1,11 @@
 <script lang="ts">
+    import { activeTab, eel, serviceDay } from "@stores";
     import { fly } from "svelte/transition";
-    import { eel } from "@stores";
 
-    let today: Date = new Date();
-    let formattedDate: string = formatDate(today);
+    let formattedDate: string = formatDate($serviceDay);
 
     /**
-     * Formats the date to the format YYYY-MM-DD
+     * Formats the date to the format YYYY-MM-DD.
      * @param date
      */
     function formatDate(date: Date): string {
@@ -17,7 +16,7 @@
     }
 
     /**
-     * Sets the date to the sunday following the current date
+     * Sets the date to the sunday following the current date.
      * @param day
      */
     function getNextSunday(day: Date): Date {
@@ -26,48 +25,53 @@
     }
 
     /**
-     * Sets the date to the selected date
+     * Sets the date to the selected date.
      * @param e
      */
     function handleDateChange(e: Event): void {
         let dateParts: string[] = (e.target as HTMLInputElement).value.split('-');
-        today = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
-        formattedDate = formatDate(today);
+        let newDay = new Date(parseInt(dateParts[0]), parseInt(dateParts[1]) - 1, parseInt(dateParts[2]));
+        serviceDay.set(newDay);
+        formattedDate = formatDate(newDay);
     }
 
     /** 
-     * Sets the date to the sunday following the current date
+     * Sets the date to the sunday following the current date.
      */
     function handleNextSunday(): void {
-        today = getNextSunday(today);
-        formattedDate = formatDate(today);
+        let nextSunday = getNextSunday($serviceDay);
+        serviceDay.set(nextSunday);
+        formattedDate = formatDate(nextSunday);
     }
 
     /**
-     * Prints the date
+     * Sets the date in the backend to the selected date.
      */
     function handleSubmit(): void {
-        eel.set_date(formatDate(today))();
+        eel.set_date(formatDate($serviceDay))();
+        activeTab.set('liturgy');
     }
 </script>
 
 
 <div 
     class='container-item'
-    in:fly="{{ x: -1000, duration: 300 }}"
-    out:fly="{{ x: 1000, duration: 300 }}"
+    in:fly="{{ x: 1000, duration: 300 }}"
+    out:fly="{{ x: -1000, duration: 300 }}"
 >
+    <h1>Build worship plan for {formattedDate}</h1>
     <div class='flex'>
-        Select day: <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
+        <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
         <button on:click={handleNextSunday}>Next sunday</button>
-        <button on:click={handleSubmit}>Submit</button>
+        <button on:click={handleSubmit}>Confirm</button>
     </div>
 </div>
 
 <style>
     .flex {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         justify-content: center;
+        column-gap: 1rem;
     }
 </style>
