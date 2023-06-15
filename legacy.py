@@ -28,9 +28,9 @@ lit.load_files('pentecost')
 
 hymns = Hymns(settings)
 hymns.day = this_sunday
-hymns.add_hymn(641)
-hymns.add_hymn(676)
-hymns.add_hymn(888)
+hymns.add_hymn()
+hymns.add_hymn()
+hymns.add_hymn()
 
 ppt = PowerPoint(settings)
 ppt.day = this_sunday
