@@ -46,6 +46,7 @@ def update_settings(new_settings: dict) -> None:
 def list_liturgies() -> list[str]:
     '''List all liturgies.'''
     return [
+        [] if not os.listdir(f'{settings.LOCAL_DIR}/liturgy') else
         dir for dir in os.listdir(f'{settings.LOCAL_DIR}/liturgy') 
         if os.path.isdir(f'{settings.LOCAL_DIR}/liturgy/{dir}')
     ]
@@ -72,8 +73,6 @@ def set_date(date: str) -> None:
     ppt.day = day
     sas.day = day
 
-    print(day)
-
 
 @eel.expose
 def add_hymn(hymn_number: int) -> list[dict]:
@@ -89,8 +88,8 @@ def start_eel() -> None:
     eel.start(
         'index.html', 
         mode='chrome',
-        host='localhost',
         app_mode=True,
+        host='localhost',
         port=8080,
         size=(1600, 1200)
     )
