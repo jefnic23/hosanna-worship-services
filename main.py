@@ -1,3 +1,4 @@
+import os
 from datetime import datetime
 from tkinter import Tk, filedialog
 
@@ -39,7 +40,16 @@ def update_settings(new_settings: dict) -> None:
         print(is_valid.errors())
     settings.update_settings(new_settings)
     settings.save_settings()
-    
+
+
+@eel.expose
+def list_liturgies() -> list[str]:
+    '''List all liturgies.'''
+    return [
+        dir for dir in os.listdir(f'{settings.LOCAL_DIR}/liturgy') 
+        if os.path.isdir(f'{settings.LOCAL_DIR}/liturgy/{dir}')
+    ]
+
     
 @eel.expose
 def get_dir():
