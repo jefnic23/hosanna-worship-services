@@ -1,3 +1,5 @@
+import os
+
 from pydantic import BaseSettings
 
 
@@ -7,7 +9,7 @@ class Settings(BaseSettings):
     DROPBOX_APP_KEY: str = ''
     DROPBOX_APP_SECRET: str = ''
     DROPBOX_REFRESH_TOKEN: str = ''
-    LOCAL_DIR: str = ''
+    LOCAL_DIR: str = os.path.expanduser('~/Documents')
 
 
     class Config:

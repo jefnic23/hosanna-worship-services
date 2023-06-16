@@ -45,10 +45,12 @@ def update_settings(new_settings: dict) -> None:
 @eel.expose
 def list_liturgies() -> list[str]:
     '''List all liturgies.'''
+    if not os.path.exists(f'{settings.LOCAL_DIR}/liturgy'):
+        os.mkdir(f'{settings.LOCAL_DIR}/liturgy')
+
     return [
-        [] if not os.listdir(f'{settings.LOCAL_DIR}/liturgy') else
         dir for dir in os.listdir(f'{settings.LOCAL_DIR}/liturgy') 
-        if os.path.isdir(f'{settings.LOCAL_DIR}/liturgy/{dir}')
+        if os.path.isdir(f'{settings.LOCAL_DIR}/liturgy/{dir}') 
     ]
 
     
@@ -58,7 +60,7 @@ def get_dir():
     root = Tk()
     root.withdraw()
     root.wm_attributes('-topmost', 1)
-    folder = filedialog.askdirectory()
+    folder = filedialog.askdirectory(initialdir=settings.LOCAL_DIR)
     return folder
 
 
