@@ -27,8 +27,8 @@
 
 <div 
     class='container-item'
-    in:fly="{{ x: 1000, duration: 300 }}"
-    out:fly="{{ x: -1000, duration: 300 }}"
+    in:fly="{{ x: -1000, duration: 300 }}"
+    out:fly="{{ x: 1000, duration: 300 }}"
 >
     {#each liturgies as liturgy}
         <p>{liturgy}</p>

@@ -1,6 +1,7 @@
 <script lang="ts">
     import DateSelector from "@components/DateSelector.svelte";
     import Planner from "@components/Planner.svelte";
+    import Settings from "@components/Settings.svelte";
     import Sidebar from "@components/Sidebar.svelte";
     import TextEditor from "@components/TextEditor.svelte";
     import { activeTab } from "@stores";
@@ -16,7 +17,7 @@
         {:else if $activeTab === "powerpoint"}
             <Planner />
         {:else if $activeTab === "review"}
-            <Planner />
+            <Settings />
         {:else}
             <DateSelector />
         {/if}
