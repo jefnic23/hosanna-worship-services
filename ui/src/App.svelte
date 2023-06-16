@@ -29,6 +29,7 @@
         display: grid;
         grid-template-columns: 250px 5fr;
         height: 100vh;
+        position: fixed;
     }
 
     .container {
