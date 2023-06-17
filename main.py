@@ -83,19 +83,34 @@ def add_hymn(hymn_number: int) -> list[dict]:
     return [hymn.dict() for hymn in hymns._hymns]
 
 
-def start_eel() -> None:
+def start_eel(develop: bool) -> None:
     '''Starts the Eel server.'''
 
-    eel.init('web')
-    eel.start(
-        'index.html', 
-        mode='chrome',
+    if develop:
+        directory = 'ui/src'
+        app = None
+        page = {'port': 8080}
+    else:
+        directory = 'web'
+        app = 'chrome'
+        page = 'index.html'
+
+    eel_kwargs = dict(
         app_mode=True,
         host='localhost',
         port=8080,
         size=(1600, 1200)
     )
 
+    eel.init(directory, ['.ts', '.js', '.html'])
+    eel.start(
+        page = page, 
+        mode = app,
+        **eel_kwargs
+    )
+
 
 if __name__ == '__main__':
-    start_eel()
+    import sys
+
+    start_eel(develop = '--develop' in sys.argv)
