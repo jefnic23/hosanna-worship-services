@@ -21,8 +21,8 @@
 
 <div 
     class="container-item" 
-    in:fly="{{ x: -1000, duration: 300 }}"
-    out:fly="{{ x: 1000, duration: 300 }}"
+    in:fly="{{ x: -500, duration: 300 }}"
+    out:fly="{{ x: 500, duration: 300 }}"
 >
     {#each Object.keys(settings) as setting}
         {@const input_type = setting === "LOCAL_DIR" ? "button" : "text"}

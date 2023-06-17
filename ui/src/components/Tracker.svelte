@@ -1,5 +1,13 @@
 <script lang='ts'>
+    import type { Page } from "@interfaces/page";
     import { activeTab } from "@stores";
+
+    const pages: Page[] = [
+        { name: 'date', description: 'Select date' },
+        { name: 'liturgy', description: 'Select liturgy' },
+        { name: 'powerpoint', description: 'Build PowerPoint' },
+        { name: 'review', description: 'Review & confirm' }
+    ]
 
     const handleClick = (tab: string) => {
         activeTab.set(tab);
@@ -7,18 +15,11 @@
 </script>
 
 <ul>
-    <li>
-        <button on:click={() => handleClick('date')}>Select date</button>
-    </li>
-    <li>
-        <button on:click={() => handleClick('liturgy')}>Select liturgy</button>
-    </li>
-    <li>
-        <button on:click={() => handleClick('powerpoint')}>Build PowerPoint</button>
-    </li>
-    <li>
-        <button on:click={() => handleClick('review')}>Review & confirm</button>
-    </li>
+    {#each pages as page}
+        <li>
+            <button on:click={() => handleClick(page.name)}>{page.description}</button>
+        </li>
+    {/each}
 </ul>
 
 <style>

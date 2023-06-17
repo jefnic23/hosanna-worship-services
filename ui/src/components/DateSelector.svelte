@@ -56,8 +56,8 @@
 
 <div 
     class='container-item'
-    in:fly="{{ x: -1000, duration: 300 }}"
-    out:fly="{{ x: 1000, duration: 300 }}"
+    in:fly="{{ x: -500, duration: 300 }}"
+    out:fly="{{ x: 500, duration: 300 }}"
 >
     <h1>Build worship plan for {formattedDate}</h1>
     <div class='flex'>
