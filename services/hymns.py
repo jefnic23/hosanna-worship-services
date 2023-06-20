@@ -25,9 +25,11 @@ class Hymns:
     
     
     def get_hymns(self) -> list[Hymn]:
-        """Get list of hymns.
+        """
+        Get list of hymns.
         
-        Returns:
+        Returns
+        -------
             list[Hymn]: the list of hymns.
         """
         return self._hymns
@@ -38,14 +40,17 @@ class Hymns:
         hymn_number: int, 
         df: pd.DataFrame = DF
     ) -> Hymn:
-        """Lookup hymn in hymnal.
+        """
+        Lookup hymn in hymnal.
 
-        Args:
-            hymn_number (int): the ELW hymn number.
-            df (pd.DataFrame, optional): the pandas DataFrame where the hymns are located. Defaults to DF.
+        Args
+        -------
+            hymn_number (int) : the ELW hymn number.
+            df (pd.DataFrame, optional) : the pandas DataFrame where the hymns are located. Defaults to DF.
 
-        Returns:
-            Hymn: the title and number of the hymn.
+        Returns
+        -------
+            Hymn : the title and number of the hymn.
         """
         try:
             return Hymn(**df.loc[df['number'] == hymn_number].to_dict('records')[0])
