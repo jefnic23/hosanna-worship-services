@@ -9,7 +9,7 @@ from services.settings import Settings
 class Hymns:
     """Class for adding hymns to the service."""
 
-    DF = pd.read_csv('data/hymnal.csv', index_col='Number')
+    DF = pd.read_csv('data/hymnal.csv')
 
 
     def __init__(self, settings: Settings) -> None:
@@ -20,19 +20,34 @@ class Hymns:
 
     def add_hymn(self, hymn_number: int) -> Hymn:
         """Add hymn to service."""
-        hymn = Hymns._get_hymn(hymn_number)
-        new_hymn = Hymn(title=hymn['Title'], number=f'ELW {hymn_number}')
-        self._hymns.append(new_hymn)
-        return new_hymn
+        self._hymns.append(hymn := Hymns.lookup_hymn(hymn_number))
+        return hymn
+    
+    
+    def get_hymns(self) -> list[Hymn]:
+        """Get list of hymns.
+        
+        Returns:
+            list[Hymn]: the list of hymns.
+        """
+        return self._hymns
 
 
     @staticmethod
-    def _get_hymn(
+    def lookup_hymn(
         hymn_number: int, 
         df: pd.DataFrame = DF
-    ) -> object:
-        """Get hymn by hymn number."""
+    ) -> Hymn:
+        """Lookup hymn in hymnal.
+
+        Args:
+            hymn_number (int): the ELW hymn number.
+            df (pd.DataFrame, optional): the pandas DataFrame where the hymns are located. Defaults to DF.
+
+        Returns:
+            Hymn: the title and number of the hymn.
+        """
         try:
-            return df.loc[hymn_number]
+            return Hymn(**df.loc[df['number'] == hymn_number].to_dict('records')[0])
         except KeyError:
             print(f'Hymn {hymn_number} not found.')
