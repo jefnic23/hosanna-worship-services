@@ -37,7 +37,7 @@
     in:fly="{{ x: -500, duration: 300 }}"
     out:fly="{{ x: 500, duration: 300 }}"
 >
-    {#each Object.keys(elements) as element}
+    {#each Object.keys(elements) as element (element)}
         <div class="planner-element">
             <div class="planner-element-name">{element}</div>
             {#if elements[element] === 'hymn'}

@@ -28,8 +28,8 @@
 <input type='text' on:change={handleTextChange} placeholder="Enter hymn number" />
 <button on:click={handleSubmit}>Submit</button>
 <div>
-    {#each hymns as hymn}
+    {#each hymns as hymn (hymn.number)}
         <p>{hymn.title}</p>
-        <p>ELW {hymn.number}</p>
+        <p>{hymn.number}</p>
     {/each}
 </div>

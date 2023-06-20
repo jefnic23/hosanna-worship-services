@@ -30,7 +30,7 @@
     in:fly="{{ x: -500, duration: 300 }}"
     out:fly="{{ x: 500, duration: 300 }}"
 >
-    {#each liturgies as liturgy}
+    {#each liturgies as liturgy (liturgy)}
         <p>{liturgy}</p>
     {/each}
     <div class='flex'>

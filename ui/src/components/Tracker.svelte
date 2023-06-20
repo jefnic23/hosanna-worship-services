@@ -15,7 +15,7 @@
 </script>
 
 <ul>
-    {#each pages as page}
+    {#each pages as page (page.name)}
         <li>
             <button on:click={() => handleClick(page.name)}>{page.description}</button>
         </li>

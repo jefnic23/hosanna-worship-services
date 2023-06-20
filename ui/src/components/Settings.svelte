@@ -24,7 +24,7 @@
     in:fly="{{ x: -500, duration: 300 }}"
     out:fly="{{ x: 500, duration: 300 }}"
 >
-    {#each Object.keys(settings) as setting}
+    {#each Object.keys(settings) as setting (setting)}
         {@const input_type = setting === "LOCAL_DIR" ? "button" : "text"}
         <span>
             <p>{setting}:</p>
