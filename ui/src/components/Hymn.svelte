@@ -2,34 +2,34 @@
     import { eel } from "@stores";
     import type { Hymn } from "@interfaces/hymn";
 
-    let hymn: string = '';
-    let hymns: Hymn[] = [];
+    let hymnNumber: string = '';
+    let hymn: Hymn;
 
     /**
      * Sets the text to the selected text
      * @param e
      */
     function handleTextChange(e: Event): void {
-        hymn = (e.target as HTMLTextAreaElement).value;
+        hymnNumber = (e.target as HTMLTextAreaElement).value;
     }
 
     /**
      * Adds the hymn to the service
      */
     function handleSubmit(): void {
-        eel.add_hymn(parseInt(hymn))((n: Hymn[]) => {
-            hymns = n
+        eel.add_hymn(parseInt(hymnNumber))((n: Hymn) => {
+            hymn = n
         });
 
-        hymn = '';
+        hymnNumber = '';
     }
 </script>
 
 <input type='text' on:change={handleTextChange} placeholder="Enter hymn number" />
 <button on:click={handleSubmit}>Submit</button>
 <div>
-    {#each hymns as hymn (hymn.number)}
+    {#if hymn}
         <p>{hymn.title}</p>
         <p>{hymn.number}</p>
-    {/each}
+    {/if}
 </div>

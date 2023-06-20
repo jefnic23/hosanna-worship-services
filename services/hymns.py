@@ -18,12 +18,12 @@ class Hymns:
         self._hymns: list[Hymn] = []
     
 
-    def add_hymn(self, hymn_number: int) -> None:
+    def add_hymn(self, hymn_number: int) -> Hymn:
         """Add hymn to service."""
         hymn = Hymns._get_hymn(hymn_number)
-        self._hymns.append(
-            Hymn(title=hymn['Title'], number=f'ELW {hymn_number}')
-        )
+        new_hymn = Hymn(title=hymn['Title'], number=f'ELW {hymn_number}')
+        self._hymns.append(new_hymn)
+        return new_hymn
 
 
     @staticmethod

@@ -79,8 +79,8 @@ def set_date(date: str) -> None:
 @eel.expose
 def add_hymn(hymn_number: int) -> list[dict]:
     '''Add a hymn to the list of hymns.'''
-    hymns.add_hymn(hymn_number)
-    return [hymn.dict() for hymn in hymns._hymns]
+    hymn = hymns.add_hymn(hymn_number)
+    return hymn.dict()
 
 
 def start_eel(develop: bool) -> None:
