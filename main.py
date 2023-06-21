@@ -66,7 +66,14 @@ def get_dir():
 
 @eel.expose
 def set_date(date: str) -> None:
-    '''Set date for all services.'''
+    """
+    Sets the date for each service.
+
+    Parameters
+    ----------
+    date : str
+        date string in the format YYYY-MM-DD
+    """
     day = datetime.strptime(date, '%Y-%m-%d').date()
 
     doc.day = day
@@ -77,14 +84,30 @@ def set_date(date: str) -> None:
 
 
 @eel.expose
-def add_hymn(hymn_number: int) -> list[dict]:
-    '''Add a hymn to the list of hymns.'''
+def add_hymn(hymn_number: int) -> dict[str, str]:
+    """Adds a hymn to the service.
+
+    Args
+    -------
+        hymn_number (int) : ELW hymn number.
+
+    Returns
+    -------
+        dict[str, str] : dict representation of hymn containing the hymn number and title.
+    """
     hymn = hymns.add_hymn(hymn_number)
     return hymn.dict()
 
 
 def start_eel(develop: bool) -> None:
-    '''Starts the Eel server.'''
+    """
+    Starts the eel server.
+
+    Parameters
+    ----------
+    develop : bool
+        If True, starts the server in development mode.
+    """
 
     if develop:
         directory = 'ui/src'
