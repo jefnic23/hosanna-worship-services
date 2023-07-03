@@ -54,10 +54,3 @@ button:focus,
 button:focus-visible {
 	outline: 4px auto -webkit-focus-ring-color;
 }
-
-.container-item {
-    grid-row: 1;
-    grid-column: 1;
-    padding: 1rem;
-    margin: auto;
-}
