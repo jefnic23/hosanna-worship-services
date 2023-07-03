@@ -1,6 +1,5 @@
 <script lang="ts">
     import { activeTab, eel, serviceDay } from "@stores";
-    import { fly } from "svelte/transition";
 
     let formattedDate: string = formatDate($serviceDay);
 
@@ -53,18 +52,11 @@
     }
 </script>
 
-
-<div 
-    class='container-item'
-    in:fly="{{ x: -500, duration: 300 }}"
-    out:fly="{{ x: 500, duration: 300 }}"
->
-    <h1>Build worship plan for {formattedDate}</h1>
-    <div class='flex'>
-        <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
-        <button on:click={handleNextSunday}>Next sunday</button>
-        <button on:click={handleSubmit}>Confirm</button>
-    </div>
+<h1>Build worship plan for {formattedDate}</h1>
+<div class='flex'>
+    <input type="date" bind:value={formattedDate} on:change={handleDateChange}/>
+    <button on:click={handleNextSunday}>Next sunday</button>
+    <button on:click={handleSubmit}>Confirm</button>
 </div>
 
 <style>

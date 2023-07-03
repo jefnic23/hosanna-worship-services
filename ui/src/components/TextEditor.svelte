@@ -1,6 +1,5 @@
 <script lang="ts">
     import { eel } from "@stores";
-    import { fly } from "svelte/transition";
 
     let text: string = '';
 
@@ -25,18 +24,12 @@
     }
 </script>
 
-<div 
-    class='container-item'
-    in:fly="{{ x: -500, duration: 300 }}"
-    out:fly="{{ x: 500, duration: 300 }}"
->
-    {#each liturgies as liturgy (liturgy)}
-        <p>{liturgy}</p>
-    {/each}
-    <div class='flex'>
-        <textarea bind:value={text} on:change={handleTextChange}></textarea>
-        <button on:click={handleSubmit}>Submit</button>
-    </div>
+{#each liturgies as liturgy (liturgy)}
+    <p>{liturgy}</p>
+{/each}
+<div class='flex'>
+    <textarea bind:value={text} on:change={handleTextChange}></textarea>
+    <button on:click={handleSubmit}>Submit</button>
 </div>
 
 <style>

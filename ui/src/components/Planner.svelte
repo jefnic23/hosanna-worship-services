@@ -1,6 +1,5 @@
 <script lang="ts">
     import Hymn from "@components/Hymn.svelte";
-    import { fly } from "svelte/transition";
     
     const elements: {} = {
         'Confession': 'call_and_response',
@@ -32,11 +31,7 @@
     }
 </script>
 
-<div 
-    class="flex container-item" 
-    in:fly="{{ x: -500, duration: 300 }}"
-    out:fly="{{ x: 500, duration: 300 }}"
->
+<div class="flex">
     {#each Object.keys(elements) as element (element)}
         <div class="planner-element">
             <div class="planner-element-name">{element}</div>
@@ -49,7 +44,6 @@
     {/each}
 </div>
     
-
 <style>
     .flex {
         display: flex;
