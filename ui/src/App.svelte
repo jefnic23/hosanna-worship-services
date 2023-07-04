@@ -1,11 +1,11 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
     import DateSelector from "@components/DateSelector.svelte";
     import Planner from "@components/Planner.svelte";
     import Settings from "@components/Settings.svelte";
     import TextEditor from "@components/TextEditor.svelte";
     import type { Page } from "@interfaces/page";
     import { activeTab } from "@stores";
+    import { fly } from "svelte/transition";
 
     const pages: Page[] = [
         { name: 'date', description: 'Select date', content: DateSelector },
@@ -79,6 +79,8 @@
         min-height: 100vh;
         margin-left: 250px;
         width: calc(100vw - 250px);
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
 
     .container-item {

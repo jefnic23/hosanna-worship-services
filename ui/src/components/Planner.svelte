@@ -31,26 +31,18 @@
     }
 </script>
 
-<div class="flex">
-    {#each Object.keys(elements) as element (element)}
-        <div class="planner-element">
-            <div class="planner-element-name">{element}</div>
-            {#if elements[element] === 'hymn'}
-                <Hymn />
-            {:else}
-                <div class="planner-element-type">{elements[element]}</div>
-            {/if}
-        </div>
-    {/each}
-</div>
+{#each Object.keys(elements) as element (element)}
+    <div class="planner-element">
+        <div class="planner-element-name">{element}</div>
+        {#if elements[element] === 'hymn'}
+            <Hymn />
+        {:else}
+            <div class="planner-element-type">{elements[element]}</div>
+        {/if}
+    </div>
+{/each}
     
 <style>
-    .flex {
-        display: flex;
-        flex-direction: column;
-        overflow: auto;
-    }
-    
     .planner-element {
         display: flex;
         flex-direction: row;
