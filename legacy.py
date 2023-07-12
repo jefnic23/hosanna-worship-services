@@ -58,7 +58,7 @@ ppt.add_rich_text('Gospel', sas.gospel.body)
 ppt.add_title_slide('Sermon')
 ppt.add_hymn(hymns._hymns[1])
 ppt.add_rich_text('Apostle\'s Creed', lit.creed, spoken=True)
-ppt.add_intercessions(sas.intercession.call, sas.intercession.response)
+ppt.add_intercessions('Lord, in your mercy,', 'hear our prayer.')
 ppt.add_rich_text('Dialogue', lit.dialogue, anchor='middle')
 
 # ppt.add_rich_text('Preface', lit.preface)
