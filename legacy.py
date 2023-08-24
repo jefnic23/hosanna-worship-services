@@ -10,7 +10,7 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
-this_sunday = get_sunday()
+this_sunday = get_sunday(delta=0)
 settings = Settings()
 
 path = Path(settings.LOCAL_DIR, 'services')
@@ -24,13 +24,13 @@ sas.get_texts_and_images()
 sas.logoff()
 
 lit = Liturgy(settings)
-lit.load_files('pentecost')
+lit.load_files('Autumn')
 
 hymns = Hymns(settings)
 hymns.day = this_sunday
-hymns.add_hymn(883)
-hymns.add_hymn(793)
-hymns.add_hymn(661)
+hymns.add_hymn(513)
+hymns.add_hymn(517)
+hymns.add_hymn(504)
 
 ppt = PowerPoint(settings)
 ppt.day = this_sunday
@@ -44,21 +44,17 @@ ppt.add_rich_text('', lit.lord_be_with_you, anchor='middle')
 ppt.add_rich_text('Prayer of the Day', sas.prayer, spoken=True)
 ppt.add_title_slide(sas.first_reading.title)
 ppt.add_rich_text('First Reading', sas.first_reading.body)
-
 ppt.add_title_slide(sas.psalm.title)
 ppt.add_rich_text('Psalm', sas.psalm.body)
-
 ppt.add_title_slide(sas.second_reading.title)
 ppt.add_rich_text('Second Reading', sas.second_reading.body)
 ppt.add_rich_text('Gospel Acclamation', lit.gospel_acclamation, spoken=True)
-
 ppt.add_gospel_title(sas.gospel.title)
 ppt.add_rich_text('Gospel', sas.gospel.body)
-
 ppt.add_title_slide('Sermon')
 ppt.add_hymn(hymns._hymns[1])
 ppt.add_rich_text('Apostle\'s Creed', lit.creed, spoken=True)
-ppt.add_intercessions(sas.intercession.call, sas.intercession.response)
+ppt.add_intercessions('Lord, in your mercy,', 'hear our prayer.')
 ppt.add_rich_text('Dialogue', lit.dialogue, anchor='middle')
 
 # ppt.add_rich_text('Preface', lit.preface)
