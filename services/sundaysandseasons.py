@@ -231,11 +231,12 @@ class SundaysAndSeasons:
 
         body = []
         for i, line in enumerate(split(formatted_text, lambda x: x is None)):
-            new_line = SundaysAndSeasons._remove_whitespace(f"{line[0]}{' '.join(line[1:])}")
-            if i % 2 == 0:
-                body.append(new_line)
-            else:
-                body.append(f"<b>{new_line}</b>")
+            if line:
+                new_line = SundaysAndSeasons._remove_whitespace(f"{line[0]}{' '.join(line[1:])}")
+                if i % 2 == 0:
+                    body.append(new_line)
+                else:
+                    body.append(f"<b>{new_line}</b>")
 
         return Reading(
             title = title,

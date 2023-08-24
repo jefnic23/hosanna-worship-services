@@ -24,6 +24,16 @@ class Hymns:
         return hymn
     
     
+    def add_other_hymn(
+        self,
+        hymn_number: int,
+        hymn_title: str,
+        hymnal: str
+    ) -> Hymn:
+        self._hymns.append(hymn := Hymn(title=f'({hymnal}) {hymn_title}', number=hymn_number))
+        return hymn
+    
+    
     def get_hymns(self) -> list[Hymn]:
         """
         Get list of hymns.
