@@ -152,7 +152,6 @@ class PowerPoint:
         """
         if spoken:
             text = '\n'.join([f'<b>{line}</b>' for line in text.splitlines()])
-        text = 'Let us pray.' + '\n' + text
         superscripts = re.findall(r'<sup>(.*?)</sup>', text)
         regular_text, bold_text, italic_text = split_formatted_text(text.replace('<sup>', '').replace('</sup>', ''))
         bold_lines = [line[1] for line in bold_text]
