@@ -165,7 +165,8 @@ class SundaysAndSeasons:
     ) -> str:
         '''Get the prayer of the day in a soup object'''
         parent = soup.body.find(string=regex).parent
-        return parent.findNext('div', {'class': 'body'}).get_text().strip()
+        text = parent.findNext('div', {'class': 'body'}).get_text().strip()
+        return 'Let us pray.\n' + '\n'.join([f'<b>{line}</b>' for line in text.splitlines()])
 
 
     @staticmethod
