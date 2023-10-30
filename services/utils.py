@@ -100,10 +100,11 @@ def get_superscripts(
 
 def clean_text(text: str) -> str:
     '''Normalizes text.'''
-    cleaned = (
+    cleaned = ' '.join(
         text.encode('utf-8', errors='ignore').decode()
         .replace(' | ', ' ').replace('| ', ' ').replace('- ', '').replace('  ', ' ')
         .strip()
+        .split()
     )
     return cleaned[:-1].strip() if cleaned.endswith('R') else cleaned 
 

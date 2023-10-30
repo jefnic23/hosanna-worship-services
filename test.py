@@ -48,15 +48,14 @@ for i, line in enumerate(split(formatted_text, lambda x: x is None)):
     if line:
         new_line = SundaysAndSeasons._remove_whitespace(f"{line[0]}{' '.join(line[1:])}")
         if i % 2 == 0:
-            body.append(f'{new_line}')
+            body.append(f'<div>{new_line}</div>')
         else:
-            body.append(f'<b>{new_line}</b>')
+            body.append(f'<div><b>{new_line}</b></div>')
 
 reading = Reading(
     title = title,
     body = '\n'.join(body)
 )
 
-
-for line in formatted_text:
+for line in body:
     print(line)
