@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from models.petition import Petition
 from models.reading import Reading
 from services.settings import Settings
-from services.utils import clean_text, grouper
+from services.utils import clean_text
 
 
 class SundaysAndSeasons:
@@ -20,9 +20,7 @@ class SundaysAndSeasons:
     BASE = 'https://members.sundaysandseasons.com'
     LOGIN = BASE + '/Account/Login'
     LOGOFF = BASE + '/Account/LogOff'
-    TEXTS = BASE + '/Home/TextsAndResources/{}/0#texts'
-    SLIDES = BASE + '/Visuals/Index/{}/0#projectable'
-    CLIPART = BASE + '/Visuals/Index/{}/0#clipart'
+    HOME = BASE + '/Home/Index/{}/0#plans'
 
     PRAYER = 'Prayer of the Day'
     FIRST_READING = re.compile(r'First Reading:')
@@ -42,6 +40,10 @@ class SundaysAndSeasons:
         self._username: str = settings.USER
         self._password: str = settings.PASSWORD
         self._path: Path = f'{settings.LOCAL_DIR}/services' 
+        self._page: str = 0
+        self._texts_url: str = SundaysAndSeasons.BASE + '/Home/TextsAndResources/{}/{}#texts'
+        self._slides_url: str = SundaysAndSeasons.BASE + '/Visuals/Index/{}/{}#projectable'
+        self._clipart_url: str = SundaysAndSeasons.BASE + '/Visuals/Index/{}/{}#clipart'
 
         self.title: str
         self.prayer: str
@@ -74,6 +76,7 @@ class SundaysAndSeasons:
 
     def get_texts_and_images(self) -> None:
         '''Get all the data for the current date'''
+        self._get_title_and_url()
         self._get_texts()
         self._get_slide()
         
@@ -86,14 +89,25 @@ class SundaysAndSeasons:
         login_form = soup.find(id='loginForm').form.find_all('input')[0]
         key, value = login_form['name'], login_form['value']
         return key, value
-        
+    
 
-    def _get_texts(self, url: str = TEXTS) -> None:
-        '''Get all the texts for the current date'''
+    def _get_title_and_url(self, url: str = HOME):
         req = self._session.get(url.format(self.day))
         soup = BeautifulSoup(req.text, 'html.parser')
+        html = soup.body.find('div', {'id': 'ribbondescription'})
+        if html.find('br') and html.find('br').next_sibling.strip() == 'or':
+            a = html.find('a')
+            self._page = a.get('href').split('/')[-1]
+            self.title = a.get_text()
+        else:
+            self.title = html.find('h3').get_text()
+        
 
-        self.title = self._get_title(soup)
+    def _get_texts(self) -> None:
+        '''Get all the texts for the current date'''
+        req = self._session.get(self._texts_url.format(self.day, self._page))
+        soup = BeautifulSoup(req.text, 'html.parser')
+
         self.prayer = self._get_prayer(soup)
         self.first_reading = self._get_reading(
             soup, 
@@ -118,12 +132,11 @@ class SundaysAndSeasons:
 
 
     def _get_slide(
-        self, 
-        url: str = SLIDES, 
+        self,
         base: str = BASE
     ) -> None:
         '''Get the main slide in a soup object'''
-        req = self._session.get(url.format(self.day))
+        req = self._session.get(self._slides_url.format(self.day, self._page))
         soup = BeautifulSoup(req.text, 'html.parser')
         parent = soup.body.find('div', {'id': 'toggle-btn-panel-projectable'})
         children = parent.find_all_next('img')
@@ -151,12 +164,6 @@ class SundaysAndSeasons:
     #endregion Private Methods
     
     #region Static Methods
-
-    @staticmethod
-    def _get_title(soup: BeautifulSoup) -> str:
-        '''Get the title of the day in a soup object'''
-        return soup.body.find('div', {'id': 'ribbondescription'}).get_text().strip()
-
 
     @staticmethod
     def _get_prayer(
@@ -235,9 +242,9 @@ class SundaysAndSeasons:
             if line:
                 new_line = SundaysAndSeasons._remove_whitespace(f"{line[0]}{' '.join(line[1:])}")
                 if i % 2 == 0:
-                    body.append(new_line)
+                    body.append(f'{new_line}')
                 else:
-                    body.append(f"<b>{new_line}</b>")
+                    body.append(f'<b>{new_line}</b>')
 
         return Reading(
             title = title,

@@ -102,7 +102,7 @@ def clean_text(text: str) -> str:
     '''Normalizes text.'''
     cleaned = (
         text.encode('utf-8', errors='ignore').decode()
-        .replace(' | ', ' ').replace('- ', '').replace('  ', ' ')
+        .replace(' | ', ' ').replace('| ', ' ').replace('- ', '').replace('  ', ' ')
         .strip()
     )
     return cleaned[:-1].strip() if cleaned.endswith('R') else cleaned 

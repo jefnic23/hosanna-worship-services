@@ -34,8 +34,9 @@ class PowerPoint:
     ITALIC: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuii.ttf', 24)
     DRAW: ImageDraw.ImageDraw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
     
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings, title: str):
         self.day: date = date.today()
+        self.title: str = title
         self.prs = Presentation()
         self.prs.slide_width = Inches(6)
         self.prs.slide_height = Inches(4)
@@ -247,7 +248,7 @@ class PowerPoint:
         '''Save the presentation.'''
         if not os.path.exists(f'{self._path}/{self.day}'):
             os.makedirs(f'{self._path}/{self.day}')
-        self.prs.save(f'{self._path}/{self.day}/{self.day}.pptx')
+        self.prs.save(f'{self._path}/{self.day}/{self.title}.pptx')
 
 
     #region Private Methods

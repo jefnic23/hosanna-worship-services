@@ -1,4 +1,5 @@
 import os
+from datetime import date, timedelta
 from pathlib import Path
 
 from services.document import WordDocument
@@ -10,7 +11,7 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
-this_sunday = get_sunday(delta=0)
+this_sunday = get_sunday(delta=1)
 settings = Settings()
 
 path = Path(settings.LOCAL_DIR, 'services')
@@ -24,15 +25,15 @@ sas.get_texts_and_images()
 sas.logoff()
 
 lit = Liturgy(settings)
-lit.load_files('Autumn')
+lit.load_files('November')
 
 hymns = Hymns(settings)
 hymns.day = this_sunday
-hymns.add_hymn(513)
-hymns.add_hymn(517)
-hymns.add_hymn(504)
+hymns.add_hymn(423)
+hymns.add_hymn(426)
+hymns.add_hymn(422)
 
-ppt = PowerPoint(settings)
+ppt = PowerPoint(settings, sas.title)
 ppt.day = this_sunday
 ppt.convert_image()
 ppt.add_image()
@@ -73,16 +74,16 @@ ppt.add_rich_text('Dismissal', lit.dismissal, anchor='middle')
 ppt.add_image()
 ppt.save()
 
-doc = WordDocument(settings)
-doc.day = this_sunday
-doc.add_rich_text(sas.first_reading)
-doc.add_rich_text(sas.psalm)
-doc.add_rich_text(sas.second_reading)
-doc.save()
+# doc = WordDocument(settings)
+# doc.day = this_sunday
+# doc.add_rich_text(sas.first_reading)
+# doc.add_rich_text(sas.psalm)
+# doc.add_rich_text(sas.second_reading)
+# doc.save()
 
-dbx = Dropbox(settings)
-dbx.day = this_sunday
-dbx.connect()
-dbx.upload('pptx')
-dbx.upload('pdf')
-dbx.close()
+# dbx = Dropbox(settings)
+# dbx.day = this_sunday
+# dbx.connect()
+# dbx.upload('pptx')
+# dbx.upload('pdf')
+# dbx.close()
