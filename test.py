@@ -2,10 +2,107 @@ import re
 
 from boltons.iterutils import split
 from bs4 import BeautifulSoup
+from PIL import Image, ImageDraw, ImageFont
+from PIL.ImageFont import FreeTypeFont
 
 from models.reading import Reading
+from services.powerpoint import PowerPoint
 from services.sundaysandseasons import SundaysAndSeasons
-from services.utils import clean_text
+from services.utils import clean_text, split_formatted_text
+
+###############################
+
+MAX_WIDTH: int = 565
+MAX_HEIGHT: int = 335
+
+REGULAR: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeui.ttf', 24)
+BOLD: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuib.ttf', 24)
+ITALIC: FreeTypeFont = ImageFont.truetype('%SystemRoot%\Fonts\segoeuii.ttf', 24)
+DRAW: ImageDraw.ImageDraw = ImageDraw.Draw(Image.new('RGB', (MAX_WIDTH, MAX_HEIGHT)))
+
+# def get_height(
+#     lines: str, 
+#     draw: ImageDraw.ImageDraw, 
+#     font: FreeTypeFont, 
+#     max_height: int = MAX_HEIGHT
+# ) -> list[str]:
+#     '''Gets the height of a line of text and splits it if it's too long.'''
+#     if PowerPoint.check_size(lines, draw, font)['height'] < max_height:
+#         return [lines]
+
+#     regex = re.search(r'<div>(.*?)</div>', lines, re.MULTILINE | re.DOTALL)
+#     group = regex.group(1).strip().splitlines() if regex else None
+#     slides = []
+#     for line in lines.splitlines():
+#         if re.match(r'<br>', line):
+#             # If the line is a break, insert a new slide
+#             slides += ['']
+#             continue
+
+#         if re.match(r'<div>', line) or re.match(r'</div>', line):
+#             continue
+
+#         height = PowerPoint.check_size(
+#             '\n'.join(slides[-1:] + [line]), 
+#             draw, 
+#             font
+#         )['height']
+        
+#         if regex is not None and line == group[0]:
+#             # check if the call and response will fit on the current slide
+#             height = PowerPoint.check_size(
+#                 '\n'.join(slides[-1:] + [line] + [group[1]]),
+#                 draw,
+#                 font
+#             )['height']
+#             if height > max_height:
+#                 slides += [line]
+#             else:
+#                 slides[-1:] = ['\n'.join(slides[-1:] + [line])]
+#             continue
+
+#         if height < max_height:
+#             slides[-1:] = ['\n'.join(slides[-1:] + [line]).lstrip()]
+#         else:
+#             slides += [line]
+#     return slides
+
+def get_height(
+    lines: str, 
+    draw: ImageDraw.ImageDraw, 
+    font: ImageFont.FreeTypeFont, 
+    max_height: int = MAX_HEIGHT
+) -> list[str]:
+    '''Gets the height of a line of text and splits it if it's too long.'''
+    if PowerPoint.check_size(lines, draw, font)['height'] < max_height:
+        return [lines]
+
+    # Split the input lines into chunks separated by '<div>' and '</div>'
+    chunks = re.split(r'(<div>.*?</div>)', lines)
+    
+    # Initialize the list of slides
+    slides = ['']
+    
+    for chunk in chunks:
+        # Skip empty chunks
+        if not chunk:
+            continue
+        
+        if chunk.startswith('<div>'):
+            # If it's a '<div>' tag, remove the tags and add it to the current slide
+            slide_text = chunk[len('<div>'):-len('</div>')].replace('<div>', '').replace('</div>', '').strip() 
+            slides[-1] += slide_text
+        else:
+            # If it's not a '<div>' tag, split it by line breaks
+            chunk_lines = chunk.strip().splitlines()
+            for line in chunk_lines:
+                line = line.replace('<div>', '').replace('</div>', '').strip()  # Remove leading and trailing whitespace
+                if PowerPoint.check_size('\n'.join([slides[-1], line]), draw, font)['height'] < max_height:
+                    slides[-1] += '\n' + line
+                else:
+                    slides.append(line)
+    
+    return slides
 
 ###############################
 
@@ -57,5 +154,36 @@ reading = Reading(
     body = '\n'.join(body)
 )
 
-for line in body:
-    print(line)
+text = reading.body
+
+superscripts = re.findall(r'<sup>(.*?)</sup>', text)
+regular_text, bold_text, italic_text = split_formatted_text(text.replace('<sup>', '').replace('</sup>', ''))
+bold_lines = [line[1] for line in bold_text]
+italic_lines = [line[1] for line in italic_text]
+lines = [
+    line[1] for line in sorted(regular_text + bold_text + italic_text, key=lambda x: x[0])
+]
+width_formatted_text = []
+bold_formatted_text = []
+italic_formatted_text = []
+for line in lines:
+    if line in bold_lines:
+        bold_line = PowerPoint.get_width(line, DRAW, BOLD)
+        width_formatted_text.append(bold_line)
+        for l in bold_line.splitlines():
+            bold_formatted_text.append(l)
+    elif line in italic_lines:
+        italic_line = PowerPoint.get_width(line, DRAW, ITALIC)
+        width_formatted_text.append(italic_line)
+        for l in italic_line.splitlines():
+            italic_formatted_text.append(l)
+    else:
+        width_formatted_text.append(PowerPoint.get_width(line, DRAW, REGULAR))
+
+width_formatted_text = '\n'.join(width_formatted_text)
+
+slides = get_height(width_formatted_text, DRAW, REGULAR)
+
+for slide in slides:
+    print(slide)
+
