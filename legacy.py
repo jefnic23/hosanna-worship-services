@@ -11,7 +11,7 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
-this_sunday = get_sunday(delta=1)
+this_sunday = get_sunday()
 settings = Settings()
 
 path = Path(settings.LOCAL_DIR, 'services')
@@ -74,16 +74,16 @@ ppt.add_rich_text('Dismissal', lit.dismissal, anchor='middle')
 ppt.add_image()
 ppt.save()
 
-# doc = WordDocument(settings)
-# doc.day = this_sunday
-# doc.add_rich_text(sas.first_reading)
-# doc.add_rich_text(sas.psalm)
-# doc.add_rich_text(sas.second_reading)
-# doc.save()
+doc = WordDocument(settings, sas.title)
+doc.day = this_sunday
+doc.add_rich_text(sas.first_reading)
+doc.add_rich_text(sas.psalm)
+doc.add_rich_text(sas.second_reading)
+doc.save()
 
-# dbx = Dropbox(settings)
-# dbx.day = this_sunday
-# dbx.connect()
-# dbx.upload('pptx')
-# dbx.upload('pdf')
-# dbx.close()
+dbx = Dropbox(settings, sas.title)
+dbx.day = this_sunday
+dbx.connect()
+dbx.upload('pptx')
+dbx.upload('pdf')
+dbx.close()

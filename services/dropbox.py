@@ -9,8 +9,9 @@ from services.settings import Settings
 
 class Dropbox:
     '''Class for interacting with Dropbox.'''
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: Settings, title: str):
         self.day: date = date.today()
+        self.title: str = title
         self._path = f'{settings.LOCAL_DIR}/services'
         self._app_key: str = settings.DROPBOX_APP_KEY
         self._app_secret: str = settings.DROPBOX_APP_SECRET
@@ -24,12 +25,12 @@ class Dropbox:
     ) -> None:
         '''Upload a file to Dropbox.'''
         try:
-            with open(f'{self._path}/{self.day}/{self.day}.{ext}', 'rb') as f:
+            with open(f'{self._path}/{self.day}/{self.title}.{ext}', 'rb') as f:
                 file = f.read()
 
             self._dbx.files_upload(
                 file, 
-                f'/{self.day}/{self.day}.{ext}', 
+                f'/{self.day}/{self.title}.{ext}', 
                 mode=WriteMode.overwrite
             )
         except ApiError as err:
