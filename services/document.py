@@ -87,7 +87,7 @@ class WordDocument:
 
         os.system(
             f'soffice --headless --invisible --convert-to pdf --outdir '
-            f'{self._path}/{self.day} {self._path}/{self.day}/{self.title}.docx'
+            f'{self._path}/{self.day} "{self._path}/{self.day}/{self.title}.docx"'
         )
         os.remove(f'{self._path}/{self.day}/{self.title}.docx')
 
