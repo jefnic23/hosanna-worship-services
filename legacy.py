@@ -29,9 +29,9 @@ lit.load_files('November')
 
 hymns = Hymns(settings)
 hymns.day = this_sunday
-hymns.add_hymn(423)
-hymns.add_hymn(426)
-hymns.add_hymn(422)
+hymns.add_hymn(438)
+hymns.add_hymn(638)
+hymns.add_hymn(717)
 
 ppt = PowerPoint(settings, sas.title)
 ppt.day = this_sunday
