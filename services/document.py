@@ -67,7 +67,8 @@ class WordDocument:
                         color=(86, 86, 86) if (start, end) in sups else (0, 0, 0),
                     )
                 for _ in range(len(sups)):
-                    superscripts.pop(0)
+                    if superscripts:
+                        superscripts.pop(0)
             else:
                 run = WordDocument._add_run(
                     paragraph, 
@@ -89,7 +90,7 @@ class WordDocument:
             f'soffice --headless --invisible --convert-to pdf --outdir '
             f'{self._path}/{self.day} "{self._path}/{self.day}/{self.title}.docx"'
         )
-        os.remove(f'{self._path}/{self.day}/{self.title}.docx')
+        # os.remove(f'{self._path}/{self.day}/{self.title}.docx')
 
 
     @staticmethod

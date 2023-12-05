@@ -13,11 +13,11 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 
 settings = Settings()
-doc = WordDocument(settings)
-dbx = Dropbox(settings)
+doc = WordDocument(settings, '')
+dbx = Dropbox(settings, '')
 hymns = Hymns(settings)
 lit = Liturgy(settings)
-ppt = PowerPoint(settings)
+ppt = PowerPoint(settings, '')
 sas = SundaysAndSeasons(settings)
 
 
@@ -99,41 +99,23 @@ def add_hymn(hymn_number: int) -> dict[str, str]:
     return hymn.dict()
 
 
-def start_eel(develop: bool) -> None:
+def start_eel() -> None:
     """
     Starts the eel server.
-
-    Parameters
-    ----------
-    develop : bool
-        If True, starts the server in development mode.
     """
-
-    if develop:
-        directory = 'ui/src'
-        app = None
-        page = {'port': 8080}
-    else:
-        directory = 'web'
-        app = 'chrome'
-        page = 'index.html'
+    
+    directory = 'web'
+    eel.init(directory, ['.ts', '.js', '.html'])
 
     eel_kwargs = dict(
+        mode='portable',
         app_mode=True,
         host='localhost',
         port=8080,
         size=(1600, 1200)
     )
-
-    eel.init(directory, ['.ts', '.js', '.html'])
-    eel.start(
-        page = page, 
-        mode = app,
-        **eel_kwargs
-    )
+    eel.start('index.html', **eel_kwargs)
 
 
 if __name__ == '__main__':
-    import sys
-
-    start_eel(develop = '--develop' in sys.argv)
+    start_eel()

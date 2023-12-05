@@ -101,8 +101,9 @@ class SundaysAndSeasons:
             self.title = a.get_text()
         else:
             self.title = html.find('h3').get_text()
+        if self.title is None:
+            self.title = self.day
         
-
     def _get_texts(self) -> None:
         '''Get all the texts for the current date'''
         req = self._session.get(self._texts_url.format(self.day, self._page))
