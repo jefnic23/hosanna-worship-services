@@ -79,8 +79,7 @@
         min-height: 100vh;
         margin-left: 250px;
         width: calc(100vw - 250px);
-        overflow-y: scroll;
-        overflow-x: hidden;
+        overflow: hidden;
     }
 
     .container-item {
@@ -88,5 +87,7 @@
         grid-column: 1;
         padding: 1rem;
         margin: auto;
+        overflow-y: auto;
+        max-height: 89svh;
     }
 </style>
