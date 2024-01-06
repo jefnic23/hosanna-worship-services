@@ -18,20 +18,20 @@ path = Path(settings.LOCAL_DIR, 'services')
 if not os.path.exists(f'{path}/{this_sunday}'):
     os.makedirs(f'{path}/{this_sunday}')
 
+lit = Liturgy(settings)
+lit.load_files('BaptismOfOurLord')
+
+hymns = Hymns(settings)
+hymns.day = this_sunday
+hymns.add_hymn(314)
+hymns.add_hymn(300)
+hymns.add_hymn(454)
+
 sas = SundaysAndSeasons(settings)
 sas.day = this_sunday
 sas.login()
 sas.get_texts_and_images()
 sas.logoff()
-
-lit = Liturgy(settings)
-lit.load_files('Advent')
-
-hymns = Hymns(settings)
-hymns.day = this_sunday
-hymns.add_hymn(436)
-hymns.add_hymn(715)
-hymns.add_hymn(439)
 
 ppt = PowerPoint(settings, sas.title)
 ppt.day = this_sunday
@@ -43,8 +43,6 @@ ppt.add_rich_text('Greeting', lit.greeting)
 ppt.add_rich_text('Kyrie', lit.kyrie, spoken=True)
 ppt.add_rich_text('', lit.lord_be_with_you, anchor='middle')
 ppt.add_rich_text('Prayer of the Day', sas.prayer)
-ppt.add_title_slide('Lighting of the Advent Wreath')
-ppt.add_rich_text('A Candle is Burning', lit.wreath.split('<br>')[0], spoken=True)
 ppt.add_title_slide(sas.first_reading.title)
 ppt.add_rich_text('First Reading', sas.first_reading.body)
 ppt.add_title_slide(sas.psalm.title)
@@ -56,8 +54,8 @@ ppt.add_gospel_title(sas.gospel.title)
 ppt.add_rich_text('Gospel', sas.gospel.body)
 ppt.add_title_slide('Sermon')
 ppt.add_hymn(hymns._hymns[1])
-ppt.add_rich_text('Apostle\'s Creed', lit.creed, spoken=True)
-ppt.add_intercessions('Lord, in your mercy,', 'hear our prayer.')
+ppt.add_rich_text('Nicene Creed', lit.nicene_creed, spoken=True)
+ppt.add_intercessions("Lord, in your mercy,", "hear our prayer.")
 ppt.add_rich_text('Dialogue', lit.dialogue, anchor='middle')
 ppt.add_rich_text('Preface', lit.preface)
 ppt.add_rich_text('Holy, holy, holy', lit.canticle, spoken=True)
