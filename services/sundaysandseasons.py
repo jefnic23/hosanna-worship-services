@@ -94,15 +94,22 @@ class SundaysAndSeasons:
     def _get_title_and_url(self, url: str = HOME):
         req = self._session.get(url.format(self.day))
         soup = BeautifulSoup(req.text, 'html.parser')
-        html = soup.body.find('div', {'id': 'ribbondescription'})
-        if html.find('br') and html.find('br').next_sibling.strip() == 'or':
-            a = html.find('a')
-            self._page = a.get('href').split('/')[-1]
-            self.title = a.get_text()
+        html = soup.body.find('h1', {'id': 'ribbontitle'})
+
+        title = html.get_text()
+        if title is not None:
+            self.title = title.split(" / ")[0].strip()
         else:
-            self.title = html.find('h3').get_text()
-        if self.title is None:
             self.title = self.day
+
+        # if html.find('br') and html.find('br').next_sibling.strip() == 'or':
+        #     a = html.find('a')
+        #     self._page = a.get('href').split('/')[-1]
+        #     self.title = a.get_text()
+        # else:
+        #     self.title = html.find('h3').get_text()
+        # if self.title is None:
+        #     self.title = self.day
         
     def _get_texts(self) -> None:
         '''Get all the texts for the current date'''
@@ -260,13 +267,19 @@ class SundaysAndSeasons:
     ) -> Petition:
         '''Get the intercessions in a soup object'''
         parent = soup.find('h3', string=regex)
-        children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
-        p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
-        c = children[1].get_text().strip()
-        return Petition(
-            call = p,
-            response = c
-        )
+        if parent:
+            children = parent.find_all_next('div', {'class': 'body'})[1].find_all('div')[:2]
+            p = (pastor := children[0].get_text())[pastor.rfind('. '):].split('. ')[1]
+            c = children[1].get_text().strip()
+            return Petition(
+                call = p,
+                response = c
+            )
+        else:
+            return Petition(
+                call = "Lord, in your mercy,",
+                response = 'hear our prayer.'
+            )
     
     
     @staticmethod
