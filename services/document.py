@@ -10,8 +10,7 @@ from docx.text.paragraph import Paragraph, Run
 
 from models.reading import Reading
 from services.settings import Settings
-from services.utils import (clean_text, get_superscripts, lookahead,
-                            split_formatted_text)
+from services.utils import clean_text, get_superscripts, lookahead, split_formatted_text
 
 
 class WordDocument:
@@ -86,10 +85,10 @@ class WordDocument:
             os.makedirs(f'{self._path}/{self.day}')
         self._document.save(f'{self._path}/{self.day}/{self.title}.docx')
 
-        os.system(
-            f'soffice --headless --invisible --convert-to pdf --outdir '
-            f'{self._path}/{self.day} "{self._path}/{self.day}/{self.title}.docx"'
-        )
+        # os.system(
+        #     f'soffice --headless --invisible --convert-to pdf --outdir '
+        #     f'{self._path}/{self.day} "{self._path}/{self.day}/{self.title}.docx"'
+        # )
         # os.remove(f'{self._path}/{self.day}/{self.title}.docx')
 
 
