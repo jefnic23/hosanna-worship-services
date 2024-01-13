@@ -249,6 +249,7 @@ class PowerPoint:
         if not os.path.exists(f'{self._path}/{self.day}'):
             os.makedirs(f'{self._path}/{self.day}')
         self.prs.save(f'{self._path}/{self.day}/{self.title}.pptx')
+        os.remove(f'{self._path}/{self.day}/image.jpg')
 
 
     #region Private Methods
