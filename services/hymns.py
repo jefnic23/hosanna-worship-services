@@ -34,15 +34,17 @@ class Hymns:
         return hymn
     
     
-    def get_hymns(self) -> list[Hymn]:
+    def get_hymn(self, index: int) -> Hymn:
         """
-        Get list of hymns.
+        Get hymn by index.
         
         Returns
         -------
-            list[Hymn]: the list of hymns.
+            Hymn: the requested hymn.
         """
-        return self._hymns
+        if index > len(self._hymns) or index < 1:
+            raise IndexError(f"Please enter a number between 1 and {len(self._hymns)}")
+        return self._hymns[index - 1]
 
 
     @staticmethod
