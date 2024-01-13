@@ -11,7 +11,7 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 from services.utils import get_sunday
 
-this_sunday = get_sunday()
+this_sunday = get_sunday(4)
 settings = Settings()
 
 path = Path(settings.LOCAL_DIR, 'services')
@@ -19,13 +19,13 @@ if not os.path.exists(f'{path}/{this_sunday}'):
     os.makedirs(f'{path}/{this_sunday}')
 
 lit = Liturgy(settings)
-lit.load_files('BaptismOfOurLord')
+lit.load_files('Epiphany')
 
 hymns = Hymns(settings)
 hymns.day = this_sunday
-hymns.add_hymn(314)
-hymns.add_hymn(300)
-hymns.add_hymn(454)
+hymns.add_hymn(671)
+hymns.add_hymn(715)
+hymns.add_hymn(815)
 
 sas = SundaysAndSeasons(settings)
 sas.day = this_sunday
@@ -38,7 +38,7 @@ ppt.day = this_sunday
 ppt.convert_image()
 ppt.add_image()
 ppt.add_rich_text('Confession and Forgiveness', lit.confession)
-ppt.add_hymn(hymns._hymns[0])
+ppt.add_hymn(hymns.get_hymn(1))
 ppt.add_rich_text('Greeting', lit.greeting)
 ppt.add_rich_text('Kyrie', lit.kyrie, spoken=True)
 ppt.add_rich_text('', lit.lord_be_with_you, anchor='middle')
@@ -53,8 +53,8 @@ ppt.add_rich_text('Gospel Acclamation', lit.gospel_acclamation, spoken=True)
 ppt.add_gospel_title(sas.gospel.title)
 ppt.add_rich_text('Gospel', sas.gospel.body)
 ppt.add_title_slide('Sermon')
-ppt.add_hymn(hymns._hymns[1])
-ppt.add_rich_text('Nicene Creed', lit.nicene_creed, spoken=True)
+ppt.add_hymn(hymns.get_hymn(2))
+ppt.add_rich_text('Nicene Creed', lit.apostles_creed, spoken=True)
 ppt.add_intercessions("Lord, in your mercy,", "hear our prayer.")
 ppt.add_rich_text('Dialogue', lit.dialogue, anchor='middle')
 ppt.add_rich_text('Preface', lit.preface)
@@ -67,7 +67,7 @@ ppt.add_title_slide('Communion')
 ppt.add_rich_text('Communion', lit.communion_blessing)
 ppt.add_rich_text('Prayer after Communion', lit.prayer_after_communion)
 ppt.add_rich_text('Blessing', lit.blessing)
-ppt.add_hymn(hymns._hymns[2])
+ppt.add_hymn(hymns.get_hymn(3))
 ppt.add_rich_text('Dismissal', lit.dismissal, anchor='middle')
 ppt.add_image()
 ppt.save()
