@@ -1,7 +1,7 @@
 import os
-from datetime import date, timedelta
 from pathlib import Path
 
+from models.enums.weekday import Weekday
 from services.document import WordDocument
 from services.dropbox import Dropbox
 from services.hymns import Hymns
@@ -9,9 +9,9 @@ from services.liturgy import Liturgy
 from services.powerpoint import PowerPoint
 from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
-from services.utils import get_sunday
+from services.utils import get_day
 
-this_sunday = get_sunday(4)
+this_sunday = get_day(delta=0, weekday=Weekday.SUNDAY)
 settings = Settings()
 
 path = Path(settings.LOCAL_DIR, 'services')
@@ -19,13 +19,13 @@ if not os.path.exists(f'{path}/{this_sunday}'):
     os.makedirs(f'{path}/{this_sunday}')
 
 lit = Liturgy(settings)
-lit.load_files('Epiphany')
+lit.load_files('Lent')
 
 hymns = Hymns(settings)
 hymns.day = this_sunday
-hymns.add_hymn(671)
-hymns.add_hymn(715)
-hymns.add_hymn(815)
+hymns.add_hymn(328)
+hymns.add_hymn(592)
+hymns.add_hymn(793)
 
 sas = SundaysAndSeasons(settings)
 sas.day = this_sunday
