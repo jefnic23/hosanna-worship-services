@@ -1,10 +1,11 @@
-import calendar
 import os
 import re
 from datetime import date, timedelta
 from distutils.spawn import find_executable
 from itertools import chain, pairwise, zip_longest
 from typing import Iterable
+
+from models.enums.weekday import Weekday
 
 
 def point_to_px(point: int) -> int:
@@ -120,8 +121,6 @@ def create_directory(path: str) -> None:
         os.makedirs(path)
 
 
-def get_sunday(delta: int = 0) -> date:
-    '''Gets the date of the next Sunday.'''
+def get_day(delta: int = 0, weekday: Weekday = Weekday.SUNDAY) -> date:
     TODAY: date = date.today()
-    SUNDAY: int = calendar.SUNDAY
-    return TODAY + timedelta((SUNDAY - TODAY.weekday()) % 7) + timedelta(weeks=delta)
+    return TODAY + timedelta((weekday.value - TODAY.weekday()) % 7) + timedelta(weeks=delta)
