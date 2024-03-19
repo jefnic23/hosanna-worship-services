@@ -11,6 +11,7 @@
         { name: 'date', description: 'Select date', content: DateSelector },
         { name: 'liturgy', description: 'Select liturgy', content: TextEditor },
         { name: 'powerpoint', description: 'Build PowerPoint', content: Planner },
+        { name: 'settings', description: 'Settings', content: Settings },
         { name: 'review', description: 'Review & confirm', content: Settings }
     ]
 </script>

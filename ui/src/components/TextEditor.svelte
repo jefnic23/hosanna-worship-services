@@ -1,5 +1,6 @@
 <script lang="ts">
     import { eel } from "@stores";
+    import { marked } from 'marked';
 
     let text: string = '';
 
@@ -37,5 +38,14 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+    }
+
+    textarea {
+        width: 565px;
+        height: 335px;
+        padding: 31.5px 16.5px;
+        resize: none;
+        font-size: 24px;
+        font-family: 'Segoe UI';
     }
 </style>
