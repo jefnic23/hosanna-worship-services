@@ -55,8 +55,8 @@ def list_liturgies() -> list[str]:
 
     
 @eel.expose
-def get_dir():
-    '''Get directory for file storage.'''
+def set_dir():
+    '''Set directory for file storage.'''
     root = Tk()
     root.withdraw()
     root.wm_attributes('-topmost', 1)

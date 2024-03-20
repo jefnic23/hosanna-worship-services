@@ -12,8 +12,8 @@
         settings[(e.target as HTMLInputElement).name] = (e.target as HTMLInputElement).value;
     }
 
-    const getDir = async () => {
-        let dir = await eel.get_dir()();
+    const setDir = async () => {
+        let dir = await eel.set_dir()();
         settings.LOCAL_DIR = dir;
     }
 </script>
@@ -23,7 +23,8 @@
     <span>
         <p>{setting}:</p>
         {#if input_type === "button"}
-            <button on:click={getDir}>Choose Directory</button>
+            <p>{settings[setting]}</p>
+            <button on:click={setDir}>Choose Directory</button>
         {:else}
             <input type={input_type} name={setting} value={settings[setting]} on:change={handleChange} />
         {/if}
