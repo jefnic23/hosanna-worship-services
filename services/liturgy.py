@@ -27,6 +27,26 @@ class Liturgy:
         List all the liturgy files, e.g. dir(liturgy)
         """
         return list(self._files.keys())
+    
+
+    def list_seasons(self) -> list[str]:
+        """
+        List all liturgical seasons.
+        """
+        if not os.path.exists(self._path):
+            os.mkdir(self._path)
+
+        return [
+            dir for dir in os.listdir(self._path) 
+            if os.path.isdir(f'{self._path}/{dir}') 
+        ]
+    
+
+    def list_files(self, season: str) -> list[str]:
+        """
+        List files for a liturgical season.
+        """
+        return [file for file in os.listdir(f'{self._path}/{season}')]
 
 
     def load_files(self, season: str) -> None:

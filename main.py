@@ -45,13 +45,17 @@ def update_settings(new_settings: dict) -> None:
 @eel.expose
 def list_liturgies() -> list[str]:
     '''List all liturgies.'''
-    if not os.path.exists(f'{settings.LOCAL_DIR}/liturgy'):
-        os.mkdir(f'{settings.LOCAL_DIR}/liturgy')
+    return lit.list_seasons()
 
-    return [
-        dir for dir in os.listdir(f'{settings.LOCAL_DIR}/liturgy') 
-        if os.path.isdir(f'{settings.LOCAL_DIR}/liturgy/{dir}') 
-    ]
+
+@eel.expose
+def list_liturgical_files(season: str) -> list[str]:
+    return lit.list_files(season)
+
+
+@eel.expose
+def get_liturgical_file(season: str, file: str) -> str:
+    return ''
 
     
 @eel.expose
