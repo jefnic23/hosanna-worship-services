@@ -1,15 +1,15 @@
 <script lang="ts">
     import DateSelector from "@components/DateSelector.svelte";
+    import Liturgy from "@components/Liturgy.svelte";
     import Planner from "@components/Planner.svelte";
     import Settings from "@components/Settings.svelte";
-    import TextEditor from "@components/TextEditor.svelte";
     import type { Page } from "@interfaces/page";
     import { activeTab } from "@stores";
     import { fly } from "svelte/transition";
 
     const pages: Page[] = [
         { name: 'date', description: 'Select date', content: DateSelector },
-        { name: 'liturgy', description: 'Select liturgy', content: TextEditor },
+        { name: 'liturgy', description: 'Select liturgy', content: Liturgy },
         { name: 'powerpoint', description: 'Build PowerPoint', content: Planner },
         { name: 'settings', description: 'Settings', content: Settings },
         { name: 'review', description: 'Review & confirm', content: Settings }

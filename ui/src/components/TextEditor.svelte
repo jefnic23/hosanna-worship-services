@@ -6,11 +6,6 @@
     let htmlContent: string = '';
     $: text, parseMarkdown(text);
 
-    let liturgies: string[] = [];
-    eel.list_liturgies()((n: string[]) => {
-        liturgies = n;
-    });
-
     /**
      * Sets the text to the selected text
      * @param e
@@ -19,6 +14,10 @@
         text = (e.target as HTMLTextAreaElement).value;
     }
 
+    /**
+     * Converts text into markdown
+     * @param text
+     */
     async function parseMarkdown(text: string): Promise<void> {
         htmlContent = await marked.parse(text);
     }
@@ -31,9 +30,6 @@
     }
 </script>
 
-{#each liturgies as liturgy (liturgy)}
-    <p>{liturgy}</p>
-{/each}
 <div class='flex-row'>
     <div class='flex-col'>
         <textarea bind:value={text} on:change={handleTextChange}></textarea>
@@ -41,7 +37,6 @@
     </div>
     <div class='powerpoint'>{@html htmlContent}</div>
 </div>
-
 
 <style>
     .flex-row {
