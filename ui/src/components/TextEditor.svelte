@@ -59,6 +59,7 @@
         font-size: 24px;
         font-family: 'Segoe UI';
         line-height: 1.25;
+        border: 1px white solid;
     }
 
     :global(.powerpoint *){
