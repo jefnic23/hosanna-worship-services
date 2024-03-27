@@ -22,11 +22,13 @@ class SundaysAndSeasons:
     LOGOFF = BASE + '/Account/LogOff'
     HOME = BASE + '/Home/Index/{}/0#plans'
 
-    PRAYER = 'Prayer of the Day'
+    PRAYER = re.compile(r'Prayer of the Day')
+    PRAYER_ALTERNATE = re.compile(r'Prayer of the Day (Alternate)')
     FIRST_READING = re.compile(r'First Reading:')
     PSALM = re.compile(r'Psalm:')
     SECOND_READING = re.compile(r'Second Reading:')
     GOSPEL = re.compile(r'^Gospel:')
+    PROCESSIONAL_GOSPEL = re.compile(r'Processional Gospel:')
     INTERCESSION = re.compile(r'Prayers of Intercession')
 
     READING_CALL = 'The word of the Lord,'
@@ -47,10 +49,12 @@ class SundaysAndSeasons:
 
         self.title: str
         self.prayer: str
+        self.prayer_alternate: str
         self.first_reading: Reading
         self.psalm: Reading
         self.second_reading: Reading
         self.gospel: Reading
+        self.processional_gospel: Reading
         self.intercession: Petition
 
 
@@ -74,10 +78,10 @@ class SundaysAndSeasons:
             raise Exception('Logoff failed')
         
 
-    def get_texts_and_images(self) -> None:
+    def get_texts_and_images(self, processional_gospel: bool = False) -> None:
         '''Get all the data for the current date'''
         self._get_title_and_url()
-        self._get_texts()
+        self._get_texts(processional_gospel)
         self._get_slide()
         
     #region Private Methods
@@ -111,12 +115,12 @@ class SundaysAndSeasons:
         # if self.title is None:
         #     self.title = self.day
         
-    def _get_texts(self) -> None:
+    def _get_texts(self, processional_gospel: bool = False, alternate_prayer: bool = False) -> None:
         '''Get all the texts for the current date'''
         req = self._session.get(self._texts_url.format(self.day, self._page))
         soup = BeautifulSoup(req.text, 'html.parser')
 
-        self.prayer = self._get_prayer(soup)
+        self.prayer = self._get_prayer(soup, SundaysAndSeasons.PRAYER)
         self.first_reading = self._get_reading(
             soup, 
             SundaysAndSeasons.FIRST_READING, 
@@ -137,6 +141,17 @@ class SundaysAndSeasons:
             SundaysAndSeasons.GOSPEL_RESPONSE
         )
         self.intercession = self._get_intercession(soup)
+
+        if processional_gospel:
+            self.processional_gospel = self._get_reading(
+                soup,
+                SundaysAndSeasons.PROCESSIONAL_GOSPEL,
+                SundaysAndSeasons.GOSPEL_CALL,
+                SundaysAndSeasons.GOSPEL_RESPONSE
+            )
+
+        if alternate_prayer:
+            self.prayer_alternate = self._get_prayer(soup, SundaysAndSeasons.PRAYER_ALTERNATE)
 
 
     def _get_slide(
@@ -176,7 +191,7 @@ class SundaysAndSeasons:
     @staticmethod
     def _get_prayer(
         soup: BeautifulSoup,
-        regex: re.Pattern[str] = PRAYER
+        regex: re.Pattern[str]
     ) -> str:
         '''Get the prayer of the day in a soup object'''
         parent = soup.body.find(string=regex).parent
