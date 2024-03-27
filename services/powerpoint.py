@@ -133,6 +133,7 @@ class PowerPoint:
             title: str, 
             text: str, 
             anchor: str = '',
+            alignment: str = '',
             spoken: bool = False,
             draw: ImageDraw.ImageDraw = DRAW,
             regular: FreeTypeFont = REGULAR,
@@ -188,7 +189,7 @@ class PowerPoint:
             tf.auto_size = MSO_AUTO_SIZE.NONE
             tf.vertical_anchor = None if not anchor else PowerPoint._anchor_map(anchor)
             paragraph = tf.paragraphs[0]
-            paragraph.alignment = PP_ALIGN.LEFT
+            paragraph.alignment = PP_ALIGN.LEFT if not alignment else PowerPoint._alignment_map(alignment)
             for line, has_more in lookahead(slide.splitlines()):
                 sups = get_superscripts(superscripts, line)
                 if len(sups) > 0:
@@ -433,5 +434,15 @@ class PowerPoint:
             'middle': MSO_VERTICAL_ANCHOR.MIDDLE, # type: ignore
             'bottom': MSO_VERTICAL_ANCHOR.BOTTOM # type: ignore
         }[anchor]
+    
+
+    @staticmethod
+    def _alignment_map(alignment: str) -> PP_ALIGN:
+        '''Returns the horizontal alignment of a paragraph.'''
+        return {
+            'left': PP_ALIGN.LEFT,
+            'center': PP_ALIGN.CENTER,
+            'right': PP_ALIGN.RIGHT
+        }[alignment]
             
     #endregion
