@@ -8,10 +8,10 @@ class Liturgy:
     """
     A class to handle the liturgy files.
     """
-    def __init__(self, settings: Settings):
-        self._files: dict[str, str] = {},
-        self._path: str = f'{settings.LOCAL_DIR}/liturgy'
 
+    def __init__(self, settings: Settings):
+        self._files: dict[str, str] = ({},)
+        self._path: str = f"{settings.LOCAL_DIR}/liturgy"
 
     def __getattr__(self, name: str) -> str:
         """
@@ -19,15 +19,13 @@ class Liturgy:
         """
         if name in self._files:
             return self._files[name]
-        raise AttributeError(f'{name} not found')
-    
+        raise AttributeError(f"{name} not found")
 
     def __dir__(self) -> list[str]:
         """
         List all the liturgy files, e.g. dir(liturgy)
         """
         return list(self._files.keys())
-    
 
     def list_seasons(self) -> list[str]:
         """
@@ -37,17 +35,16 @@ class Liturgy:
             os.mkdir(self._path)
 
         return [
-            dir for dir in os.listdir(self._path) 
-            if os.path.isdir(f'{self._path}/{dir}') 
+            dir
+            for dir in os.listdir(self._path)
+            if os.path.isdir(f"{self._path}/{dir}")
         ]
-    
 
     def list_files(self, season: str) -> list[str]:
         """
         List files for a liturgical season.
         """
-        return [file for file in os.listdir(f'{self._path}/{season}')]
-
+        return [file for file in os.listdir(f"{self._path}/{season}")]
 
     def load_files(self, season: str) -> None:
         """
@@ -56,10 +53,8 @@ class Liturgy:
         path = Path(self._path, season)
         files = {}
         for file in os.listdir(path):
-            if file.endswith('.txt'):
+            if file.endswith(".txt"):
                 files[Path(file).stem] = open(
-                    f'{path}/{file}', 
-                    'r', 
-                    encoding='utf-8'
+                    f"{path}/{file}", "r", encoding="utf-8"
                 ).read()
         self._files = files

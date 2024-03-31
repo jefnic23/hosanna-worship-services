@@ -13,11 +13,11 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 
 settings = Settings()
-doc = WordDocument(settings, '')
-dbx = Dropbox(settings, '')
+doc = WordDocument(settings, "")
+dbx = Dropbox(settings, "")
 hymns = Hymns(settings)
 lit = Liturgy(settings)
-ppt = PowerPoint(settings, '')
+ppt = PowerPoint(settings, "")
 sas = SundaysAndSeasons(settings)
 
 
@@ -28,13 +28,13 @@ def print_something(x: str) -> None:
 
 @eel.expose
 def get_settings() -> dict:
-    '''Get all settings.'''
+    """Get all settings."""
     return settings.dict()
 
 
 @eel.expose
 def update_settings(new_settings: dict) -> None:
-    '''Update settings.'''
+    """Update settings."""
     is_valid = Settings(**new_settings)
     if not is_valid:
         print(is_valid.errors())
@@ -44,7 +44,7 @@ def update_settings(new_settings: dict) -> None:
 
 @eel.expose
 def list_liturgies() -> list[str]:
-    '''List all liturgies.'''
+    """List all liturgies."""
     return lit.list_seasons()
 
 
@@ -55,15 +55,15 @@ def list_liturgical_files(season: str) -> list[str]:
 
 @eel.expose
 def get_liturgical_file(season: str, file: str) -> str:
-    return ''
+    return ""
 
-    
+
 @eel.expose
 def set_dir():
-    '''Set directory for file storage.'''
+    """Set directory for file storage."""
     root = Tk()
     root.withdraw()
-    root.wm_attributes('-topmost', 1)
+    root.wm_attributes("-topmost", 1)
     folder = filedialog.askdirectory(initialdir=settings.LOCAL_DIR)
     return folder
 
@@ -78,7 +78,7 @@ def set_date(date: str) -> None:
     date : str
         date string in the format YYYY-MM-DD
     """
-    day = datetime.strptime(date, '%Y-%m-%d').date()
+    day = datetime.strptime(date, "%Y-%m-%d").date()
 
     doc.day = day
     dbx.day = day
@@ -107,19 +107,15 @@ def start_eel() -> None:
     """
     Starts the eel server.
     """
-    
-    directory = 'web'
-    eel.init(directory, ['.ts', '.js', '.html'])
+
+    directory = "web"
+    eel.init(directory, [".ts", ".js", ".html"])
 
     eel_kwargs = dict(
-        mode='portable',
-        app_mode=True,
-        host='localhost',
-        port=8080,
-        size=(1600, 1200)
+        mode="portable", app_mode=True, host="localhost", port=8080, size=(1600, 1200)
     )
-    eel.start('index.html', **eel_kwargs)
+    eel.start("index.html", **eel_kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     start_eel()
