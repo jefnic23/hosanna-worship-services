@@ -13,11 +13,11 @@ from services.settings import Settings
 from services.sundaysandseasons import SundaysAndSeasons
 
 settings = Settings()
-doc = WordDocument(settings, "")
-dbx = Dropbox(settings, "")
+doc = WordDocument(settings)
+dbx = Dropbox(settings)
 hymns = Hymns(settings)
 lit = Liturgy(settings)
-ppt = PowerPoint(settings, "")
+ppt = PowerPoint(settings)
 sas = SundaysAndSeasons(settings)
 
 

@@ -18,10 +18,9 @@ class WordDocument:
 
     DEFAULT_FONTSIZE = 14
 
-    def __init__(self, settings: Settings, title: str):
+    def __init__(self, settings: Settings):
         self.day: date = date.today()
-        self.title: str = title
-        self._path = f"{settings.LOCAL_DIR}/services"
+        self._path: Path = f"{settings.LOCAL_DIR}/services"
         self._document = Document()
         self._section = self._document.sections[0]
         self._section.left_margin = self._section.right_margin = (
@@ -78,11 +77,11 @@ class WordDocument:
             if has_more:
                 run.add_break()
 
-    def save(self) -> None:
+    def save(self, filename: str) -> None:
         """Save the document to the services folder."""
         if not os.path.exists(f"{self._path}/{self.day}"):
             os.makedirs(f"{self._path}/{self.day}")
-        self._document.save(f"{self._path}/{self.day}/{self.title}.docx")
+        self._document.save(f"{self._path}/{self.day}/{filename}.docx")
 
         # os.system(
         #     f'soffice --headless --invisible --convert-to pdf --outdir '

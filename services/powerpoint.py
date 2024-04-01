@@ -15,7 +15,6 @@ from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
 from models.hymn import Hymn
-from models.reading import Reading
 from services.settings import Settings
 from services.utils import get_superscripts, lookahead, split_formatted_text
 
@@ -37,15 +36,14 @@ class PowerPoint:
         Image.new("RGB", (MAX_WIDTH, MAX_HEIGHT))
     )
 
-    def __init__(self, settings: Settings, title: str):
+    def __init__(self, settings: Settings):
         self.day: date = date.today()
-        self.title: str = title
         self.prs = Presentation()
         self.prs.slide_width = Inches(6)
         self.prs.slide_height = Inches(4)
         self._section_layout = self.prs.slide_layouts[2]
         self._blank_layout = self.prs.slide_layouts[6]
-        self._path = f"{settings.LOCAL_DIR}/services"
+        self._path: Path = f"{settings.LOCAL_DIR}/services"
 
         # if os.path.exists(f'{path}/{day}/hymns.txt'):
         #     self._hymns = self._load_hymns()
@@ -241,11 +239,11 @@ class PowerPoint:
 
         os.remove(f"{self._path}/{self.day}/image.pptx")
 
-    def save(self) -> None:
+    def save(self, filename: str) -> None:
         """Save the presentation."""
         if not os.path.exists(f"{self._path}/{self.day}"):
             os.makedirs(f"{self._path}/{self.day}")
-        self.prs.save(f"{self._path}/{self.day}/{self.title}.pptx")
+        self.prs.save(f"{self._path}/{self.day}/{filename}.pptx")
         os.remove(f"{self._path}/{self.day}/image.jpg")
 
     # region Private Methods
