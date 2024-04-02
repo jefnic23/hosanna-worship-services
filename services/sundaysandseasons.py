@@ -270,9 +270,9 @@ class SundaysAndSeasons:
                     f"{line[0]}{' '.join(line[1:])}"
                 )
                 if i % 2 == 0:
-                    body.append(f"{new_line}")
+                    body.append(f'<div>\n{new_line}\n</div>')
                 else:
-                    body.append(f"<b>{new_line}</b>")
+                    body.append(f'<div>\n<b>{new_line}</b>\n</div>')
 
         return Reading(title=title, body="\n".join(body))
 

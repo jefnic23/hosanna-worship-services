@@ -348,11 +348,11 @@ class PowerPoint:
         max_height: int = MAX_HEIGHT,
     ) -> list[str]:
         """Gets the height of a line of text and splits it if it's too long."""
+
         if PowerPoint.check_size(lines, draw, font)["height"] < max_height:
             return [lines]
 
-        regex = re.search(r"<div>(.*?)</div>", lines, re.MULTILINE | re.DOTALL)
-        group = regex.group(1).strip().splitlines() if regex else None
+        regex = re.findall(r"<div>(.*?)</div>", lines, re.MULTILINE | re.DOTALL)
         slides = []
         for line in lines.splitlines():
             if re.match(r"<br>", line):
@@ -367,10 +367,11 @@ class PowerPoint:
                 "height"
             ]
 
-            if regex is not None and line == group[0]:
+            if regex is not None and any([r.find(line) == 1 for r in regex]):
                 # check if the call and response will fit on the current slide
+                div = [r for r in regex if r.find(line) == 1]
                 height = PowerPoint.check_size(
-                    "\n".join(slides[-1:] + [line] + [group[1]]), draw, font
+                    "\n".join(slides[-1:] + div[0].splitlines()), draw, font
                 )["height"]
                 if height > max_height:
                     slides += [line]
