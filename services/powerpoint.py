@@ -14,15 +14,15 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
+from models.enums.horizontal_alignment import HorizontalAlignment
+from models.enums.vertical_alignment import VerticalAlignment
 from models.hymn import Hymn
 from services.settings import Settings
 from services.utils import get_superscripts, lookahead, split_formatted_text
 
 
 class PowerPoint:
-    """
-    A class for creating a PowerPoint presentation.
-    """
+    """A class for creating PowerPoint presentations."""
 
     DEFAULT_FONT: str = "Segoe UI"
     DEFAULT_FONTSIZE: int = 18
@@ -44,9 +44,6 @@ class PowerPoint:
         self._section_layout = self.prs.slide_layouts[2]
         self._blank_layout = self.prs.slide_layouts[6]
         self._path: Path = f"{settings.LOCAL_DIR}/services"
-
-        # if os.path.exists(f'{path}/{day}/hymns.txt'):
-        #     self._hymns = self._load_hymns()
 
     def add_title_slide(self, text: str) -> None:
         """Add a title slide to the presentation/"""
@@ -71,7 +68,6 @@ class PowerPoint:
             self.prs.slide_width,
             self.prs.slide_height,
         )
-        # TODO: delete image after adding to presentation
 
     def add_hymn(self, hymn: Hymn) -> None:
         """Add a hymn to the presentation."""
@@ -123,8 +119,8 @@ class PowerPoint:
         self,
         title: str,
         text: str,
-        anchor: str = "",
-        alignment: str = "",
+        anchor: VerticalAlignment = None,
+        alignment: HorizontalAlignment = HorizontalAlignment.LEFT,
         spoken: bool = False,
         draw: ImageDraw.ImageDraw = DRAW,
         regular: FreeTypeFont = REGULAR,
@@ -183,11 +179,9 @@ class PowerPoint:
             content = s.shapes.add_textbox(Inches(0), Inches(0.5), Inches(6), Inches(3))
             tf = content.text_frame
             tf.auto_size = MSO_AUTO_SIZE.NONE
-            tf.vertical_anchor = None if not anchor else PowerPoint._anchor_map(anchor)
+            tf.vertical_anchor = anchor
             paragraph = tf.paragraphs[0]
-            paragraph.alignment = (
-                PP_ALIGN.LEFT if not alignment else PowerPoint._alignment_map(alignment)
-            )
+            paragraph.alignment = alignment
             for line, has_more in lookahead(slide.splitlines()):
                 sups = get_superscripts(superscripts, line)
                 if len(sups) > 0:
@@ -226,7 +220,8 @@ class PowerPoint:
 
     # TODO: add image file name to method signature
     def convert_image(self) -> None:
-        """Images downloaded from Sundays and Seasons are in a .pptx format.
+        """
+        Images downloaded from Sundays and Seasons are in a .pptx format.
         This method converts the image to a .jpg that can be added to the powerpoint.
         """
         prs = Presentation(f"{self._path}/{self.day}/image.pptx")
@@ -398,23 +393,5 @@ class PowerPoint:
         width_formatted_text = "\n".join(width_formatted_text)
 
         return PowerPoint.get_height(width_formatted_text, draw, regular)
-
-    @staticmethod
-    def _anchor_map(anchor: str) -> MSO_VERTICAL_ANCHOR:
-        """Returns the vertical anchor position of a text box."""
-        return {
-            "top": MSO_VERTICAL_ANCHOR.TOP,  # type: ignore
-            "middle": MSO_VERTICAL_ANCHOR.MIDDLE,  # type: ignore
-            "bottom": MSO_VERTICAL_ANCHOR.BOTTOM,  # type: ignore
-        }[anchor]
-
-    @staticmethod
-    def _alignment_map(alignment: str) -> PP_ALIGN:
-        """Returns the horizontal alignment of a paragraph."""
-        return {
-            "left": PP_ALIGN.LEFT,
-            "center": PP_ALIGN.CENTER,
-            "right": PP_ALIGN.RIGHT,
-        }[alignment]
 
     # endregion
