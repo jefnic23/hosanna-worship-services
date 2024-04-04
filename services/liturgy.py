@@ -5,9 +5,7 @@ from services.settings import Settings
 
 
 class Liturgy:
-    """
-    A class to handle the liturgy files.
-    """
+    """A class to handle the liturgy files."""
 
     def __init__(self, settings: Settings):
         self._files: dict[str, str] = ({},)
