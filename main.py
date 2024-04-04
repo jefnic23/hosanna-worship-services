@@ -99,8 +99,7 @@ def add_hymn(hymn_number: int) -> dict[str, str]:
     -------
         dict[str, str] : dict representation of hymn containing the hymn number and title.
     """
-    hymn = hymns.add_hymn(hymn_number)
-    return hymn.dict()
+    return hymns.get_hymn(hymn_number).dict()
 
 
 def start_eel() -> None:
