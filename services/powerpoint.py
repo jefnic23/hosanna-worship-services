@@ -14,8 +14,6 @@ from pptx.slide import Slide
 from pptx.text.text import _Paragraph
 from pptx.util import Inches, Pt
 
-from models.enums.horizontal_alignment import HorizontalAlignment
-from models.enums.vertical_alignment import VerticalAlignment
 from models.hymn import Hymn
 from services.settings import Settings
 from services.utils import get_superscripts, lookahead, split_formatted_text
@@ -119,8 +117,8 @@ class PowerPoint:
         self,
         title: str,
         text: str,
-        anchor: VerticalAlignment = None,
-        alignment: HorizontalAlignment = HorizontalAlignment.LEFT,
+        anchor: MSO_VERTICAL_ANCHOR = None,
+        alignment: PP_ALIGN = PP_ALIGN.LEFT,
         spoken: bool = False,
         draw: ImageDraw.ImageDraw = DRAW,
         regular: FreeTypeFont = REGULAR,
@@ -240,6 +238,11 @@ class PowerPoint:
             os.makedirs(f"{self._path}/{self.day}")
         self.prs.save(f"{self._path}/{self.day}/{filename}.pptx")
         os.remove(f"{self._path}/{self.day}/image.jpg")
+
+    def reset(self) -> None:
+        self.prs = Presentation()
+        self.prs.slide_width = Inches(6)
+        self.prs.slide_height = Inches(4)
 
     # region Private Methods
 
