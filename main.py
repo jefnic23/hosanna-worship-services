@@ -15,7 +15,7 @@ from services.sundaysandseasons import SundaysAndSeasons
 settings = Settings()
 doc = WordDocument(settings)
 dbx = Dropbox(settings)
-hymns = Hymns(settings)
+hymns = Hymns()
 lit = Liturgy(settings)
 ppt = PowerPoint(settings)
 sas = SundaysAndSeasons(settings)
@@ -80,9 +80,8 @@ def set_date(date: str) -> None:
     """
     day = datetime.strptime(date, "%Y-%m-%d").date()
 
-    doc.day = day
     dbx.day = day
-    hymns.day = day
+    doc.day = day
     ppt.day = day
     sas.day = day
 

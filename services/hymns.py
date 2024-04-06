@@ -3,15 +3,12 @@ from datetime import date
 import pandas as pd
 
 from models.hymn import Hymn
-from services.settings import Settings
 
 
 class Hymns:
     """Class for adding hymns to the service."""
 
-    def __init__(self, settings: Settings) -> None:
-        self.day: date = date.today()
-        self._path: str = f"{settings.LOCAL_DIR}/services"
+    def __init__(self) -> None:
         self._df: pd.DataFrame = pd.read_csv("data/hymnal.csv")
 
     def get_hymn(self, hymn_number: int) -> Hymn:
