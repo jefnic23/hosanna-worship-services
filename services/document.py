@@ -89,6 +89,9 @@ class WordDocument:
         # )
         # os.remove(f'{self._path}/{self.day}/{self.title}.docx')
 
+    def reset(self) -> None:
+        self._document = Document()
+
     @staticmethod
     def _add_run(
         paragraph: Paragraph,
