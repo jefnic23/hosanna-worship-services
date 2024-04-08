@@ -361,24 +361,24 @@ class PowerPoint:
             if re.match(r"<div>", line) or re.match(r"</div>", line):
                 continue
 
-            height = PowerPoint.check_size("\n".join(slides[-1:] + [line]), draw, font)[
+            height = PowerPoint.check_size("\n".join(slides[-1:] + [line.strip()]), draw, font)[
                 "height"
             ]
 
             if regex is not None and any([r.find(line) == 1 for r in regex]):
                 # check if the call and response will fit on the current slide
-                div = [r for r in regex if r.find(line) == 1]
+                div = [r.strip() for r in regex if r.find(line) == 1]
                 height = PowerPoint.check_size(
                     "\n".join(slides[-1:] + div[0].splitlines()), draw, font
                 )["height"]
                 if height > max_height:
-                    slides += [line]
+                    slides += [line.strip()]
                 else:
-                    slides[-1:] = ["\n".join(slides[-1:] + [line])]
+                    slides[-1:] = ["\n".join(slides[-1:] + [line.strip()])]
                 continue
 
             if height < max_height:
-                slides[-1:] = ["\n".join(slides[-1:] + [line]).lstrip()]
+                slides[-1:] = ["\n".join(slides[-1:] + [line.strip()]).lstrip()]
             else:
                 slides += [line]
         return slides
