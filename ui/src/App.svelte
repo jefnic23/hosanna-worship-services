@@ -8,12 +8,16 @@
     import { fly } from "svelte/transition";
 
     const pages: Page[] = [
-        { name: 'date', description: 'Select date', content: DateSelector },
-        { name: 'liturgy', description: 'Select liturgy', content: Liturgy },
-        { name: 'powerpoint', description: 'Build PowerPoint', content: Planner },
-        { name: 'settings', description: 'Settings', content: Settings },
-        { name: 'review', description: 'Review & confirm', content: Settings }
-    ]
+        { name: "date", description: "Select date", content: DateSelector },
+        { name: "liturgy", description: "Select liturgy", content: Liturgy },
+        {
+            name: "powerpoint",
+            description: "Build PowerPoint",
+            content: Planner,
+        },
+        { name: "settings", description: "Settings", content: Settings },
+        { name: "review", description: "Review & confirm", content: Settings },
+    ];
 </script>
 
 <main>
@@ -21,7 +25,9 @@
         <ul>
             {#each pages as page (page.name)}
                 <li>
-                    <button on:click={() => activeTab.set(page.name)}>{page.description}</button>
+                    <button on:click={() => activeTab.set(page.name)}
+                        >{page.description}</button
+                    >
                 </li>
             {/each}
         </ul>
@@ -29,10 +35,10 @@
     <div class="container">
         {#each pages as page (page.name)}
             {#if $activeTab === page.name}
-                <div 
+                <div
                     class="container-item"
-                    in:fly="{{ x: -500, duration: 300 }}"
-                    out:fly="{{ x: 500, duration: 300 }}"
+                    in:fly={{ x: -500, duration: 300 }}
+                    out:fly={{ x: 500, duration: 300 }}
                 >
                     <svelte:component this={page.content} />
                 </div>
