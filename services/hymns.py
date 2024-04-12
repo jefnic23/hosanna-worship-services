@@ -1,5 +1,3 @@
-from datetime import date
-
 import pandas as pd
 
 from models.hymn import Hymn

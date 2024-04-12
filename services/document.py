@@ -77,17 +77,22 @@ class WordDocument:
             if has_more:
                 run.add_break()
 
-    def save(self, filename: str) -> None:
+    def save(self, filename: str, convert_to_pdf: bool = False) -> None:
         """Save the document to the services folder."""
         if not os.path.exists(f"{self._path}/{self.day}"):
             os.makedirs(f"{self._path}/{self.day}")
         self._document.save(f"{self._path}/{self.day}/{filename}.docx")
 
-        # os.system(
-        #     f'soffice --headless --invisible --convert-to pdf --outdir '
-        #     f'{self._path}/{self.day} "{self._path}/{self.day}/{self.title}.docx"'
-        # )
+        if convert_to_pdf:
+            self._convert_to_pdf(filename)
+
         # os.remove(f'{self._path}/{self.day}/{self.title}.docx')
+
+    def _convert_to_pdf(self, filename: str) -> None:
+        os.system(
+            f"soffice --headless --invisible --convert-to pdf --outdir "
+            f'{self._path}/{self.day} "{self._path}/{self.day}/{filename}.docx"'
+        )
 
     def reset(self) -> None:
         self._document = Document()

@@ -59,7 +59,7 @@ def get_liturgical_file(season: str, file: str) -> str:
 
 
 @eel.expose
-def set_dir():
+def set_dir() -> str:
     """Set directory for file storage."""
     root = Tk()
     root.withdraw()
@@ -101,11 +101,12 @@ def add_hymn(hymn_number: int) -> dict[str, str]:
     return hymns.get_hymn(hymn_number).dict()
 
 
-def start_eel() -> None:
-    """
-    Starts the eel server.
-    """
+@eel.expose
+def open_dropbox() -> None:
+    dbx.open_developer_apps()
 
+
+if __name__ == "__main__":
     directory = "web"
     eel.init(directory, [".ts", ".js", ".html"])
 
@@ -113,7 +114,3 @@ def start_eel() -> None:
         mode="portable", app_mode=True, host="localhost", port=8080, size=(1600, 1200)
     )
     eel.start("index.html", **eel_kwargs)
-
-
-if __name__ == "__main__":
-    start_eel()
