@@ -96,5 +96,6 @@
         margin: auto;
         overflow-y: auto;
         max-height: 89svh;
+        width: -webkit-fill-available;
     }
 </style>
