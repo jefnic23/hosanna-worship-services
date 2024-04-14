@@ -1,47 +1,53 @@
 <script lang="ts">
     import Hymn from "@components/Hymn.svelte";
-    
-    const elements: {} = {
-        'Confession': 'call_and_response',
-        'Gathering Song': 'hymn',
-        'Greeting': 'call_and_response',
-        'Kyrie': 'congregation',
-        'Prayer of the Day': 'call_and_response',
-        'First Reading': 'reading',
-        'Psalm': 'psalm',
-        'Second Reading': 'reading',
-        'Gospel Acclamation': 'congregation',
-        'Gospel': 'gospel',
-        'Sermon': 'title',
-        'Hymn of the Day': 'hymn',
-        'Creed': 'congregation',
-        'Prayers of Intercession': 'intercessions',
-        'Dialogue': 'call_and_response',
-        'Preface': 'call_and_response',
-        'Holy, Holy, Holy': 'congregation',
-        'Thanksgiving': 'call_and_response',
-        'Lord\'s Prayer': 'congregation',
-        'Communion': 'title',
-        'Communion Song': 'congregation',
-        'Communion Blessing': 'call_and_response',
-        'Prayer after Communion': 'call_and_response',
-        'Blessing': 'call_and_response',
-        'Sending Song': 'hymn',
-        'Dismissal': 'call_and_response'
-    }
+
+    const serviceElements: {} = {
+        "Confession": "Text",
+        "Gathering Song": "Song",
+        "Greeting": "Text",
+        "Kyrie": "Text",
+        "Prayer of the Day": "Text",
+        "First Reading": "Text",
+        "Psalm": "Text",
+        "Second Reading": "Text",
+        "Gospel Acclamation": "Text",
+        "Gospel": "Text",
+        "Sermon": "Text",
+        "Song of the Day": "Song",
+        "Creed": "Text",
+        "Prayers of Intercession": "Text",
+        "Dialogue": "Text",
+        "Preface": "Text",
+        "Holy, Holy, Holy": "Text",
+        "Thanksgiving": "Text",
+        "Lord's Prayer": "Text",
+        "Communion": "Text",
+        "Communion Song": "Text",
+        "Communion Blessing": "Text",
+        "Prayer after Communion": "Text",
+        "Blessing": "Text",
+        "Sending Song": "Song",
+        "Dismissal": "Text",
+    };
+
+    const elementTypes: string[] = [
+        "Song",
+        "Text"
+    ]
+
 </script>
 
-{#each Object.keys(elements) as element (element)}
+{#each Object.keys(serviceElements) as element (element)}
     <div class="planner-element">
         <div class="planner-element-name">{element}</div>
-        {#if elements[element] === 'hymn'}
+        {#if serviceElements[element] === "Song"}
             <Hymn />
         {:else}
-            <div class="planner-element-type">{elements[element]}</div>
+            <div class="planner-element-type">{serviceElements[element]}</div>
         {/if}
     </div>
 {/each}
-    
+
 <style>
     .planner-element {
         display: flex;
