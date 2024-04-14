@@ -1,9 +1,9 @@
 <script lang="ts">
     import { eel } from "@stores";
-    import { marked } from 'marked';
+    import { marked } from "marked";
 
-    let text: string = '';
-    let htmlContent: string[] = [''];
+    export let text: string = "";
+    let htmlContent: string[] = [""];
 
     $: text, parseMarkdown(text);
 
@@ -13,7 +13,9 @@
      */
     async function parseMarkdown(text: string): Promise<void> {
         let slides = text.split("<br>");
-        htmlContent = await Promise.all(slides.map(slide => marked.parse(slide)));
+        htmlContent = await Promise.all(
+            slides.map((slide) => marked.parse(slide)),
+        );
     }
 
     /**
@@ -24,14 +26,14 @@
     }
 </script>
 
-<div class='flex-row'>
-    <div class='flex-col'>
+<div class="flex-row">
+    <div class="flex-col">
         <textarea bind:value={text}></textarea>
         <button on:click={handleSubmit}>Submit</button>
     </div>
-    <div class='powerpoint'>
+    <div class="powerpoint">
         {#each htmlContent as slide}
-            <div class='slides'>{@html slide}</div>
+            <div class="slides">{@html slide}</div>
         {/each}
     </div>
 </div>
@@ -61,12 +63,12 @@
         padding: 31.5px 16.5px;
         resize: none;
         font-size: 24px;
-        font-family: 'Segoe UI';
+        font-family: "Segoe UI";
         line-height: 1.25;
         border: 1px white solid;
     }
 
-    :global(.slides *){
+    :global(.slides *) {
         margin: 0 0;
     }
 </style>
