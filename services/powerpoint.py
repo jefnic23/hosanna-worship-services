@@ -158,13 +158,13 @@ class PowerPoint:
             if line in bold_lines:
                 bold_line = PowerPoint.get_width(line, draw, bold)
                 width_formatted_text.append(bold_line)
-                for l in bold_line.splitlines():
-                    bold_formatted_text.append(l)
+                for bl in bold_line.splitlines():
+                    bold_formatted_text.append(bl)
             elif line in italic_lines:
                 italic_line = PowerPoint.get_width(line, draw, italic)
                 width_formatted_text.append(italic_line)
-                for l in italic_line.splitlines():
-                    italic_formatted_text.append(l)
+                for il in italic_line.splitlines():
+                    italic_formatted_text.append(il)
             else:
                 width_formatted_text.append(PowerPoint.get_width(line, draw, regular))
 
@@ -361,9 +361,9 @@ class PowerPoint:
             if re.match(r"<div>", line) or re.match(r"</div>", line):
                 continue
 
-            height = PowerPoint.check_size("\n".join(slides[-1:] + [line.strip()]), draw, font)[
-                "height"
-            ]
+            height = PowerPoint.check_size(
+                "\n".join(slides[-1:] + [line.strip()]), draw, font
+            )["height"]
 
             if regex is not None and any([r.find(line) == 1 for r in regex]):
                 # check if the call and response will fit on the current slide

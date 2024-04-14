@@ -69,12 +69,3 @@ class Dropbox:
         )
 
         self._token = DropboxResponse(**response.json()).refresh_token
-
-    @staticmethod
-    def open_developer_apps() -> None:
-        """
-        Open a browser to the developer apps page to create an app
-        and/or retrieve an app key and app secret.
-        """
-        url = "https://www.dropbox.com/developers/apps"
-        webbrowser.open_new(url)
