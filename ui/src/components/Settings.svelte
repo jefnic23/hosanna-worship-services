@@ -1,22 +1,33 @@
 <script lang="ts">
+    import { onMount } from "svelte";
     import type { Settings } from "@interfaces/settings";
     import { eel } from "@stores";
 
     let settings: Settings = {};
 
+    onMount(() => {
+        eel.get_settings()((s: Settings) => {
+            settings = s;
+        });
+    });
+
     let dropbox_url: string = "https://www.dropbox.com/developers/apps";
-    
+
     let access_code_url: string;
     $: access_code_url = `https://www.dropbox.com/oauth2/authorize?client_id=${settings.DROPBOX_APP_KEY}&response_type=code&token_access_type=offline`;
 
-    eel.get_settings()((s: Settings) => {
-        settings = s;
-    });
+    let screenWidth: number = screen.width;
+    let screenHeight: number = screen.height;
+    let windowWidth: number = 740;
+    let windowHeight: number = 870;
+    let left: number = screenWidth / 2 - windowWidth / 2;
+    let top: number = screenHeight / 2 - windowHeight / 2;
+    let windowFeatures: string = `popup,left=${left},top=${top},width=${windowWidth},height=${windowHeight}`;
 
-    const setDir = async () => {
+    async function setDir(): Promise<void> {
         let dir = await eel.set_dir()();
         settings.LOCAL_DIR = dir;
-    };
+    }
 </script>
 
 <div class="settings-group">
@@ -40,7 +51,9 @@
 <div class="settings-group">
     <h2>Dropbox</h2>
     <div class="settings-section">
-        <button on:click={() => window.open(dropbox_url)}>
+        <button
+            on:click={() => window.open(dropbox_url, "_blank", windowFeatures)}
+        >
             Configure Dropbox
         </button>
         <div class="settings-input">
@@ -52,14 +65,19 @@
             />
         </div>
         <div class="settings-input">
-            <label for="app_secret">App Secret</label>
+            <label for="app_secret">Access Code</label>
             <input
                 type="text"
                 name="app_secret"
                 bind:value={settings.DROPBOX_APP_SECRET}
             />
         </div>
-        <button on:click={() => window.open(access_code_url)}></button>
+        <button
+            on:click={() =>
+                window.open(access_code_url, "_blank", windowFeatures)}
+        >
+            Get access code
+        </button>
         <div class="settings-input">
             <label for="refresh_token">Refresh Token</label>
             <input
@@ -76,8 +94,8 @@
     <div class="settings-section">
         <div class="settings-input">
             <label for="directory">Directory</label>
-            <button name="directory" on:click={setDir}>Choose Directory</button>
-            <p>{settings.LOCAL_DIR}</p>
+            <input name="directory" bind:value={settings.LOCAL_DIR} disabled />
+            <button on:click={setDir}>Choose Directory</button>
         </div>
     </div>
 </div>
@@ -88,6 +106,8 @@
     .settings-group {
         display: flex;
         flex-direction: row;
+        padding: 3rem 1rem;
+        border-bottom: 1px solid white;
     }
 
     .settings-section {
