@@ -50,12 +50,13 @@ def list_liturgies() -> list[str]:
 
 @eel.expose
 def list_liturgical_files(season: str) -> list[str]:
+    lit.load_files(season)
     return lit.list_files(season)
 
 
 @eel.expose
-def get_liturgical_file(file: str) -> str:
-    return lit[file.split(".txt")[0]]
+def get_liturgical_file(filename: str) -> str:
+    return lit.get_file(filename)
 
 
 @eel.expose

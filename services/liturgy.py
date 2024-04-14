@@ -11,13 +11,13 @@ class Liturgy:
         self._files: dict[str, str] = ({},)
         self._path: str = f"{settings.LOCAL_DIR}/liturgy"
 
-    def __getattr__(self, name: str) -> str:
+    def __getattr__(self, filename: str) -> str:
         """
         Return the liturgy file, e.g. liturgy.creed
         """
-        if name in self._files:
-            return self._files[name]
-        raise AttributeError(f"{name} not found")
+        if filename in self._files:
+            return self._files[filename]
+        raise AttributeError(f"{filename} not found")
 
     def __dir__(self) -> list[str]:
         """
@@ -42,7 +42,7 @@ class Liturgy:
         """
         List files for a liturgical season.
         """
-        return [file for file in os.listdir(f"{self._path}/{season}")]
+        return [Path(file).stem for file in os.listdir(f"{self._path}/{season}")]
 
     def load_files(self, season: str) -> None:
         """
@@ -56,3 +56,11 @@ class Liturgy:
                     f"{path}/{file}", "r", encoding="utf-8"
                 ).read()
         self._files = files
+
+    def get_file(self, filename: str) -> str:
+        """
+        Return the liturgy file.
+        """
+        if filename in self._files:
+            return self._files[filename]
+        raise AttributeError(f"{filename} not found")
