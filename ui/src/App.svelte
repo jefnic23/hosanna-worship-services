@@ -97,5 +97,6 @@
         overflow-y: auto;
         max-height: 89svh;
         width: -webkit-fill-available;
+        text-align: center;
     }
 </style>

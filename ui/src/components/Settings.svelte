@@ -4,7 +4,6 @@
     import { eel } from "@stores";
 
     let settings: Settings = {};
-
     onMount(() => {
         eel.get_settings()((s: Settings) => {
             settings = s;
@@ -119,6 +118,7 @@
     .settings-input {
         display: flex;
         flex-direction: column;
+        text-align: left;
     }
 
     h2 {
