@@ -51,14 +51,6 @@ class Dropbox:
         except AuthError as err:
             raise err
 
-    def get_access_code(self) -> None:
-        """Open a browser and request an access code."""
-        url = (
-            f"https://www.dropbox.com/oauth2/authorize?client_id={self._app_key}&"
-            f"response_type=code&token_access_type=offline"
-        )
-        webbrowser.open_new(url)
-
     def get_refresh_token(self, access_code: str) -> None:
         data = f"code={access_code}&grant_type=authorization_code"
 
