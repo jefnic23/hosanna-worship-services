@@ -2,6 +2,11 @@
     import { eel } from "@stores";
     import { marked } from "marked";
 
+    marked.use({
+        gfm: true,
+        breaks: true
+    });
+
     export let text: string = "";
     let htmlContent: string[] = [""];
 
