@@ -54,8 +54,8 @@ def list_liturgical_files(season: str) -> list[str]:
 
 
 @eel.expose
-def get_liturgical_file(season: str, file: str) -> str:
-    return ""
+def get_liturgical_file(file: str) -> str:
+    return lit[file.split(".txt")[0]]
 
 
 @eel.expose
