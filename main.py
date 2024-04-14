@@ -101,16 +101,15 @@ def add_hymn(hymn_number: int) -> dict[str, str]:
     return hymns.get_hymn(hymn_number).dict()
 
 
-@eel.expose
-def open_dropbox() -> None:
-    dbx.open_developer_apps()
-
-
 if __name__ == "__main__":
     directory = "web"
     eel.init(directory, [".ts", ".js", ".html"])
 
     eel_kwargs = dict(
-        mode="portable", app_mode=True, host="localhost", port=8080, size=(1600, 1200)
+        mode="portable",
+        app_mode=True,
+        host="localhost",
+        port=8080,
+        size=(1600, 1200)
     )
     eel.start("index.html", **eel_kwargs)
