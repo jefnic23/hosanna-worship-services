@@ -88,7 +88,7 @@ def set_date(date: str) -> None:
 
 
 @eel.expose
-def add_hymn(hymn_number: int) -> dict[str, str]:
+def get_hymn(hymn_number: int) -> dict[str, str]:
     """Adds a hymn to the service.
 
     Args

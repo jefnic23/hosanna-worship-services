@@ -17,7 +17,7 @@
      * Adds the hymn to the service
      */
     function handleSubmit(): void {
-        eel.add_hymn(parseInt(hymnNumber))((n: Hymn) => {
+        eel.get_hymn(parseInt(hymnNumber))((n: Hymn) => {
             hymn = n
         });
 
@@ -30,6 +30,5 @@
 <div>
     {#if hymn}
         <p>{hymn.title}</p>
-        <p>{hymn.number}</p>
     {/if}
 </div>
