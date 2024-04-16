@@ -25,7 +25,9 @@
         <ul>
             {#each pages as page (page.name)}
                 <li>
-                    <button on:click={() => activeTab.set(page.name)}
+                    <button
+                        class={page.name == $activeTab ? "active" : ""}
+                        on:click={() => activeTab.set(page.name)}
                         >{page.description}</button
                     >
                 </li>
@@ -75,8 +77,16 @@
         margin: 1rem 0;
     }
 
+    .active {
+        border: 1px solid white;
+    }
+
     button:hover {
         cursor: pointer;
+    }
+
+    button:focus {
+        border: none;
     }
 
     .container {
