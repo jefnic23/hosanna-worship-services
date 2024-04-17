@@ -11,6 +11,7 @@ export default defineConfig({
 	plugins: [svelte()],
 	resolve: {
 		alias: {
+			'@actions': path.resolve(__dirname, './src/actions'),
 			'@components': path.resolve(__dirname, './src/components'),
 			'@interfaces': path.resolve(__dirname, './src/interfaces'),
             '@pages': path.resolve(__dirname, './src/pages'),
