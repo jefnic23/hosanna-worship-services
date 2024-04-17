@@ -1,10 +1,7 @@
 <script lang="ts">
     import Hymn from "@components/Hymn.svelte";
     import Fa from "@components/Fa.svelte";
-    import {
-        faArrowsUpDownLeftRight,
-        faX,
-    } from "@fortawesome/free-solid-svg-icons";
+    import { faArrowsUpDown, faX } from "@fortawesome/free-solid-svg-icons";
     import { ServiceElementType } from "@interfaces/serviceElement";
     import type { ServiceElement } from "@interfaces/serviceElement";
 
@@ -37,26 +34,20 @@
         { name: "Dismissal", type: ServiceElementType.Text },
     ];
 
-    let dragItem: ServiceElement;
-
-    function handleDragStart(event, item) {
-        dragItem = item;
+    function handleDragStart(event: DragEvent, serviceElement: ServiceElement): void {
+        event.dataTransfer.setData("text/plain", JSON.stringify(serviceElement));
     }
 
-    function handleDragOver(event) {
+    function handleDragOver(event: DragEvent) {
         event.preventDefault(); // Necessary to allow dropping
     }
 
-    function handleDrop(event, item) {
-        const draggingIndex = serviceElements.indexOf(dragItem);
-        const targetIndex = serviceElements.indexOf(item);
-
+    function handleDrop(event: DragEvent, targetIndex: number) {
+        let serviceElement: ServiceElement = JSON.parse(event.dataTransfer.getData("text/plain"));
+        const draggingIndex = serviceElements.indexOf(serviceElement);
         serviceElements.splice(draggingIndex, 1); // Remove the item being dragged
-        serviceElements.splice(targetIndex, 0, dragItem); // Insert it before the target item
-
-        serviceElements = [...serviceElements];
-
-        dragItem = null; // Clear the drag item after drop
+        serviceElements.splice(targetIndex, 0, serviceElement); // Insert it before the target item
+        serviceElements = serviceElements;
     }
 </script>
 
@@ -71,12 +62,12 @@
         {#each serviceElements as serviceElement, index}
             <tr
                 draggable="true"
-                on:dragstart={(event) => handleDragStart(event, serviceElement)}
+                on:dragstart={(event) => handleDragStart(event, serviceElement)} 
                 on:dragover={handleDragOver}
-                on:drop={(event) => handleDrop(event, serviceElement)}
+                on:drop={(event) => handleDrop(event, index)}
             >
                 <td>
-                    <Fa icon={faArrowsUpDownLeftRight} color="#89b4fa" />
+                    <Fa icon={faArrowsUpDown} color="#89b4fa" />
                     <Fa icon={faX} color="#FF0000" />
                 </td>
                 <td class="planner-element-name">{serviceElement.name}</td>
@@ -101,6 +92,15 @@
 
     td {
         padding: 1rem 0;
+    }
+
+    tbody:global(.droppable) {
+        outline: 0.1rem solid white;
+        outline-offset: 0.25rem;
+    }
+
+    tbody:global(.droppable) * {
+        pointer-events: none;
     }
 
     /* .planner-element {
