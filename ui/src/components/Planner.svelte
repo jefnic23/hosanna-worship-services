@@ -3,7 +3,9 @@
     import Fa from "@components/Fa.svelte";
     import { faArrowsUpDown, faX } from "@fortawesome/free-solid-svg-icons";
     import { ServiceElementType } from "@interfaces/serviceElement";
+    import { receive, send } from "@actions/transition";
     import type { ServiceElement } from "@interfaces/serviceElement";
+    import { flip } from "svelte/animate";
 
     let serviceElements: ServiceElement[] = [
         { name: "Confession", type: ServiceElementType.Text },
@@ -34,8 +36,8 @@
         { name: "Dismissal", type: ServiceElementType.Text },
     ];
 
-    function handleDragStart(event: DragEvent, serviceElement: ServiceElement): void {
-        event.dataTransfer.setData("text/plain", JSON.stringify(serviceElement));
+    function handleDragStart(event: DragEvent, name: string): void {
+        event.dataTransfer.setData("text/plain", name);
     }
 
     function handleDragOver(event: DragEvent) {
@@ -43,11 +45,13 @@
     }
 
     function handleDrop(event: DragEvent, targetIndex: number) {
-        let serviceElement: ServiceElement = JSON.parse(event.dataTransfer.getData("text/plain"));
+        event.preventDefault();
+        let name: string = event.dataTransfer.getData("text/plain");
+        const serviceElement = serviceElements.find(e => e.name === name);
         const draggingIndex = serviceElements.indexOf(serviceElement);
         serviceElements.splice(draggingIndex, 1); // Remove the item being dragged
         serviceElements.splice(targetIndex, 0, serviceElement); // Insert it before the target item
-        serviceElements = serviceElements;
+        serviceElements = [...serviceElements];
     }
 </script>
 
@@ -59,12 +63,15 @@
         </tr>
     </thead>
     <tbody>
-        {#each serviceElements as serviceElement, index}
+        {#each serviceElements as serviceElement, index (serviceElement.name)}
             <tr
                 draggable="true"
-                on:dragstart={(event) => handleDragStart(event, serviceElement)} 
+                on:dragstart={(event) => handleDragStart(event, serviceElement.name)} 
                 on:dragover={handleDragOver}
                 on:drop={(event) => handleDrop(event, index)}
+                out:send={{ key: index }}
+                in:receive={{ key: index }}
+                animate:flip={{ duration: 200 }}
             >
                 <td>
                     <Fa icon={faArrowsUpDown} color="#89b4fa" />
