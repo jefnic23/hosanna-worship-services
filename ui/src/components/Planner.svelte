@@ -63,7 +63,7 @@
                 }}
                 in:receive|local={{ key: index }}
                 out:send|local={{ key: index }}
-                animate:flip={{ duration: 200 }}
+                animate:flip={{ duration: 233 }}
             >
                 <td>
                     <Fa icon={faArrowsUpDown} color="#89b4fa" />
