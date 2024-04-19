@@ -1,6 +1,7 @@
 <script lang="ts">
     import Hymn from "@components/Hymn.svelte";
     import Fa from "@components/Fa.svelte";
+    import { draggable, dropzone } from "@actions/dnd";
     import { faArrowsUpDown, faX } from "@fortawesome/free-solid-svg-icons";
     import { ServiceElementType } from "@interfaces/serviceElement";
     import { receive, send } from "@actions/transition";
@@ -35,24 +36,6 @@
         { name: "Sending Song", type: ServiceElementType.Song },
         { name: "Dismissal", type: ServiceElementType.Text },
     ];
-
-    function handleDragStart(event: DragEvent, name: string): void {
-        event.dataTransfer.setData("text/plain", name);
-    }
-
-    function handleDragOver(event: DragEvent) {
-        event.preventDefault(); // Necessary to allow dropping
-    }
-
-    function handleDrop(event: DragEvent, targetIndex: number) {
-        event.preventDefault();
-        let name: string = event.dataTransfer.getData("text/plain");
-        const serviceElement = serviceElements.find(e => e.name === name);
-        const draggingIndex = serviceElements.indexOf(serviceElement);
-        serviceElements.splice(draggingIndex, 1); // Remove the item being dragged
-        serviceElements.splice(targetIndex, 0, serviceElement); // Insert it before the target item
-        serviceElements = [...serviceElements];
-    }
 </script>
 
 <table>
@@ -65,12 +48,21 @@
     <tbody>
         {#each serviceElements as serviceElement, index (serviceElement.name)}
             <tr
-                draggable="true"
-                on:dragstart={(event) => handleDragStart(event, serviceElement.name)} 
-                on:dragover={handleDragOver}
-                on:drop={(event) => handleDrop(event, index)}
-                out:send={{ key: index }}
-                in:receive={{ key: index }}
+                use:draggable={serviceElement.name}
+                use:dropzone={{
+                    onDrop(name) {
+                        const draggingElement = serviceElements.find(
+                            (e) => e.name === name,
+                        );
+                        const draggingIndex =
+                            serviceElements.indexOf(draggingElement);
+                        serviceElements.splice(draggingIndex, 1); // Remove the item being dragged
+                        serviceElements.splice(index, 0, draggingElement); // Insert it before the target item
+                        serviceElements = [...serviceElements];
+                    },
+                }}
+                in:receive|local={{ key: index }}
+                out:send|local={{ key: index }}
                 animate:flip={{ duration: 200 }}
             >
                 <td>
@@ -101,12 +93,12 @@
         padding: 1rem 0;
     }
 
-    tbody:global(.droppable) {
+    :global(.droppable) {
         outline: 0.1rem solid white;
         outline-offset: 0.25rem;
     }
 
-    tbody:global(.droppable) * {
+    :global(.droppable) * {
         pointer-events: none;
     }
 
