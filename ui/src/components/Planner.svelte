@@ -1,11 +1,11 @@
 <script lang="ts">
-    import Hymn from "@components/Hymn.svelte";
-    import Fa from "@components/Fa.svelte";
     import { draggable, dropzone } from "@actions/dnd";
-    import { faArrowsUpDown, faX } from "@fortawesome/free-solid-svg-icons";
-    import { ServiceElementType } from "@interfaces/serviceElement";
     import { receive, send } from "@actions/transition";
+    import Fa from "@components/Fa.svelte";
+    import Hymn from "@components/Hymn.svelte";
+    import { faArrowsUpDown, faX } from "@fortawesome/free-solid-svg-icons";
     import type { ServiceElement } from "@interfaces/serviceElement";
+    import { ServiceElementType } from "@interfaces/serviceElement";
     import { flip } from "svelte/animate";
 
     let serviceElements: ServiceElement[] = [
