@@ -243,6 +243,8 @@ class PowerPoint:
         self.prs = Presentation()
         self.prs.slide_width = Inches(6)
         self.prs.slide_height = Inches(4)
+        self._section_layout = self.prs.slide_layouts[2]
+        self._blank_layout = self.prs.slide_layouts[6]
 
     # region Private Methods
 
@@ -260,16 +262,6 @@ class PowerPoint:
     # endregion
 
     # region Static Methods
-
-    @staticmethod
-    def _get_pastor(text: str) -> list[int]:
-        """Returns the indices of the pastor's lines"""
-        return [p.start() for p in re.finditer(r"P:", text)]
-
-    @staticmethod
-    def _get_congregation(text: str) -> list[int]:
-        """Returns the indices of the congregation's lines"""
-        return [c.start() for c in re.finditer(r"C:", text)]
 
     @staticmethod
     def _add_header(slide: Slide, header_text: str) -> None:
