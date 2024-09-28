@@ -93,11 +93,6 @@
         padding: 1rem 0;
     }
 
-    :global(.droppable) {
-        outline: 0.1rem solid white;
-        outline-offset: 0.25rem;
-    }
-
     :global(.droppable) * {
         pointer-events: none;
     }

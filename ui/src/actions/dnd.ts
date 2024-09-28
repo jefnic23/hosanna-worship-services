@@ -6,9 +6,15 @@ export function draggable(node: HTMLElement, data: any) {
 
     function handleDragStart(e: DragEvent) {
         e.dataTransfer.setData("text/plain", data);
+        (e.target as HTMLElement).style.cursor = "grabbing";
+    }
+
+    function handleDragEnd(e: DragEvent) {
+        (e.target as HTMLElement).style.cursor = "grab";
     }
 
     node.addEventListener("dragstart", handleDragStart);
+    node.addEventListener("dragend", handleDragEnd);
 
     return {
         update(data: any) {
@@ -16,6 +22,7 @@ export function draggable(node: HTMLElement, data: any) {
         },
         destroy() {
             node.removeEventListener("dragstart", handleDragStart);
+            node.removeEventListener("dragend", handleDragEnd);
         }
     }
 }
