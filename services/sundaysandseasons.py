@@ -98,22 +98,13 @@ class SundaysAndSeasons:
     def _get_title_and_url(self, url: str = HOME):
         req = self._session.get(url.format(self.day))
         soup = BeautifulSoup(req.text, "html.parser")
-        html = soup.body.find("h1", {"id": "ribbontitle"})
+        html = soup.body.find("div", {"id": "ribbondescription"})
 
-        title = html.get_text()
-        if title is not None:
-            self.title = title.split(" / ")[0].strip()
+        if link := html.find("a"):
+            self._page = link.get("href").split("/")[-1]
+            self.title = link.get_text()
         else:
-            self.title = self.day
-
-        # if html.find('br') and html.find('br').next_sibling.strip() == 'or':
-        #     a = html.find('a')
-        #     self._page = a.get('href').split('/')[-1]
-        #     self.title = a.get_text()
-        # else:
-        #     self.title = html.find('h3').get_text()
-        # if self.title is None:
-        #     self.title = self.day
+            self.title = html.find("h3").get_text()
 
     def _get_texts(
         self, processional_gospel: bool = False, alternate_prayer: bool = False
@@ -270,9 +261,9 @@ class SundaysAndSeasons:
                     f"{line[0]}{' '.join(line[1:])}"
                 )
                 if i % 2 == 0:
-                    body.append(f'<div>\n{new_line}\n</div>')
+                    body.append(f"<div>\n{new_line}\n</div>")
                 else:
-                    body.append(f'<div>\n<b>{new_line}</b>\n</div>')
+                    body.append(f"<div>\n<b>{new_line}</b>\n</div>")
 
         return Reading(title=title, body="\n".join(body))
 
