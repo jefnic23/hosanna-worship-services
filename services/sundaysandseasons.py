@@ -84,6 +84,7 @@ class SundaysAndSeasons:
         self._get_title_and_url()
         self._get_texts(processional_gospel)
         self._get_slide()
+        self._page = 0
 
     # region Private Methods
 
@@ -296,7 +297,7 @@ class SundaysAndSeasons:
         return superscripts
 
     @staticmethod
-    def _add_superscripts(text: str, superscripts: list) -> str:
+    def _add_superscripts(text: str, superscripts: list[str]) -> str:
         """Finds the superscripts in a text string and surrounds them with the html
         superscript tag, which is later used to format the text in the powerpoint slides.
 
@@ -318,7 +319,7 @@ class SundaysAndSeasons:
         new_text = ""
         for superscript in superscripts:
             indeces = find_superscript(text, superscript, start)
-            new_text += text[start : indeces[0]] + f"<sup>{superscript}</sup>"
+            new_text += text[start : indeces[0]] + f"<sup>{superscript.strip()}</sup>"
             start = indeces[1]
         new_text += text[start:]
         return new_text
