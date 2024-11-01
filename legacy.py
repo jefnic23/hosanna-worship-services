@@ -27,7 +27,10 @@ if __name__ == "__main__":
     sas.login()
 
     hymn_list = [
-        [532, 414, 434],
+        [423, 426, 422],
+        [679, 790, 439],
+        [624, 438, 632],
+        [855, 434, 660]
     ]
 
     for i, hymns in enumerate(hymn_list):
@@ -57,7 +60,7 @@ if __name__ == "__main__":
         ppt.add_rich_text("Confession and Forgiveness", lit.confession)
         ppt.add_hymn(first_hymn)
         ppt.add_rich_text("Greeting", lit.greeting)
-        ppt.add_rich_text("Hymn of Praise", lit.kyrie, spoken=True)
+        ppt.add_rich_text("Hymn of Praise", lit.hymn_of_praise, spoken=True)
         ppt.add_rich_text("", lit.lord_be_with_you, anchor=MSO_VERTICAL_ANCHOR.MIDDLE)
         ppt.add_rich_text("Prayer of the Day", sas.prayer)
         ppt.add_title_slide(sas.first_reading.title)
@@ -94,6 +97,7 @@ if __name__ == "__main__":
 
         # region Generate Readings
 
+        doc.add_page_numbers()
         doc.add_rich_text(
             title=f"First Reading: {sas.first_reading.title}",
             body=sas.first_reading.body,
@@ -114,6 +118,7 @@ if __name__ == "__main__":
 
         # region Print Service
 
+        doc.add_page_numbers()
         doc.add_rich_text(title="Prelude", body=None, highlight_title=True)
         doc.add_rich_text(title="Confession and Forgiveness", body=lit.confession)
         doc.add_rich_text(
@@ -122,7 +127,11 @@ if __name__ == "__main__":
             highlight_title=True,
         )
         doc.add_rich_text(title="Greeting", body=lit.greeting)
-        doc.add_rich_text(title="Kyrie", body=None, highlight_title=True)
+        doc.add_rich_text(
+            title="Hymn of Praise: Sing to the Lord of Harvest, ELW 694",
+            body=None,
+            highlight_title=True,
+        )
         doc.add_rich_text(title=None, body=lit.lord_be_with_you)
         doc.add_rich_text(title="Prayer of the Day", body=sas.prayer)
         doc.add_rich_text(
