@@ -26,10 +26,10 @@ class WordDocument:
         self._document = Document()
         self._section = self._document.sections[0]
         self._section.left_margin = self._section.right_margin = (
-            self._section.top_margin
-        ) = self._section.bottom_margin = Inches(0.5)
-
-        self.add_page_numbers()
+            self._section.bottom_margin
+        ) = Inches(0.5)
+        self._section.top_margin = Inches(1)
+        self._section.header_distance = Inches(0.5)
 
     def add_rich_text(
         self,
@@ -48,7 +48,7 @@ class WordDocument:
                 bold=True,
                 small_caps=True,
                 highlight=highlight_title,
-                underline=False if highlight_title else True
+                underline=False if highlight_title else True,
             )
 
         if body is None:
@@ -105,7 +105,8 @@ class WordDocument:
         """Add page numbers to the header of the document."""
         header = self._section.header
         paragraph = header.paragraphs[0]
-        paragraph.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+
+        run = paragraph.add_run(f"{self.day}\t\t\t")
 
         # Create a new run and add the PAGE field to it
         run = paragraph.add_run()
@@ -156,10 +157,10 @@ class WordDocument:
         self._document = Document()
         self._section = self._document.sections[0]
         self._section.left_margin = self._section.right_margin = (
-            self._section.top_margin
-        ) = self._section.bottom_margin = Inches(0.5)
-
-        self.add_page_numbers()
+            self._section.bottom_margin
+        ) = Inches(0.5)
+        self._section.top_margin = Inches(1)
+        self._section.header_distance = Inches(0.5)
 
     @staticmethod
     def _add_run(
@@ -172,7 +173,7 @@ class WordDocument:
         color: tuple = (0, 0, 0),
         small_caps: bool = False,
         highlight: bool = False,
-        underline: bool = False
+        underline: bool = False,
     ) -> Run:
         """Add a run to a paragraph"""
         run = paragraph.add_run()
