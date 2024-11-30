@@ -27,157 +27,187 @@ if __name__ == "__main__":
     sas.login()
 
     hymn_list = [
-        [423, 426, 422],
-        [679, 790, 439],
-        [624, 438, 632],
-        [855, 434, 660]
+        [245, 715, 248],
+        [266, 650, 631],
+        [242, 248, 843],
+        [257, 723, 439]
     ]
 
-    for i, hymns in enumerate(hymn_list):
-        day = get_day(delta=i, weekday=Weekday.SUNDAY)
+    try:
+        for i, hymns in enumerate(hymn_list):
+            day = get_day(delta=i, weekday=Weekday.SUNDAY)
 
-        path = Path(settings.LOCAL_DIR, "services")
-        if not os.path.exists(f"{path}/{day}"):
-            os.makedirs(f"{path}/{day}")
+            path = Path(settings.LOCAL_DIR, "services")
+            if not os.path.exists(f"{path}/{day}"):
+                os.makedirs(f"{path}/{day}")
 
-        lit.load_files("Pentecost")
+            lit.load_files("Advent")
 
-        first_hymn = hymnal.get_hymn(hymns[0])
-        second_hymn = hymnal.get_hymn(hymns[1])
-        third_hymn = hymnal.get_hymn(hymns[2])
+            first_hymn = hymnal.get_hymn(hymns[0])
+            second_hymn = hymnal.get_hymn(hymns[1])
+            third_hymn = hymnal.get_hymn(hymns[2])
 
-        # dbx.day = day
-        doc.day = day
-        ppt.day = day
-        sas.day = day
+            # dbx.day = day
+            doc.day = day
+            ppt.day = day
+            sas.day = day
 
-        sas.get_texts_and_images()
+            sas.get_texts_and_images()
 
-        # region Build PowerPoint
+            # region Build PowerPoint
 
-        ppt.convert_image()
-        ppt.add_image()
-        ppt.add_rich_text("Confession and Forgiveness", lit.confession)
-        ppt.add_hymn(first_hymn)
-        ppt.add_rich_text("Greeting", lit.greeting)
-        ppt.add_rich_text("Hymn of Praise", lit.hymn_of_praise, spoken=True)
-        ppt.add_rich_text("", lit.lord_be_with_you, anchor=MSO_VERTICAL_ANCHOR.MIDDLE)
-        ppt.add_rich_text("Prayer of the Day", sas.prayer)
-        ppt.add_title_slide(sas.first_reading.title)
-        ppt.add_rich_text("First Reading", sas.first_reading.body)
-        ppt.add_title_slide(sas.psalm.title)
-        ppt.add_rich_text("Psalm", sas.psalm.body)
-        ppt.add_title_slide(sas.second_reading.title)
-        ppt.add_rich_text("Second Reading", sas.second_reading.body)
-        ppt.add_rich_text("Gospel Acclamation", lit.gospel_acclamation, spoken=True)
-        ppt.add_gospel_title(sas.gospel.title)
-        ppt.add_rich_text("Gospel", sas.gospel.body)
-        ppt.add_title_slide("Sermon")
-        ppt.add_hymn(second_hymn)
-        ppt.add_rich_text("Apostles' Creed", lit.apostles_creed, spoken=True)
-        ppt.add_intercessions("Lord, in your mercy,", "hear our prayer.")
-        ppt.add_rich_text("Dialogue", lit.dialogue, anchor=MSO_VERTICAL_ANCHOR.MIDDLE)
-        ppt.add_rich_text("Preface", lit.preface)
-        ppt.add_rich_text("Holy, holy, holy", lit.canticle, spoken=True)
-        ppt.add_rich_text("Thanksgiving", lit.thanksgiving)
-        ppt.add_rich_text("Lord's Prayer", lit.lords_prayer, spoken=True)
-        ppt.add_title_slide("Communion")
-        ppt.add_rich_text("Communion Hymn", lit.communion_hymn, spoken=True)
-        ppt.add_title_slide("Communion")
-        ppt.add_rich_text("Communion", lit.communion_blessing)
-        ppt.add_rich_text("Prayer after Communion", lit.prayer_after_communion)
-        ppt.add_rich_text("Blessing", lit.blessing)
-        ppt.add_hymn(third_hymn)
-        ppt.add_rich_text("Dismissal", lit.dismissal, anchor=MSO_VERTICAL_ANCHOR.MIDDLE)
-        ppt.add_image()
-        ppt.save(sas.title)
-        ppt.reset()
+            ppt.convert_image()
+            ppt.add_image()
+            ppt.add_rich_text("Confession and Forgiveness", lit.confession)
+            ppt.add_hymn(first_hymn)
+            ppt.add_rich_text("Greeting", lit.greeting)
+            ppt.add_rich_text("Hymn of Praise", lit.hymn_of_praise, spoken=True)
+            ppt.add_rich_text(
+                "", lit.lord_be_with_you, anchor=MSO_VERTICAL_ANCHOR.MIDDLE
+            )
+            ppt.add_rich_text("Prayer of the Day", sas.prayer)
 
-        # endregion
+            # advent only
+            ppt.add_title_slide("Lighting of the Advent Wreath")
+            ppt.add_rich_text(
+                title="A Candle is Burning",
+                text="\n\n".join(lit.advent_wreath.split("\n\n")[: i + 1]),
+                spoken=True,
+            )
 
-        # region Generate Readings
+            ppt.add_title_slide(sas.first_reading.title)
+            ppt.add_rich_text("First Reading", sas.first_reading.body)
+            ppt.add_title_slide(sas.psalm.title)
+            ppt.add_rich_text("Psalm", sas.psalm.body)
+            ppt.add_title_slide(sas.second_reading.title)
+            ppt.add_rich_text("Second Reading", sas.second_reading.body)
+            ppt.add_rich_text("Gospel Acclamation", lit.gospel_acclamation, spoken=True)
+            ppt.add_gospel_title(sas.gospel.title)
+            ppt.add_rich_text("Gospel", sas.gospel.body)
+            ppt.add_title_slide("Sermon")
+            ppt.add_hymn(second_hymn)
+            ppt.add_rich_text("Apostles' Creed", lit.apostles_creed, spoken=True)
+            ppt.add_intercessions(
+                call="Lord, in your mercy,", response="hear our prayer."
+            )
+            ppt.add_rich_text(
+                "Dialogue", lit.dialogue, anchor=MSO_VERTICAL_ANCHOR.MIDDLE
+            )
+            ppt.add_rich_text("Preface", lit.preface)
+            ppt.add_rich_text("Holy, holy, holy", lit.holy_holy_holy, spoken=True)
+            ppt.add_rich_text("Thanksgiving", lit.thanksgiving)
+            ppt.add_rich_text("Lord's Prayer", lit.lords_prayer, spoken=True)
+            ppt.add_title_slide("Communion")
+            ppt.add_rich_text("Communion Hymn", lit.communion_hymn, spoken=True)
+            ppt.add_title_slide("Communion")
+            ppt.add_rich_text("Communion", lit.communion_blessing)
+            ppt.add_rich_text("Prayer after Communion", lit.prayer_after_communion)
+            ppt.add_rich_text("Blessing", lit.blessing)
+            ppt.add_hymn(third_hymn)
+            ppt.add_rich_text(
+                "Dismissal", lit.dismissal, anchor=MSO_VERTICAL_ANCHOR.MIDDLE
+            )
+            ppt.add_image()
+            ppt.save(sas.title)
+            ppt.reset()
 
-        doc.add_page_numbers()
-        doc.add_rich_text(
-            title=f"First Reading: {sas.first_reading.title}",
-            body=sas.first_reading.body,
-            keep_together=True,
-        )
-        doc.add_rich_text(
-            title=sas.psalm.title, body=sas.psalm.body, keep_together=True
-        )
-        doc.add_rich_text(
-            title=f"Second Reading: {sas.second_reading.title}",
-            body=sas.second_reading.body,
-            keep_together=True,
-        )
-        doc.save(filename="Readings", convert_to_pdf=True)
-        doc.reset()
+            # endregion
 
-        # endregion
+            # region Generate Readings
 
-        # region Print Service
+            doc.add_page_numbers()
+            doc.add_rich_text(
+                title=f"First Reading: {sas.first_reading.title}",
+                body=sas.first_reading.body,
+                keep_together=True,
+            )
+            doc.add_rich_text(
+                title=sas.psalm.title, body=sas.psalm.body, keep_together=True
+            )
+            doc.add_rich_text(
+                title=f"Second Reading: {sas.second_reading.title}",
+                body=sas.second_reading.body,
+                keep_together=True,
+            )
+            doc.save(filename="Readings", convert_to_pdf=True)
+            doc.reset()
 
-        doc.add_page_numbers()
-        doc.add_rich_text(title="Prelude", body=None, highlight_title=True)
-        doc.add_rich_text(title="Confession and Forgiveness", body=lit.confession)
-        doc.add_rich_text(
-            title=f"Hymn: {first_hymn.title}, ELW {first_hymn.number}",
-            body=None,
-            highlight_title=True,
-        )
-        doc.add_rich_text(title="Greeting", body=lit.greeting)
-        doc.add_rich_text(
-            title="Hymn of Praise: Sing to the Lord of Harvest, ELW 694",
-            body=None,
-            highlight_title=True,
-        )
-        doc.add_rich_text(title=None, body=lit.lord_be_with_you)
-        doc.add_rich_text(title="Prayer of the Day", body=sas.prayer)
-        doc.add_rich_text(
-            title=f"First Reading: {sas.first_reading.title}",
-            body=sas.first_reading.body,
-        )
-        doc.add_rich_text(title=sas.psalm.title, body=sas.psalm.body)
-        doc.add_rich_text(
-            title=f"Second Reading: {sas.second_reading.title}",
-            body=sas.second_reading.body,
-        )
-        doc.add_rich_text(title="Gospel Acclamation", body=None, highlight_title=True)
-        doc.add_rich_text(
-            title=f"Gospel Reading: {sas.gospel.title}", body=sas.gospel.body
-        )
-        doc.add_rich_text(title="Sermon", body=None)
-        doc.add_rich_text(
-            title=f"Hymn: {second_hymn.title}, ELW {second_hymn.number}",
-            body=None,
-            highlight_title=True,
-        )
-        doc.add_rich_text(title="Apostles' Creed", body=lit.apostles_creed)
-        doc.add_rich_text(title="Prayers of Intercession", body=None)
-        doc.add_rich_text(title="Dialogue", body=lit.dialogue)
-        doc.add_rich_text(title="Preface", body=lit.preface)
-        doc.add_rich_text(title="Holy, holy, holy", body=None, highlight_title=True)
-        doc.add_rich_text(title="Lord's Prayer", body=lit.lords_prayer)
-        doc.add_rich_text(title="Communion", body=None, highlight_title=True)
-        doc.add_rich_text(title="Communion Blessing", body=lit.communion_blessing)
-        doc.add_rich_text(
-            title="Prayer after Communion", body=lit.prayer_after_communion
-        )
-        doc.add_rich_text(title="Blessing", body=lit.blessing)
-        doc.add_rich_text(
-            title=f"Hymn: {third_hymn.title}, ELW {third_hymn.number}",
-            body=None,
-            highlight_title=True,
-        )
-        doc.add_rich_text(title="Dismissal", body=lit.dismissal)
-        doc.save(filename=sas.title, convert_to_pdf=True)
-        doc.reset()
+            # endregion
 
-        # endregion
+            # region Print Service
 
-        # dbx.upload(f"{sas.title}.docx")
-        # dbx.upload(f"{sas.title}.pptx")
+            doc.add_page_numbers()
+            doc.add_rich_text(title="Prelude", body=None, highlight_title=True)
+            doc.add_rich_text(title="Confession and Forgiveness", body=lit.confession)
+            doc.add_rich_text(
+                title=f"Hymn: {first_hymn.title}, ELW {first_hymn.number}",
+                body=None,
+                highlight_title=True,
+            )
+            doc.add_rich_text(title="Greeting", body=lit.greeting)
+            doc.add_rich_text(
+                title="Hymn of Praise: Sing to the Lord of Harvest, ELW 694",
+                body=None,
+                highlight_title=True,
+            )
+            doc.add_rich_text(title=None, body=lit.lord_be_with_you)
+            doc.add_rich_text(title="Prayer of the Day", body=sas.prayer)
 
-    sas.logoff()
-    # dbx.close()
+            # advent only
+            doc.add_rich_text(
+                title="Lightning of the Advent Wreath",
+                body=f"{i+1} verse{'s' if i+1 > 1 else ''} of Away in a Manger, ELW 277",
+                highlight_title=True,
+            )
+
+            doc.add_rich_text(
+                title=f"First Reading: {sas.first_reading.title}",
+                body=sas.first_reading.body,
+            )
+            doc.add_rich_text(title=sas.psalm.title, body=sas.psalm.body)
+            doc.add_rich_text(
+                title=f"Second Reading: {sas.second_reading.title}",
+                body=sas.second_reading.body,
+            )
+            doc.add_rich_text(
+                title="Gospel Acclamation", body=None, highlight_title=True
+            )
+            doc.add_rich_text(
+                title=f"Gospel Reading: {sas.gospel.title}", body=sas.gospel.body
+            )
+            doc.add_rich_text(title="Sermon", body=None)
+            doc.add_rich_text(
+                title=f"Hymn: {second_hymn.title}, ELW {second_hymn.number}",
+                body=None,
+                highlight_title=True,
+            )
+            doc.add_rich_text(title="Apostles' Creed", body=lit.apostles_creed)
+            doc.add_rich_text(title="Prayers of Intercession", body=None)
+            doc.add_rich_text(title="Dialogue", body=lit.dialogue)
+            doc.add_rich_text(title="Preface", body=lit.preface)
+            doc.add_rich_text(title="Holy, holy, holy", body=None, highlight_title=True)
+            doc.add_rich_text(title="Lord's Prayer", body=lit.lords_prayer)
+            doc.add_rich_text(title="Communion", body=None, highlight_title=True)
+            doc.add_rich_text(title="Communion Blessing", body=lit.communion_blessing)
+            doc.add_rich_text(
+                title="Prayer after Communion", body=lit.prayer_after_communion
+            )
+            doc.add_rich_text(title="Blessing", body=lit.blessing)
+            doc.add_rich_text(
+                title=f"Hymn: {third_hymn.title}, ELW {third_hymn.number}",
+                body=None,
+                highlight_title=True,
+            )
+            doc.add_rich_text(title="Dismissal", body=lit.dismissal)
+            doc.save(filename=sas.title, convert_to_pdf=True)
+            doc.reset()
+
+            # endregion
+
+            # dbx.upload(f"{sas.title}.docx")
+            # dbx.upload(f"{sas.title}.pptx")
+    except Exception as e:
+        print(e)
+    finally:
+        sas.logoff()
+        # dbx.close()
