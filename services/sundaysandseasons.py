@@ -104,8 +104,11 @@ class SundaysAndSeasons:
         if link := html.find("a"):
             self._page = link.get("href").split("/")[-1]
             self.title = link.get_text()
+        elif description := html.find("h3").get_text():
+            self.title = description
         else:
-            self.title = html.find("h3").get_text()
+            html = soup.body.find("h1", {"id": "ribbontitle"})
+            self.title = html.get_text()
 
     def _get_texts(
         self, processional_gospel: bool = False, alternate_prayer: bool = False
